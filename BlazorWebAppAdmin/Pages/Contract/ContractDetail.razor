@@ -1,0 +1,118 @@
+﻿@page "/contracts/detail/{Id:int}"
+@using BlazorWebAppAdmin.Services
+@inject NavigationManager Navigation
+@inject IContractService ContractService
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="Contract"
+                 BreadcrumbCurrent="Detail" />
+
+<div class="container-fluid">
+    <div class="row g-4">
+        <div class="col-md-12">
+            <div class="card card-primary card-outline shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0"><i class="bi bi-file-earmark-text me-2"></i>Contract Details</h4>
+                </div>
+
+                <div class="card-body">
+                    @if (contract == null)
+                    {
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2 text-muted">Loading contract information...</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-2"><b>Contract Number:</b> @contract.ContractNumber</div>
+                                <div class="mb-2"><b>Partner:</b> @contract.Partner?.Name</div>
+                                <div class="mb-2"><b>Contract Date:</b> @contract.ContractDate?.ToString("dd/MM/yyyy")</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-2"><b>Total Value:</b> @contract.TotalValue?.ToString("N0")</div>
+                                <div class="mb-2"><b>Payment Terms:</b> @contract.PaymentTerms</div>
+                                <div class="mb-2"><b>Notes:</b> @contract.Notes</div>
+                            </div>
+                        </div>
+
+                        <h5 class="mt-3"><i class="bi bi-film me-1"></i>Movies in Contract</h5>
+                        <table class="table table-striped table-bordered mt-2 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Title</th>
+                                    <th class="text-end">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (contract.MovieInContract == null || !contract.MovieInContract.Any())
+                                {
+                                    <tr>
+                                        <td colspan="2" class="text-center text-muted py-3">No movies in this contract</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var m in contract.MovieInContract)
+                                    {
+                                        <tr>
+                                            <td>@m.Title</td>
+                                            <td class="text-end">@m.Price.ToString("N0")</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+
+                        @if (!string.IsNullOrEmpty(contract.ContractFileName))
+                        {
+                            <div class="mt-4">
+                                <button class="btn btn-outline-primary me-2" @onclick="DownloadContract">
+                                    <i class="bi bi-download me-1"></i> Download @contract.ContractFileName
+                                </button>
+                            </div>
+                        }
+
+                        <div class="mt-4">
+                            <button class="btn btn-secondary me-2" @onclick="GoBack">
+                                <i class="bi bi-arrow-left-circle me-1"></i> Back
+                            </button>
+                            <button class="btn btn-warning" @onclick="() => EditContract(contract.Id)">
+                                <i class="bi bi-pencil-square me-1"></i> Edit
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private ContractViewModelDetail? contract;
+
+    protected override async Task OnInitializedAsync()
+    {
+        contract = await ContractService.GetByIdAsync(Id);
+    }
+
+    private async Task DownloadContract()
+    {
+        if (contract == null) return;
+        await ContractService.DownloadFileAsync(contract.Id);
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/contracts");
+    }
+
+    private void EditContract(int id)
+    {
+        Navigation.NavigateTo($"/contracts/edit/{id}");
+    }
+}

@@ -1,0 +1,36 @@
+﻿<div class="card text-white bg-primary bg-gradient border-primary mb-4">
+    <div class="card-header border-0">
+        <h3 class="card-title">Sales Value</h3>
+    </div>
+    <div class="card-body">
+        <div id="world-map" style="height: 220px"></div>
+    </div>
+    <div class="card-footer border-0">
+        <div class="row">
+            <div class="col-4 text-center">
+                <div id="sparkline-1" class="text-dark"></div>
+                <div class="text-white">Visitors</div>
+            </div>
+            <div class="col-4 text-center">
+                <div id="sparkline-2" class="text-dark"></div>
+                <div class="text-white">Online</div>
+            </div>
+            <div class="col-4 text-center">
+                <div id="sparkline-3" class="text-dark"></div>
+                <div class="text-white">Sales</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject] IJSRuntime JS { get; set; } = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("salesCard.init");
+        }
+    }
+}

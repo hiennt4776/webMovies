@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navbar Dropdown Example</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/style.css">
+ 
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold text-danger" href="#">🎬 Movie Hub</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link active" href="#trending">Trending</a></li>
+        <li class="nav-item"><a class="nav-link" href="#new">New</a></li>
+        <li class="nav-item"><a class="nav-link" href="#top">Top Rated</a></li>
+
+        <!-- Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown">
+            Categories <i class="fa-solid fa-chevron-down"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="categoriesDropdown">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Comedy</a></li>
+            <li><a class="dropdown-item" href="#">Drama</a></li>
+            <li><a class="dropdown-item" href="#">Sci-Fi</a></li>
+          </ul>
+        </li>
+      </ul>
+
+     <form class="d-flex me-3">
+        <input class="form-control me-2 rounded-pill" type="search" placeholder="Search movies...">
+        <button class="btn btn-blue rounded-pill" type="submit">Search</button>
+      </form>
+      <div class="d-flex">
+        <button class="btn btn-success rounded-pill me-2">Register</button>
+        <button class="btn btn-danger rounded-pill">Login</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+  <div class="container py-5">
+    <h1 class="text-center mb-5">🎬 Movie Hub - Buttons Demo</h1>
+
+    <!-- Navbar Buttons -->
+    <div class="mb-5">
+      <h3>🔹 Navbar</h3>
+      <button class="btn btn-danger">Search</button>
+      <button class="btn btn-outline-light me-2">Register</button>
+      <button class="btn btn-light">Login</button>
+    </div>
+
+    <!-- Login/Register -->
+    <div class="mb-5">
+      <h3>🔹 Login / Register</h3>
+      <button class="btn btn-primary w-25">Login</button>
+      <button class="btn btn-success w-25">Register</button>
+    </div>
+
+    <!-- Watch Page -->
+    <div class="mb-5">
+      <h3>🔹 Watch Page</h3>
+      <button class="btn btn-primary btn-toggle">▶ Watch Film</button>
+      <button class="btn btn-danger btn-toggle">🎞 Watch Trailer</button>
+      <button class="btn btn-success">Submit Comment</button>
+    </div>
+
+    <!-- Blog -->
+    <div class="mb-5">
+      <h3>🔹 Blog</h3>
+      <a href="#" class="btn btn-danger btn-sm">Read More</a>
+      <a href="#" class="btn btn-outline-light">← Back to Blogs</a>
+    </div>
+
+    <!-- Cart -->
+    <div class="mb-5">
+      <h3>🔹 Cart</h3>
+      <button class="btn btn-warning btn-sm">Remove</button>
+      <button class="btn btn-success">Checkout</button>
+    </div>
+
+    <!-- Subscription -->
+    <div class="mb-5">
+      <h3>🔹 Subscription (Buy Package)</h3>
+      <button class="btn btn-primary">Buy Now</button>
+    </div>
+
+    <!-- FAQ -->
+    <div class="mb-5">
+      <h3>🔹 FAQ</h3>
+      <button class="btn btn-warning">💳 Rent</button>
+    </div>
+
+    <!-- Contact -->
+    <div class="mb-5">
+      <h3>🔹 Contact</h3>
+      <button class="btn btn-danger">Send Message</button>
+    </div>
+
+    <!-- Footer -->
+    <div class="mb-5">
+      <h3>🔹 Footer</h3>
+      <button class="btn btn-danger">Go</button>
+    </div>
+
+    <!-- Back to Top -->
+    <div>
+      <h3>🔹 Back to Top</h3>
+      <button id="backTop" class="btn btn-danger">↑</button>
+    </div>
+  </div>
+
+  <div class="card-body text-center">
+  <h5 class="card-title">The Hangover</h5>
+
+  <!-- Comedy -->
+  <span class="badge bg-warning text-dark">Comedy</span>
+  
+  <!-- Action -->
+  <span class="badge bg-danger">Action</span>
+  
+  <!-- Adventure -->
+  <span class="badge bg-success">Adventure</span>
+  
+  <!-- Animation -->
+  <span class="badge bg-info text-dark">Animation</span>
+  
+  <!-- Biography -->
+  <span class="badge bg-secondary">Biography</span>
+  
+  <!-- Crime -->
+  <span class="badge bg-dark">Crime</span>
+  
+  <!-- Documentary -->
+  <span class="badge bg-light text-dark border">Documentary</span>
+  
+  <!-- Drama -->
+  <span class="badge bg-primary">Drama</span>
+  
+  <!-- Family -->
+  <span class="badge bg-success">Family</span>
+  
+  <!-- Fantasy -->
+  <span class="badge bg-purple" style="background:#6f42c1;">Fantasy</span>
+  
+  <!-- History -->
+  <span class="badge bg-secondary">History</span>
+  
+  <!-- Horror -->
+  <span class="badge bg-danger">Horror</span>
+  
+  <!-- Music -->
+  <span class="badge bg-pink" style="background:#d63384;">Music</span>
+  
+  <!-- Mystery -->
+  <span class="badge bg-dark">Mystery</span>
+  
+  <!-- Romance -->
+  <span class="badge bg-pink" style="background:#e83e8c;">Romance</span>
+  
+  <!-- Sci-Fi -->
+  <span class="badge bg-info text-dark">Sci-Fi</span>
+  
+  <!-- Sport -->
+  <span class="badge bg-success">Sport</span>
+  
+  <!-- Thriller -->
+  <span class="badge bg-secondary">Thriller</span>
+  
+  <!-- War -->
+  <span class="badge bg-dark">War</span>
+  
+  <!-- Western -->
+  <span class="badge bg-warning text-dark">Western</span>
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

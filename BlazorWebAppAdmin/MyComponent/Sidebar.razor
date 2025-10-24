@@ -1,0 +1,83 @@
+﻿<!--begin::Sidebar-->
+<aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+    <!--begin::Sidebar Brand-->
+    <div class="sidebar-brand">
+        <a href="/" class="brand-link">
+            <img src="./assets/img/AdminLTELogo.png"
+                 alt="AdminLTE Logo"
+                 class="brand-image opacity-75 shadow" />
+            <span class="brand-text fw-light">Movie Dashboard</span>
+        </a>
+    </div>
+    <!--end::Sidebar Brand-->
+    <!--begin::Sidebar Wrapper-->
+    <div class="sidebar-wrapper">
+        <nav class="mt-2">
+            <ul class="nav sidebar-menu flex-column"
+                data-lte-toggle="treeview"
+                role="navigation"
+                aria-label="Main navigation"
+                data-accordion="false"
+                id="navigation">
+
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+                        <i class="nav-icon bi bi-speedometer"></i>
+                        <p>Dashboard</p>
+                    </NavLink>
+                </li>
+
+                <!-- Quản lý (Treeview) -->
+                <li class="nav-item has-treeview menu-open">
+                    <ul class="nav nav-treeview">
+
+                        <!-- Category -->
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/categories" Match="NavLinkMatch.Prefix">
+                                <i class="nav-icon bi bi-tags"></i>
+                                <p>Category</p>
+                            </NavLink>
+                        </li>
+
+                        <!-- Partner -->
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/partners" Match="NavLinkMatch.Prefix">
+                                <i class="nav-icon bi bi-people"></i>
+                                <p>Partner</p>
+                            </NavLink>
+                        </li>
+
+                        <!-- Contract -->
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/contracts" Match="NavLinkMatch.Prefix">
+                                <i class="nav-icon bi bi-file-earmark-text"></i>
+                                <p>Contract</p>
+                            </NavLink>
+                        </li>
+
+                        <!-- Employee -->
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/employees" Match="NavLinkMatch.Prefix">
+                                <i class="nav-icon bi bi-person-badge"></i>
+                                <p>Employee</p>
+                            </NavLink>
+                        </li>
+
+                        <!-- User -->
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/userEmployees" Match="NavLinkMatch.Prefix">
+                                <i class="nav-icon bi bi-person-circle"></i>
+                                <p>User</p>
+                            </NavLink>
+                        </li>
+
+                    </ul>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+    <!--end::Sidebar Wrapper-->
+</aside>
+<!--end::Sidebar-->

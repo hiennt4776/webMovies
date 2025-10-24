@@ -1,0 +1,62 @@
+﻿@page "/counter"
+
+@* Xác định URL của trang này là /counter.
+Khi người dùng truy cập https://localhost:xxxx/counter, Blazor sẽ render nội dung của trang này. *@
+
+<PageTitle>Counter</PageTitle>
+@* PageTitle sẽ gắn "Counter" vào <title> trong <head>.
+Khi chuyển sang trang khác, tab trình duyệt sẽ hiển thị title mới. *@
+
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@*<h1>Counter</h1>: tiêu đề trang.
+<p role="status">Current count: @currentCount</p>:
+ @currentCount là biến C# được bind trực tiếp vào HTML.
+Khi giá trị currentCount thay đổi, Blazor tự động re-render đoạn HTML này.
+role="status" → thông tin cho assistive technology (screen reader).
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>:
+@onclick="IncrementCount": Blazor lắng nghe sự kiện click và gọi hàm IncrementCount() trong code-behind.
+Bootstrap btn btn-primary để có nút màu xanh chuẩn Bootstrap.
+ *@
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}
+@* private int currentCount = 0; → khai báo biến số đếm, khởi tạo bằng 0.
+IncrementCount() → khi nút click, tăng giá trị currentCount lên 1.
+Blazor tự động re-render UI khi giá trị biến thay đổi, nên <p> sẽ cập nhật số đếm ngay lập tức. *@
+
+
+@* 5. Cơ chế hoạt động
+
+Người dùng mở trang /counter.
+
+Blazor render HTML ban đầu: hiển thị Current count: 0.
+
+Người dùng click nút → gọi IncrementCount().
+
+currentCount tăng lên → Blazor tự re-render phần @currentCount → hiển thị 1, 2, 3…
+
+Không cần refresh trang, mọi thay đổi được cập nhật realtime nhờ Blazor Server.
+
+🔑 Tóm tắt
+
+Đây là example cơ bản để minh họa:
+
+Data binding (@currentCount)
+
+Event handling (@onclick)
+
+Re-render UI tự động khi state thay đổi.
+
+Nguyên lý giống MVVM: UI <-> state <-> event handler. *@

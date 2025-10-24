@@ -1,0 +1,94 @@
+﻿@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Routing
+@using Blazored.LocalStorage
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark shadow">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-danger" href="/">🎬 Movie Hub</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link active" href="#trending">Trending</a></li>
+                <li class="nav-item"><a class="nav-link" href="#new">New</a></li>
+                <li class="nav-item"><a class="nav-link" href="#top">Top Rated</a></li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown">
+                        Categories <i class="fa-solid fa-chevron-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Comedy</a></li>
+                        <li><a class="dropdown-item" href="#">Drama</a></li>
+                        <li><a class="dropdown-item" href="#">Sci-Fi</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <form class="d-flex me-3">
+                <input class="form-control me-2 rounded-pill" type="search" placeholder="Search movies...">
+                <button class="btn btn-blue rounded-pill" type="submit">Search</button>
+            </form>
+
+            @if (string.IsNullOrEmpty(FullName))
+            {
+                <!-- Chưa đăng nhập -->
+                <div class="d-flex">
+                    <button class="btn btn-success rounded-pill me-2" @onclick="GoToRegister">Register</button>
+                    <button class="btn btn-danger rounded-pill" @onclick="GoToLogin">Login</button>
+                </div>
+            }
+            else
+            {
+                <!-- Đã đăng nhập -->
+                <div class="d-flex align-items-center">
+                    <span class="text-white me-3 fw-semibold">@FullName</span>
+                    <button class="btn btn-outline-light rounded-pill" @onclick="Logout">Logout</button>
+                </div>
+            }
+        </div>
+    </div>
+</nav>
+
+@code {
+    [Inject] NavigationManager NavManager { get; set; }
+    [Inject] ILocalStorageService LocalStorage { get; set; }
+
+    private string? FullName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Lấy fullname từ localStorage (nếu có)
+        FullName = await LocalStorage.GetItemAsync<string>("fullName");
+
+        // Nếu null => đặt về rỗng để tránh lỗi null reference
+        FullName ??= string.Empty;
+    }
+
+    private void GoToRegister()
+    {
+        NavManager.NavigateTo("/register");
+    }
+
+    private void GoToLogin()
+    {
+        NavManager.NavigateTo("/login");
+    }
+
+    private async Task Logout()
+    {
+        // Xóa thông tin trong LocalStorage
+        await LocalStorage.RemoveItemAsync("token");
+        await LocalStorage.RemoveItemAsync("fullName");
+        await LocalStorage.RemoveItemAsync("email");
+
+        FullName = string.Empty;
+
+        // Điều hướng về login
+        NavManager.NavigateTo("/login", forceLoad: true);
+    }
+}

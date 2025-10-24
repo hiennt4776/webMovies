@@ -1,0 +1,114 @@
+﻿@page "/employees/detail/{Id:int}"
+@using BlazorWebAppAdmin.Services
+@inject NavigationManager Navigation
+@inject IEmployeeService EmployeeService
+@inject IJSRuntime JSRuntime
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="Employee"
+                 BreadcrumbCurrent="Detail" />
+
+@if (employee == null)
+{
+    <div class="alert alert-info text-center mt-4">
+        <div class="spinner-border text-primary me-2" role="status"></div>
+        Loading employee details...
+    </div>
+}
+else
+{
+    <div class="card shadow-sm p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0 text-primary">
+                <i class="bi bi-person-circle me-2"></i> @employee.FullName
+            </h4>
+            <div>
+                <button class="btn btn-success me-2" @onclick="AddEmployee">
+                    <i class="bi bi-plus-lg"></i> Add
+                </button>
+                <button class="btn btn-warning me-2" @onclick="EditEmployee">
+                    <i class="bi bi-pencil-square"></i> Edit
+                </button>
+                <button class="btn btn-secondary" @onclick="BackToList">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </button>
+            </div>
+        </div>
+
+        <hr />
+
+        <dl class="row mt-3">
+            <dt class="col-sm-3 fw-bold text-muted">Employee ID</dt>
+            <dd class="col-sm-9">@employee.Id</dd>
+
+            <dt class="col-sm-3 fw-bold text-muted">Full Name</dt>
+            <dd class="col-sm-9">@employee.FullName</dd>
+
+            <dt class="col-sm-3 fw-bold text-muted">Gender</dt>
+            <dd class="col-sm-9">
+                @(employee.Gender == true ? "Male" : employee.Gender == false ? "Female" : "Not specified")
+            </dd>
+
+            <dt class="col-sm-3 fw-bold text-muted">Email</dt>
+            <dd class="col-sm-9">@employee.Email</dd>
+
+            <dt class="col-sm-3 fw-bold text-muted">Phone Number</dt>
+            <dd class="col-sm-9">@employee.PhoneNumber</dd>
+
+            <dt class="col-sm-3 fw-bold text-muted">Address</dt>
+            <dd class="col-sm-9">@employee.Address</dd>
+
+            <dt class="col-sm-3 fw-bold text-muted">Job Status</dt>
+            <dd class="col-sm-9">@employee.JobStatus</dd>
+
+            <dt class="col-sm-3 fw-bold text-muted">Date of Birth</dt>
+            <dd class="col-sm-9">@employee.DateOfBirth?.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3 fw-bold text-muted">Salary</dt>
+            <dd class="col-sm-9">@employee.Salary?.ToString("N0") VND</dd>
+        </dl>
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private EmployeeViewModel? employee;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            employee = await EmployeeService.GetByIdAsync(Id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error loading employee details: {ex.Message}");
+        }
+    }
+
+    private void BackToList()
+    {
+        Navigation.NavigateTo("/employees");
+    }
+
+    private void AddEmployee()
+    {
+        Navigation.NavigateTo("/employees/add");
+    }
+
+    private void EditEmployee()
+    {
+        Navigation.NavigateTo($"/employees/edit/{Id}");
+    }
+
+    private async Task DeleteEmployee()
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {employee?.FullName}?");
+        if (confirmed)
+        {
+            await EmployeeService.DeleteAsync(Id);
+            Navigation.NavigateTo("/employees");
+        }
+    }
+}

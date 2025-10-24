@@ -1,0 +1,27 @@
+﻿@* Component: DashboardHeader *@
+@code {
+    [Parameter] public string Title { get; set; } = "Dashboard";
+    [Parameter] public string BreadcrumbMain { get; set; } = "Category";
+    [Parameter] public string BreadcrumbCurrent { get; set; } = "Index";
+}
+
+<div class="container-fluid">
+    <!--begin::Row-->
+    <div class="row align-items-center">
+        <div class="col-sm-6">
+            <h3 class="mb-0">@Title</h3>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-end mb-0">
+                <li class="breadcrumb-item">
+                    <a href="#">@BreadcrumbMain</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    @BreadcrumbCurrent
+                </li>
+            </ol>
+        </div>
+    </div>
+    <!--end::Row-->
+</div>
+

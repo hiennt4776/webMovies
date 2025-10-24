@@ -1,0 +1,263 @@
+﻿@page "/contracts"
+@using BlazorWebAppAdmin.Services
+@inject IContractService ContractService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="Contract"
+                 BreadcrumbCurrent="List" />
+
+<div class="container-fluid">
+    <div class="row g-4">
+        <div class="col-12">
+
+            <div class="card card-outline card-primary shadow-sm">
+                <!-- Header -->
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-contract me-2"></i>Contract List
+                    </h5>
+                    <button class="btn btn-success btn-sm px-3" @onclick="AddNew">
+                        <i class="fas fa-plus me-1"></i> Add Contract
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body">
+                    <!-- Search -->
+                    <div class="row g-2 align-items-center mb-3">
+                        <div class="col-md-8 col-sm-12">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" placeholder="Search contract..."
+                                       @bind="searchText" @bind:event="oninput" />
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-12 text-end">
+                            <button class="btn btn-primary me-2" @onclick="SearchContract">
+                                <i class="fas fa-search me-1"></i> Search
+                            </button>
+                            <button class="btn btn-outline-secondary me-2" @onclick="ClearSearch">
+                                <i class="fas fa-undo me-1"></i> Clear
+                            </button>
+                            <button class="btn btn-outline-success" @onclick="AddNew">
+                                <i class="fas fa-plus me-1"></i> Add
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    @if (pagedResult == null)
+                    {
+                        <p class="text-center text-muted my-4"><em>Loading data...</em></p>
+                    }
+                    else if (!pagedResult.Items.Any())
+                    {
+                        <p class="text-center text-muted my-4">No contracts found.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle text-center table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="sortable" @onclick="() => SortBy(nameof(ContractViewModel.ContractNumber))">
+                                            Contract No. @GetSortIcon(nameof(ContractViewModel.ContractNumber))
+                                        </th>
+                                        <th class="sortable" @onclick="() => SortBy(nameof(ContractViewModel.Partner.Name))">
+                                            Partner @GetSortIcon(nameof(ContractViewModel.Partner.Name))
+                                        </th>
+                                        <th class="sortable" @onclick="() => SortBy(nameof(ContractViewModel.ContractDate))">
+                                            Date @GetSortIcon(nameof(ContractViewModel.ContractDate))
+                                        </th>
+                                        <th class="sortable" @onclick="() => SortBy(nameof(ContractViewModel.TotalValue))">
+                                            Total Value (₫) @GetSortIcon(nameof(ContractViewModel.TotalValue))
+                                        </th>
+                                        <th style="width: 150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in pagedResult.Items)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold">@item.ContractNumber</td>
+                                            <td>@item.Partner?.Name</td>
+                                            <td>@item.ContractDate</td>
+                                            <td class="text-end">@($"{item.TotalValue:N0}")</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button class="btn btn-info btn-sm" title="View"
+                                                            @onclick="() => GoToDetail(item.Id)">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-warning btn-sm text-white" title="Edit"
+                                                            @onclick="() => Edit(item.Id)">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </button>
+                                                    <button class="btn btn-danger btn-sm" title="Delete"
+                                                            @onclick="() => ShowConfirm(item.Id, item.ContractNumber)">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button class="btn btn-outline-primary btn-sm" @onclick="PreviousPage" disabled="@(!CanPrevious)">
+                                <i class="fas fa-chevron-left"></i> Prev
+                            </button>
+                            <div class="fw-semibold">
+                                Page <span class="text-primary">@pagedResult.PageNumber</span> /
+                                <span class="text-primary">@TotalPages</span> |
+                                Total: <span class="text-primary">@pagedResult.TotalCount</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm" @onclick="NextPage" disabled="@(!CanNext)">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+@if (showConfirm)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-3">
+                <div class="modal-header bg-danger text-white rounded-top-3">
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseConfirm"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete contract <b>@confirmName</b>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseConfirm">Cancel</button>
+                    <button class="btn btn-danger" @onclick="ConfirmDelete">
+                        <i class="fas fa-trash-alt me-1"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private PagedResult<ContractViewModel>? pagedResult;
+    private int pageNumber = 1;
+    private int pageSize = 10;
+    private string? searchText;
+    private string sortField = "CreateDate";
+    private bool ascending = false;
+
+    private bool showConfirm;
+    private int deleteId;
+    private string? confirmName;
+
+    private int TotalPages => (int)Math.Ceiling((double)(pagedResult?.TotalCount ?? 0) / pageSize);
+    private bool CanPrevious => pageNumber > 1;
+    private bool CanNext => pagedResult != null && pageNumber < TotalPages;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        pagedResult = await ContractService.GetPagedSearchSortAsync(pageNumber, pageSize, searchText, sortField, ascending);
+    }
+
+    private async Task SearchContract()
+    {
+        pageNumber = 1;
+        await LoadDataAsync();
+    }
+
+    private async Task ClearSearch()
+    {
+        searchText = string.Empty;
+        pageNumber = 1;
+        await LoadDataAsync();
+    }
+
+    private void SortBy(string field)
+    {
+        if (sortField == field)
+            ascending = !ascending;
+        else
+        {
+            sortField = field;
+            ascending = true;
+        }
+        _ = LoadDataAsync();
+    }
+
+    private string GetSortIcon(string field)
+    {
+        if (sortField != field) return "";
+        return ascending ? "▲" : "▼";
+    }
+
+    private async Task PreviousPage()
+    {
+        if (CanPrevious)
+        {
+            pageNumber--;
+            await LoadDataAsync();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (CanNext)
+        {
+            pageNumber++;
+            await LoadDataAsync();
+        }
+    }
+
+    private void AddNew() => Navigation.NavigateTo("/contracts/add");
+    private void Edit(int id) => Navigation.NavigateTo($"/contracts/edit/{id}");
+    private void GoToDetail(int id) => Navigation.NavigateTo($"/contracts/detail/{id}");
+
+    private void ShowConfirm(int id, string name)
+    {
+        deleteId = id;
+        confirmName = name;
+        showConfirm = true;
+    }
+
+    private void CloseConfirm()
+    {
+        showConfirm = false;
+        confirmName = null;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        showConfirm = false;
+        var result = await ContractService.DeleteAsync(deleteId);
+        if (result)
+        {
+            await LoadDataAsync();
+            await JSRuntime.InvokeVoidAsync("alert", "✅ Deleted successfully!");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "❌ Delete failed!");
+        }
+    }
+}

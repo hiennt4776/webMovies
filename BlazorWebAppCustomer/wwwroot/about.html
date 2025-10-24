@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - Movie Hub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold text-danger" href="#">🎬 Movie Hub</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link active" href="#trending">Trending</a></li>
+        <li class="nav-item"><a class="nav-link" href="#new">New</a></li>
+        <li class="nav-item"><a class="nav-link" href="#top">Top Rated</a></li>
+
+        <!-- Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown">
+            Categories <i class="fa-solid fa-chevron-down"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="categoriesDropdown">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Comedy</a></li>
+            <li><a class="dropdown-item" href="#">Drama</a></li>
+            <li><a class="dropdown-item" href="#">Sci-Fi</a></li>
+          </ul>
+        </li>
+      </ul>
+
+     <form class="d-flex me-3">
+        <input class="form-control me-2 rounded-pill" type="search" placeholder="Search movies...">
+        <button class="btn btn-blue rounded-pill" type="submit">Search</button>
+      </form>
+      <div class="d-flex">
+        <button class="btn btn-success rounded-pill me-2">Register</button>
+        <button class="btn btn-danger rounded-pill">Login</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Offcanvas Menu -->
+<div class="offcanvas offcanvas-start bg-dark text-light" id="offcanvasNav">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">🎬 Movie Hub</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="navbar-nav">
+      <li class="nav-item"><a class="nav-link text-light" href="index.html#trending">Trending</a></li>
+      <li class="nav-item"><a class="nav-link text-light" href="index.html#new">New</a></li>
+      <li class="nav-item"><a class="nav-link text-light" href="index.html#top">Top Rated</a></li>
+      <li class="nav-item"><a class="nav-link text-light" href="index.html#categories">Categories</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Hero Section -->
+<header class="about-hero text-center">
+  <div class="container">
+    <h1 class="fw-bold">About Movie Hub</h1>
+    <p class="lead">Your trusted source for movie reviews, trailers, and industry insights.</p>
+  </div>
+</header>
+
+<!-- About Content -->
+<div class="container my-5">
+  <div class="row">
+    <div class="col-lg-8">
+      <h2>Our Story</h2>
+      <p>Founded in 2025, <strong>Movie Hub</strong> was created by a group of passionate film enthusiasts 
+      who wanted to share their love of cinema with the world...</p>
+      <h2 class="mt-5">Our Mission</h2>
+      <p>🎯 Deliver trustworthy movie reviews.<br>
+         🎯 Keep fans updated with the latest trailers & news.<br>
+         🎯 Build a community of movie lovers around the world.</p>
+    </div>
+
+  <!-- Sidebar -->
+    <div class="col-lg-4">
+      <div class="card glass-card mb-4">
+        <div class="card-header fw-bold">Quick Facts</div>
+        <div class="card-body">
+          <ul class="list-unstyled">
+            <li>🌍 Founded: 2025</li>
+            <li>🎥 Focus: Movies, Reviews, Trailers</li>
+            <li>👥 Community: 10,000+ readers</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card glass-card">
+        <div class="card-header fw-bold">Contact Info</div>
+        <div class="card-body">
+          <p>Email: info@moviehub.com</p>
+          <p>Phone: +123 456 789</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Section -->
+  <h2 class="text-center mt-5">Meet Our Team</h2>
+  <div class="row">
+    <div class="col-md-4 mb-4">
+      <div class="team-card text-center">
+        <img src="https://via.placeholder.com/300x300" class="card-img-top" alt="Alex Johnson">
+        <div class="team-overlay">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-twitter"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+        </div>
+        <div class="card-body">
+          <h5>Alex Johnson</h5>
+          <p>Founder & Editor-in-Chief</p>
+        </div>
+      </div>
+    </div>
+    <!-- Thêm thành viên khác tương tự -->
+  </div>
+</div>
+
+
+<!-- Footer -->
+<footer class="text-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold text-danger">🎬 Movie Hub</h5>
+        <p>Your favorite movies, trailers, and TV shows all in one place.</p>
+        <div class="social-icons">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="#"><i class="bi bi-twitter"></i></a>
+          <a href="#"><i class="bi bi-youtube"></i></a>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li><a href="index.html#trending" class="text-light text-decoration-none">Trending</a></li>
+          <li><a href="index.html#new" class="text-light text-decoration-none">New Releases</a></li>
+          <li><a href="index.html#top" class="text-light text-decoration-none">Top Rated</a></li>
+          <li><a href="index.html#categories" class="text-light text-decoration-none">Categories</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold">Support</h6>
+        <ul class="list-unstyled">
+          <li><a href="faq.html" class="text-light text-decoration-none">Help Center</a></li>
+          <li><a href="contact.html" class="text-light text-decoration-none">Contact</a></li>
+          <li><a href="#" class="text-light text-decoration-none">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold">Subscribe</h6>
+        <div class="input-group">
+          <input type="email" class="form-control rounded-start-pill" placeholder="Enter email">
+          <button class="btn btn-gold rounded-end-pill">Go</button>
+        </div>
+      </div>
+    </div>
+    <hr class="border-secondary">
+    <p class="text-center mb-0">&copy; 2025 Movie Hub. All rights reserved.</p>
+  </div>
+</footer>
+<!-- Back to Top -->
+<button id="backToTop"><i class="bi bi-arrow-up"></i></button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

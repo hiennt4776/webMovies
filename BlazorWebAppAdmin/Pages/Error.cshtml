@@ -1,0 +1,77 @@
+﻿@page
+@model BlazorWebApp.Pages.ErrorModel
+
+@* @page: báo cho ASP.NET Core rằng đây là một Razor Page có thể được truy cập trực tiếp qua URL (ví dụ /Error).
+
+@model BlazorWebApp.Pages.ErrorModel: gắn trang này với lớp ErrorModel (code-behind Error.cshtml.cs). 
+
+Class đó cung cấp dữ liệu (RequestId, ShowRequestId) cho trang hiển thị.
+
+ *@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Error</title>
+    <link href="~/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+</head>
+
+@* Thiết lập charset UTF-8 và viewport để hiển thị đẹp trên mobile.
+
+Dùng Bootstrap CSS và site.css để style trang lỗi.
+
+asp-append-version="true": tự động thêm query string vào CSS (ví dụ site.css?v=xyz)
+để chống cache khi deploy bản mới.
+ *@
+<body>
+    <div class="main">
+        <div class="content px-4">
+            <h1 class="text-danger">Error.</h1>
+            <h2 class="text-danger">An error occurred while processing your request.</h2>
+
+            @* Hiển thị tiêu đề lỗi màu đỏ (text-danger).
+
+            Thông báo chung: “Có lỗi xảy ra khi xử lý yêu cầu của bạn.” *@
+
+            @if (Model.ShowRequestId)
+            {
+                <p>
+                    <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                </p>
+            }
+            @*Model.ShowRequestId: kiểm tra RequestId có tồn tại không.
+            Nếu có, in ra Request ID.
+            RequestId này được sinh ra từ HttpContext.TraceIdentifier hoặc System.Diagnostics.Activity.Current?.Id.
+            Mục đích: giúp developer đối chiếu log với lỗi cụ thể mà user gặp. *@
+
+            <h3>Development Mode</h3>
+            <p>
+                Swapping to the <strong>Development</strong> environment displays detailed information about the error that occurred.
+            </p>
+            <p>
+                <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
+                It can result in displaying sensitive information from exceptions to end users.
+                For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
+                and restarting the app.
+            </p>
+            @* 
+            Đây là hướng dẫn của Microsoft:
+            Ở Production: không hiển thị chi tiết lỗi để tránh lộ thông tin nhạy cảm.
+            Ở Development: nếu bạn set biến môi trường ASPNETCORE_ENVIRONMENT=Development,
+            ASP.NET Core sẽ hiển thị stack trace, dòng code lỗi chi tiết (thay vì trang này). *@
+        </div>
+    </div>
+</body>
+
+</html>
+@* 
+                Đây là Error page mặc định trong Blazor / ASP.NET Core.
+
+Nó đóng vai trò safe fallback: user chỉ thấy thông tin chung, không lộ chi tiết lỗi.
+
+RequestId giúp liên kết lỗi trên UI với log server.
+
+Muốn debug chi tiết thì đổi environment sang Development. *@

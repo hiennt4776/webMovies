@@ -1,0 +1,90 @@
+﻿@page "/useremployees/create"
+@using BlazorWebAppAdmin.Services
+@using helperMovies.Constants
+@inject IEmployeeService EmployeeService
+@inject IUserEmployeeService UserEmployeeService
+@inject IRoleService RoleService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="User Employee"
+                 BreadcrumbCurrent="Add" />
+
+
+
+<EditForm Model="@model" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Username:</label>
+        <InputText class="form-control" @bind-Value="model.Username" />
+    </div>
+
+    <div class="mb-3">
+        <label>Password:</label>
+        <InputText class="form-control" @bind-Value="model.Password" type="password" />
+    </div>
+
+    <div class="mb-3">
+        <label>Nhân viên:</label>
+        <InputSelect class="form-select" @bind-Value="model.EmployeeId">
+            @foreach (var e in employees)
+            {
+                <option value="@e.Id">@e.FullName</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <label>Vai trò:</label>
+        <InputSelect class="form-select" @bind-Value="model.RoleId">
+            @foreach (var r in roles)
+            {
+                <option value="@r.Id">@r.RoleName</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="form-check mb-3">
+        <InputCheckbox class="form-check-input" @bind-Value="model.IsLocked" />
+        <label class="form-check-label">Khóa tài khoản</label>
+    </div>
+
+    @if (model.IsLocked)
+    {
+        <div class="mb-3">
+            <label>Lý do khóa:</label>
+            <InputTextArea class="form-control" @bind-Value="model.ReasonLock" />
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+</EditForm>
+
+@code {
+    private UserEmployeeCreateViewModel model = new();
+    private List<EmployeeViewModel> employees = new();
+    private List<RoleViewModel> roles = new ();
+
+    protected override async Task OnInitializedAsync()
+    {
+        employees = await EmployeeService.GetAllEmployeesAsync();
+        if (employees.Any())
+            model.EmployeeId = employees.First().Id;
+
+        roles = await RoleService.GetAllRolesAsync();
+
+        if (roles.Any())
+            model.RoleId = roles.First().Id;
+
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var success = await UserEmployeeService.AddUserEmployeeAsync(model);
+        NavigationManager.NavigateTo("/userEmployees");
+    }
+}

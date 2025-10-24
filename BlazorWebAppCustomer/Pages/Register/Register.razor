@@ -1,0 +1,163 @@
+﻿@page "/register"
+@using BlazorWebAppCustomer.Services
+@using helperMovies.ViewModel
+@inject IUserCustomerService UserCustomerService
+@inject NavigationManager Navigation
+@inject ILogger<Register> Logger
+
+
+<HeroSection Title="Create Account" Subtitle="Join Movie Hub and explore endless entertainment." />
+
+<section class="container d-flex justify-content-center align-items-center my-5">
+    <div class="card glass-card p-4 shadow-lg" style="max-width:500px;width:100%;">
+        <h3 class="text-center mb-3">Register</h3>
+
+        <EditForm EditContext="@editContext"
+                  OnValidSubmit="HandleRegister"
+                  OnInvalidSubmit="HandleInvalidSubmit">
+
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <!-- Full Name -->
+            <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                <InputText class="form-control" @bind-Value="registerModel.FullName" />
+                <ValidationMessage For="@(() => registerModel.FullName)" />
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <InputText class="form-control" type="email" @bind-Value="registerModel.Email" />
+                <ValidationMessage For="@(() => registerModel.Email)" />
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-3">
+                <label class="form-label">Phone</label>
+                <InputText class="form-control" @bind-Value="registerModel.Phone" />
+                <ValidationMessage For="@(() => registerModel.Phone)" />
+            </div>
+
+            <!-- Address -->
+            <div class="mb-3">
+                <label class="form-label">Address</label>
+                <InputTextArea class="form-control" @bind-Value="registerModel.Address" />
+                <ValidationMessage For="@(() => registerModel.Address)" />
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="mb-3">
+                <label class="form-label">Date of Birth</label>
+                <InputDate class="form-control" @bind-Value="dobValue" />
+                <ValidationMessage For="@(() => registerModel.DateOfBirth)" />
+            </div>
+
+            <!-- Username -->
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <InputText class="form-control" @bind-Value="registerModel.Username" />
+                <ValidationMessage For="@(() => registerModel.Username)" />
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <InputText class="form-control" type="password" @bind-Value="registerModel.Password" />
+                <ValidationMessage For="@(() => registerModel.Password)" />
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-3">
+                <label class="form-label">Confirm Password</label>
+                <InputText class="form-control" type="password" @bind-Value="registerModel.ConfirmPassword" />
+                <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 rounded-pill">Register</button>
+        </EditForm>
+
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="alert alert-info mt-3 text-center">@message</div>
+        }
+
+        @if (!string.IsNullOrEmpty(validationError))
+        {
+            <div class="alert alert-danger mt-3 text-center">@validationError</div>
+        }
+
+        <p class="mt-3 text-center">
+            Already have an account?
+            <NavLink href="/login" class="text-warning text-decoration-none">Login</NavLink>
+        </p>
+    </div>
+</section>
+
+
+@code {
+    private CustomerRegisterViewModel registerModel = new();
+    private EditContext? editContext;
+    private string? message;
+    private string? validationError;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(registerModel);
+        editContext.OnValidationStateChanged += OnValidationStateChanged;
+        editContext.OnFieldChanged += OnFieldChanged;
+    }
+
+    private DateTime dobValue
+    {
+        get => registerModel.DateOfBirth == default
+            ? DateTime.Now
+            : registerModel.DateOfBirth.ToDateTime(TimeOnly.MinValue);
+        set => registerModel.DateOfBirth = DateOnly.FromDateTime(value);
+    }
+
+    private async Task HandleRegister()
+    {
+        validationError = null;
+        Logger.LogInformation("✅ Form is valid. Data: {@Model}", registerModel);
+
+        var result = await UserCustomerService.RegisterAsync(registerModel);
+        message = result.Message;
+
+        if (result.IsSuccess)
+        {
+            await Task.Delay(1500);
+            Navigation.NavigateTo("/index");
+        }
+    }
+
+    private void HandleInvalidSubmit(EditContext context)
+    {
+        validationError = "Please fix the highlighted errors before submitting.";
+
+        var errors = context.GetValidationMessages().ToList();
+        Logger.LogWarning("❌ Invalid form submission. Errors: {Errors}", string.Join(" | ", errors));
+
+        // Display errors inline for easier debug
+        Console.WriteLine("Validation errors:");
+        foreach (var err in errors)
+        {
+            Console.WriteLine($" - {err}");
+        }
+    }
+
+    private void OnFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        Logger.LogInformation("✏️ Field changed: {Field}", e.FieldIdentifier.FieldName);
+    }
+
+    private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
+    {
+        var messages = editContext?.GetValidationMessages().ToList();
+        if (messages != null && messages.Any())
+        {
+            Logger.LogInformation("⚠️ ValidationStateChanged: {Messages}", string.Join(" | ", messages));
+        }
+    }
+}

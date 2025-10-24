@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buy Subscription - Movie Hub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-dark text-light">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold text-danger" href="#">🎬 Movie Hub</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link active" href="#trending">Trending</a></li>
+        <li class="nav-item"><a class="nav-link" href="#new">New</a></li>
+        <li class="nav-item"><a class="nav-link" href="#top">Top Rated</a></li>
+
+        <!-- Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown">
+            Categories <i class="fa-solid fa-chevron-down"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="categoriesDropdown">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Comedy</a></li>
+            <li><a class="dropdown-item" href="#">Drama</a></li>
+            <li><a class="dropdown-item" href="#">Sci-Fi</a></li>
+          </ul>
+        </li>
+      </ul>
+
+     <form class="d-flex me-3">
+        <input class="form-control me-2 rounded-pill" type="search" placeholder="Search movies...">
+        <button class="btn btn-blue rounded-pill" type="submit">Search</button>
+      </form>
+      <div class="d-flex">
+        <button class="btn btn-success rounded-pill me-2">Register</button>
+        <button class="btn btn-danger rounded-pill">Login</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<!-- Offcanvas -->
+<div class="offcanvas offcanvas-start bg-dark text-light" id="offcanvasNav">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">🎬 Movie Hub</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="navbar-nav">
+      <li class="nav-item"><a class="nav-link text-light" href="index.html#trending">Trending</a></li>
+      <li class="nav-item"><a class="nav-link text-light" href="index.html#new">New</a></li>
+      <li class="nav-item"><a class="nav-link text-light" href="index.html#top">Top Rated</a></li>
+      <li class="nav-item"><a class="nav-link text-light" href="index.html#categories">Categories</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Hero -->
+<header class="hero-section d-flex align-items-center text-center text-white">
+  <div class="container">
+    <h1 class="fw-bold">Choose Your Subscription</h1>
+    <p class="lead">Flexible plans, unlimited movies.</p>
+  </div>
+</header>
+
+<!-- Packages -->
+<section class="container py-5">
+  <div class="row g-4 justify-content-center">
+
+    <!-- 1 Month -->
+    <div class="col-md-3">
+      <div class="card glass-card text-center package-card">
+        <div class="card-header">
+          <h4>1 Month</h4>
+        </div>
+        <div class="card-body">
+          <h3>$9.99</h3>
+          <p>Access all movies for 1 month</p>
+          <a href="checkout.html" class="btn btn-success w-100 rounded-pill">Buy Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 Months (highlight) -->
+    <div class="col-md-3">
+      <div class="card glass-card text-center package-card border-gold">
+        <div class="card-header bg-gold text-dark">
+          <h4>3 Months</h4>
+        </div>
+        <div class="card-body">
+          <h3>$24.99</h3>
+          <p>Save 15% compared to monthly</p>
+          <a href="checkout.html" class="btn btn-success w-100 rounded-pill">Buy Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 Months -->
+    <div class="col-md-3">
+      <div class="card glass-card text-center package-card">
+        <div class="card-header">
+          <h4>6 Months</h4>
+        </div>
+        <div class="card-body">
+          <h3>$44.99</h3>
+          <p>Best value for half a year</p>
+          <a href="checkout.html" class="btn btn-success w-100 rounded-pill">Buy Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1 Year -->
+    <div class="col-md-3">
+      <div class="card glass-card text-center package-card">
+        <div class="card-header">
+          <h4>1 Year</h4>
+        </div>
+        <div class="card-body">
+          <h3>$79.99</h3>
+          <p>Get full access for a year</p>
+          <a href="checkout.html" class="btn btn-success w-100 rounded-pill">Buy Now</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Comparison Table -->
+<section class="container my-5">
+  <h2 class="text-center mb-4">Compare Plans</h2>
+  <div class="table-responsive">
+    <table class="table table-dark table-hover align-middle text-center comparison-table">
+      <thead>
+        <tr>
+          <th scope="col">Features</th>
+          <th scope="col">1 Month</th>
+          <th scope="col" class="highlight-col">3 Months</th>
+          <th scope="col">6 Months</th>
+          <th scope="col">1 Year</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Price</td>
+          <td>$9.99</td>
+          <td class="highlight-col">$24.99</td>
+          <td>$44.99</td>
+          <td>$79.99</td>
+        </tr>
+        <tr>
+          <td>HD Streaming</td>
+          <td><i class="bi bi-check-circle-fill text-success"></i></td>
+          <td class="highlight-col"><i class="bi bi-check-circle-fill text-success"></i></td>
+          <td><i class="bi bi-check-circle-fill text-success"></i></td>
+          <td><i class="bi bi-check-circle-fill text-success"></i></td>
+        </tr>
+        <tr>
+          <td>Ultra HD (4K)</td>
+          <td><i class="bi bi-x-circle-fill text-danger"></i></td>
+          <td class="highlight-col"><i class="bi bi-check-circle-fill text-success"></i></td>
+          <td><i class="bi bi-check-circle-fill text-success"></i></td>
+          <td><i class="bi bi-check-circle-fill text-success"></i></td>
+        </tr>
+        <tr>
+          <td>Multi-Device Access</td>
+          <td>1 Device</td>
+          <td class="highlight-col">2 Devices</td>
+          <td>3 Devices</td>
+          <td>5 Devices</td>
+        </tr>
+        <tr>
+          <td>Offline Download</td>
+          <td><i class="bi bi-x-circle-fill text-danger"></i></td>
+          <td class="highlight-col"><i class="bi bi-check-circle-fill text-success"></i></td>
+          <td><i class="bi bi-check-circle-fill text-success"></i></td>
+          <td><i class="bi bi-check-circle-fill text-success"></i></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><a href="checkout.html" class="btn btn-outline-light btn-sm rounded-pill">Choose</a></td>
+          <td class="highlight-col"><a href="checkout.html" class="btn btn-success btn-sm rounded-pill">Best Value</a></td>
+          <td><a href="checkout.html" class="btn btn-outline-light btn-sm rounded-pill">Choose</a></td>
+          <td><a href="checkout.html" class="btn btn-outline-light btn-sm rounded-pill">Choose</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- Footer -->
+<footer class="text-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold text-danger">🎬 Movie Hub</h5>
+        <p>Your favorite movies, trailers, and TV shows all in one place.</p>
+        <div class="social-icons">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="#"><i class="bi bi-twitter"></i></a>
+          <a href="#"><i class="bi bi-youtube"></i></a>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li><a href="index.html#trending" class="text-light text-decoration-none">Trending</a></li>
+          <li><a href="index.html#new" class="text-light text-decoration-none">New Releases</a></li>
+          <li><a href="index.html#top" class="text-light text-decoration-none">Top Rated</a></li>
+          <li><a href="index.html#categories" class="text-light text-decoration-none">Categories</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold">Support</h6>
+        <ul class="list-unstyled">
+          <li><a href="faq.html" class="text-light text-decoration-none">Help Center</a></li>
+          <li><a href="contact.html" class="text-light text-decoration-none">Contact</a></li>
+          <li><a href="#" class="text-light text-decoration-none">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold">Subscribe</h6>
+        <div class="input-group">
+          <input type="email" class="form-control rounded-start-pill" placeholder="Enter email">
+          <button class="btn btn-gold rounded-end-pill">Go</button>
+        </div>
+      </div>
+    </div>
+    <hr class="border-secondary">
+    <p class="text-center mb-0">&copy; 2025 Movie Hub. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- Back to Top -->
+<button id="backToTop"><i class="bi bi-arrow-up"></i></button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

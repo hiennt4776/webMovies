@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Films - Movie Hub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-dark text-light">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold text-danger" href="#">🎬 Movie Hub</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link active" href="#trending">Trending</a></li>
+        <li class="nav-item"><a class="nav-link" href="#new">New</a></li>
+        <li class="nav-item"><a class="nav-link" href="#top">Top Rated</a></li>
+
+        <!-- Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown">
+            Categories <i class="fa-solid fa-chevron-down"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="categoriesDropdown">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Comedy</a></li>
+            <li><a class="dropdown-item" href="#">Drama</a></li>
+            <li><a class="dropdown-item" href="#">Sci-Fi</a></li>
+          </ul>
+        </li>
+      </ul>
+
+     <form class="d-flex me-3">
+        <input class="form-control me-2 rounded-pill" type="search" placeholder="Search movies...">
+        <button class="btn btn-blue rounded-pill" type="submit">Search</button>
+      </form>
+      <div class="d-flex">
+        <button class="btn btn-success rounded-pill me-2">Register</button>
+        <button class="btn btn-danger rounded-pill">Login</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<!-- Offcanvas -->
+<div class="offcanvas offcanvas-start bg-dark text-light" id="offcanvasNav">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">🎬 Movie Hub</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="navbar-nav">
+      <li class="nav-item"><a class="nav-link text-light" href="#trending">Trending</a></li>
+      <li class="nav-item"><a class="nav-link text-light" href="#new">New</a></li>
+      <li class="nav-item"><a class="nav-link text-light" href="#top">Top Rated</a></li>
+      <li class="nav-item"><a class="nav-link text-light" href="#categories">Categories</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Hero Section -->
+<header class="hero-section d-flex align-items-center text-center text-white">
+  <div class="container">
+    <h1 class="fw-bold">All Films</h1>
+    <p class="lead">Browse our full collection of movies and discover your next favorite film.</p>
+  </div>
+</header>
+
+
+
+  <!-- Films Tabs Content -->
+  <div class="tab-content" id="genreTabsContent">
+
+<!-- Genre Filter -->
+<section class="container my-5">
+  <ul class="nav nav-pills justify-content-center mb-4" id="genreTabs" role="tablist">
+    <li class="nav-item"><button class="nav-link active" id="all-tab" data-bs-toggle="pill" data-bs-target="#all" type="button">All</button></li>
+    <li class="nav-item"><button class="nav-link" id="action-tab" data-bs-toggle="pill" data-bs-target="#action" type="button">Action</button></li>
+    <li class="nav-item"><button class="nav-link" id="drama-tab" data-bs-toggle="pill" data-bs-target="#drama" type="button">Drama</button></li>
+    <li class="nav-item"><button class="nav-link" id="comedy-tab" data-bs-toggle="pill" data-bs-target="#comedy" type="button">Comedy</button></li>
+    <li class="nav-item"><button class="nav-link" id="scifi-tab" data-bs-toggle="pill" data-bs-target="#scifi" type="button">Sci-Fi</button></li>
+  </ul>
+
+  <!-- Films Tabs Content -->
+  <div class="tab-content" id="genreTabsContent">
+
+    <!-- ALL -->
+    <div class="tab-pane fade show active" id="all">
+      <div class="row">
+
+        <!-- ACTION -->
+        <div class="col-md-3 mb-4">
+          <div class="card glass-card film-card h-100 text-light">
+            <div class="film-img-wrapper">
+              <img src="assets/images/action1.jpg" class="card-img-top rounded" alt="Inception">
+              <div class="film-overlay">
+                <p class="mb-2">$12.99</p>
+                <a href="film-detail.html" class="btn btn-danger rounded-pill">View Details</a>
+              </div>
+            </div>
+            <div class="card-body text-center">
+              <h5 class="card-title">Inception</h5>
+              <span class="badge bg-danger">Action</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+          <div class="card glass-card film-card h-100 text-light">
+            <div class="film-img-wrapper">
+              <img src="assets/images/action2.jpg" class="card-img-top rounded" alt="Mad Max">
+              <div class="film-overlay">
+                <p class="mb-2">$10.99</p>
+                <a href="film-detail.html" class="btn btn-danger rounded-pill">View Details</a>
+              </div>
+            </div>
+            <div class="card-body text-center">
+              <h5 class="card-title">Mad Max: Fury Road</h5>
+              <span class="badge bg-danger">Action</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- DRAMA -->
+        <div class="col-md-3 mb-4">
+          <div class="card glass-card film-card h-100 text-light">
+            <div class="film-img-wrapper">
+              <img src="assets/images/drama1.jpg" class="card-img-top rounded" alt="The Godfather">
+              <div class="film-overlay">
+                <p class="mb-2">$11.99</p>
+                <a href="film-detail.html" class="btn btn-danger rounded-pill">View Details</a>
+              </div>
+            </div>
+            <div class="card-body text-center">
+              <h5 class="card-title">The Godfather</h5>
+              <span class="badge bg-primary">Drama</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+          <div class="card glass-card film-card h-100 text-light">
+            <div class="film-img-wrapper">
+              <img src="assets/images/drama2.jpg" class="card-img-top rounded" alt="Forrest Gump">
+              <div class="film-overlay">
+                <p class="mb-2">$9.99</p>
+                <a href="film-detail.html" class="btn btn-danger rounded-pill">View Details</a>
+              </div>
+            </div>
+            <div class="card-body text-center">
+              <h5 class="card-title">Forrest Gump</h5>
+              <span class="badge bg-primary">Drama</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- COMEDY -->
+        <div class="col-md-3 mb-4">
+          <div class="card glass-card film-card h-100 text-light">
+            <div class="film-img-wrapper">
+              <img src="assets/images/comedy1.jpg" class="card-img-top rounded" alt="The Hangover">
+              <div class="film-overlay">
+                <p class="mb-2">$8.99</p>
+                <a href="film-detail.html" class="btn btn-danger rounded-pill">View Details</a>
+              </div>
+            </div>
+            <div class="card-body text-center">
+              <h5 class="card-title">The Hangover</h5>
+              <span class="badge bg-warning text-dark">Comedy</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+          <div class="card glass-card film-card h-100 text-light">
+            <div class="film-img-wrapper">
+              <img src="assets/images/comedy2.jpg" class="card-img-top rounded" alt="Superbad">
+              <div class="film-overlay">
+                <p class="mb-2">$7.99</p>
+                <a href="film-detail.html" class="btn btn-danger rounded-pill">View Details</a>
+              </div>
+            </div>
+            <div class="card-body text-center">
+              <h5 class="card-title">Superbad</h5>
+              <span class="badge bg-warning text-dark">Comedy</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCI-FI -->
+        <div class="col-md-3 mb-4">
+          <div class="card glass-card film-card h-100 text-light">
+            <div class="film-img-wrapper">
+              <img src="assets/images/scifi1.jpg" class="card-img-top rounded" alt="Interstellar">
+              <div class="film-overlay">
+                <p class="mb-2">$14.99</p>
+                <a href="film-detail.html" class="btn btn-danger rounded-pill">View Details</a>
+              </div>
+            </div>
+            <div class="card-body text-center">
+              <h5 class="card-title">Interstellar</h5>
+              <span class="badge bg-info text-dark">Sci-Fi</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+          <div class="card glass-card film-card h-100 text-light">
+            <div class="film-img-wrapper">
+              <img src="assets/images/scifi2.jpg" class="card-img-top rounded" alt="Dune">
+              <div class="film-overlay">
+                <p class="mb-2">$13.49</p>
+                <a href="film-detail.html" class="btn btn-danger rounded-pill">View Details</a>
+              </div>
+            </div>
+            <div class="card-body text-center">
+              <h5 class="card-title">Dune</h5>
+              <span class="badge bg-info text-dark">Sci-Fi</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXTRA (2 more for variety) -->
+        <div class="col-md-3 mb-4">
+          <div class="card glass-card film-card h-100 text-light">
+            <div class="film-img-wrapper">
+              <img src="assets/images/action3.jpg" class="card-img-top rounded" alt="John Wick">
+              <div class="film-overlay">
+                <p class="mb-2">$12.49</p>
+                <a href="film-detail.html" class="btn btn-danger rounded-pill">View Details</a>
+              </div>
+            </div>
+            <div class="card-body text-center">
+              <h5 class="card-title">John Wick</h5>
+              <span class="badge bg-danger">Action</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+          <div class="card glass-card film-card h-100 text-light">
+            <div class="film-img-wrapper">
+              <img src="assets/images/drama3.jpg" class="card-img-top rounded" alt="Joker">
+              <div class="film-overlay">
+                <p class="mb-2">$11.49</p>
+                <a href="film-detail.html" class="btn btn-danger rounded-pill">View Details</a>
+              </div>
+            </div>
+            <div class="card-body text-center">
+              <h5 class="card-title">Joker</h5>
+              <span class="badge bg-primary">Drama</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Action / Drama / Comedy / Sci-Fi tabs có thể copy các film tương ứng vào -->
+    <!-- Ở đây mình để All chứa đủ 10 phim, còn các tab kia bạn chỉ cần copy phim thuộc genre đó -->
+    
+  </div>
+</section>
+
+
+
+<!-- Footer -->
+<footer class="text-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold text-danger">🎬 Movie Hub</h5>
+        <p>Your favorite movies, trailers, and TV shows all in one place.</p>
+        <div class="social-icons">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="#"><i class="bi bi-twitter"></i></a>
+          <a href="#"><i class="bi bi-youtube"></i></a>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li><a href="#trending" class="text-light text-decoration-none">Trending</a></li>
+          <li><a href="#new" class="text-light text-decoration-none">New Releases</a></li>
+          <li><a href="#top" class="text-light text-decoration-none">Top Rated</a></li>
+          <li><a href="#categories" class="text-light text-decoration-none">Categories</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold">Support</h6>
+        <ul class="list-unstyled">
+          <li><a href="faq.html" class="text-light text-decoration-none">Help Center</a></li>
+          <li><a href="contact.html" class="text-light text-decoration-none">Contact</a></li>
+          <li><a href="#" class="text-light text-decoration-none">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold">Subscribe</h6>
+        <div class="input-group">
+          <input type="email" class="form-control rounded-start-pill" placeholder="Enter email">
+          <button class="btn btn-gold rounded-end-pill">Go</button>
+        </div>
+      </div>
+    </div>
+    <hr class="border-secondary">
+    <p class="text-center mb-0">&copy; 2025 Movie Hub. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- Back to Top -->
+<button id="backToTop"><i class="bi bi-arrow-up"></i></button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

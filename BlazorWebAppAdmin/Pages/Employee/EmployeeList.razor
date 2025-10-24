@@ -1,0 +1,172 @@
+﻿@page "/employees"
+@using BlazorWebAppAdmin.Services
+@using helperMovies.Constants
+@inject IEmployeeService EmployeeService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="Employee"
+                 BreadcrumbCurrent="List" />
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center">
+        <input class="form-control me-2" style="width: 250px;" placeholder="Search..."
+               @bind="filter.Keyword" @bind:event="oninput" />
+
+        <select class="form-select me-2" style="width: 180px;" @bind="filter.JobStatus">
+            <option value="">All statuses</option>
+            <option value="@JobStatusValue.WORKING">Working</option>
+            <option value="@JobStatusValue.RETIRED">Retired</option>
+        </select>
+
+        <button class="btn btn-primary" @onclick="LoadData">
+            <i class="bi bi-search"></i> Search
+        </button>
+    </div>
+
+    <button class="btn btn-success" @onclick="AddEmployee">
+        <i class="bi bi-plus-circle"></i> Add Employee
+    </button>
+</div>
+
+@if (pagedResult == null)
+{
+    <div class="alert alert-info">Loading data...</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Full Name</th>
+                    <th>Gender</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Address</th>
+                    <th>Status</th>
+                    <th>Date of Birth</th>
+                    <th>Salary</th>
+                    <th class="text-center" style="width: 160px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (pagedResult.Items.Any())
+                {
+                    @foreach (var item in pagedResult.Items)
+                    {
+                        <tr>
+                            <td>@item.FullName</td>
+                            <td>@(item.Gender == true ? "Male" : item.Gender == false ? "Female" : "-")</td>
+                            <td>@item.Email</td>
+                            <td>@item.PhoneNumber</td>
+                            <td>@item.Address</td>
+                            <td>
+                                @if (item.JobStatus == JobStatusValue.WORKING)
+                                {
+                                    <span class="badge bg-success">Working</span>
+                                }
+                                else if (item.JobStatus == JobStatusValue.RETIRED)
+                                {
+                                    <span class="badge bg-secondary">Retired</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Unknown</span>
+                                }
+                            </td>
+                            <td>@(item.DateOfBirth?.ToString("MM/dd/yyyy"))</td>
+                            <td>@item.Salary?.ToString("N0") ₫</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-info me-1 text-white" title="Details"
+                                        @onclick="() => ViewDetails(item.Id)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-warning me-1 text-white" title="Edit"
+                                        @onclick="() => EditEmployee(item.Id)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                             
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="text-center text-muted">No employees found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <button class="btn btn-outline-secondary" @onclick="PrevPage" disabled="@(!CanPrev)">
+            <i class="bi bi-chevron-left"></i> Previous
+        </button>
+
+        <span>Page @filter.PageNumber of @TotalPages</span>
+
+        <button class="btn btn-outline-secondary" @onclick="NextPage" disabled="@(!CanNext)">
+            Next <i class="bi bi-chevron-right"></i>
+        </button>
+    </div>
+}
+
+@code {
+    private PagedResult<EmployeeViewModel>? pagedResult;
+    private EmployeeFilterViewModel filter = new();
+    private int totalCount;
+
+    private int TotalPages => (int)Math.Ceiling((double)totalCount / filter.PageSize);
+    private bool CanPrev => filter.PageNumber > 1;
+    private bool CanNext => filter.PageNumber < TotalPages;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        pagedResult = await EmployeeService.GetEmployeesAsync(filter);
+        totalCount = pagedResult.TotalCount;
+    }
+
+    private async Task PrevPage()
+    {
+        if (CanPrev)
+        {
+            filter.PageNumber--;
+            await LoadData();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (CanNext)
+        {
+            filter.PageNumber++;
+            await LoadData();
+        }
+    }
+
+    private void AddEmployee()
+    {
+        Navigation.NavigateTo("/employees/add");
+    }
+
+    private void EditEmployee(int id)
+    {
+        Navigation.NavigateTo($"/employees/edit/{id}");
+    }
+
+    private void ViewDetails(int id)
+    {
+        Navigation.NavigateTo($"/employees/detail/{id}");
+    }
+
+   
+}

@@ -1,0 +1,40 @@
+﻿@page "/testform"
+
+<h3>Form kiểm tra nhập liệu</h3>
+
+<EditForm Model="@formModel" OnSubmit="@HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label>Nhập tên:</label>
+    <InputText @bind-Value="formModel.Name" class="form-control" placeholder="Nhập tên..." />
+    <br />
+
+    <button type="submit" class="btn btn-primary">Gửi</button>
+</EditForm>
+
+<hr />
+
+<h5>Debug live:</h5>
+<p>Giá trị hiện tại: @formModel.Name</p>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <p class="mt-2 text-success">@message</p>
+}
+
+@code {
+    private FormModel formModel = new();
+    private string? message;
+
+    private void HandleSubmit(EditContext context)
+    {
+        Console.WriteLine($"👉 Nội dung nhập: {formModel.Name}");
+        message = $"Bạn đã nhập: {formModel.Name}";
+    }
+
+    public class FormModel
+    {
+        public string? Name { get; set; }
+    }
+}

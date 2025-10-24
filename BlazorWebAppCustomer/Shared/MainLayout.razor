@@ -1,0 +1,18 @@
+﻿@inherits LayoutComponentBase
+@inject IJSRuntime JS
+
+<Header />
+@Body
+
+<Footer />
+
+<button id="backToTop" class="btn btn-primary" @onclick="ScrollTop" style="position:fixed;right:20px;bottom:20px;display:none;">
+    <i class="bi bi-arrow-up"></i>
+</button>
+
+@code {
+    void ScrollTop()
+    {
+        // nếu dùng JS interop thì gọi js để cuộn lên trên
+    }
+}

@@ -1,0 +1,168 @@
+﻿@page "/partners/detail/{Id:int}"
+@using BlazorWebAppAdmin.Services
+@inject NavigationManager Navigation
+@inject IPartnerService PartnerService
+
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="Partner"
+                 BreadcrumbCurrent="Detail" />
+
+<div class="container-fluid">
+    <!--begin::Row-->
+    <div class="row">
+        <div class="col-sm-6"><h3 class="mb-0">Dashboard</h3></div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-end">
+                <li class="breadcrumb-item"><a href="#">Partners</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Detail</li>
+            </ol>
+        </div>
+    </div>
+    <!--end::Row-->
+</div>
+
+<div class="container-fluid">
+    <!--begin::Row-->
+    <div class="row g-4">
+        <!--begin::Col-->
+        <div class="col-12">
+
+            <!--begin::Different Height-->
+            <div class="card card-secondary card-outline mb-4">
+                <!--begin::Header-->
+                <div class="card-header"><div class="card-title">Detail Category</div></div>
+                <!--end::Header-->
+                <!--begin::Body-->
+                <div class="card-body">
+
+                    @if (partner == null)
+                    {
+                        <p><em>Đang tải dữ liệu...</em></p>
+                    }
+                    else
+                    {
+                        <EditForm Model="@partner">
+
+                            <div class="row">
+                                <div class="col-md-12 col-xs-12">
+                                    <label class="form-label">Tên đối tác</label>
+                                    <InputText class="form-control" @bind-Value="partner.Name" />
+                            
+                                </div>
+                                <div class="col-md-4 col-xs-12">
+                                    <label class="form-label">Email</label>
+                                    <InputText class="form-control" @bind-Value="partner.Email" />
+                                
+                                </div>
+                                <div class="col-md-4 col-xs-12">
+                                    <label class="form-label">Phone</label>
+
+                                    <InputText class="form-control" @bind-Value="partner.Phone" />
+
+                                   
+                                </div>
+                                <div class="col-md-4 col-xs-12">
+                                    <label class="form-label">Contact Info</label>
+
+                                    <InputText class="form-control" @bind-Value="partner.ContactInfo" />
+
+                             
+                                </div>
+
+
+                                <div class="col-md-12 col-xs-12">
+
+                                    <label class="form-label">Address</label>
+                                    <InputText class="form-control" @bind-Value="partner.Address" />
+                                    
+                                </div>
+
+                                <div class="col-md-4 col-xs-12">
+                                    <label class="form-label">Website</label>
+                                    <div class="invalid-feedback">
+                                        <InputText class="form-control" @bind-Value="partner.Website" />
+                                    </div>
+                                 
+                                </div>
+
+
+                                <div class="col-md-4 col-xs-12">
+                                    <label class="form-label">Tax Code</label>
+                                    <div class="invalid-feedback">
+                                        <InputText class="form-control" @bind-Value="partner.TaxCode" />
+                                    </div>
+                                 
+                                </div>
+
+
+                                <div class="col-md-4 col-xs-12">
+                                    <label class="form-label">Account Number</label>
+                                    <div class="invalid-feedback">
+                                        <InputText class="form-control" @bind-Value="partner.AccountNumber" />
+                                    </div>
+                                  
+                                </div>
+
+                                <div class="col-md-4 col-xs-12">
+                                    <label class="form-label">Bank</label>
+                                    <div class="invalid-feedback">
+                                        <InputText class="form-control" @bind-Value="partner.BankName" />
+                                    </div>
+                                  
+                                </div>
+
+
+                                <div class="col-md-4 col-xs-12">
+                                    <label class="form-label">Status </label>
+                                    <br />
+                                    <h5>
+                                        @switch (partner.Status)
+                                        {
+                                            case "ACTIVE":
+                                                <span class="badge bg-success">Active</span>
+                                                break;
+                                            case "INACTIVE":
+                                                <span class="badge bg-secondary">Inactive</span>
+                                                break;
+                                            case "SUSPENDED":
+                                                <span class="badge bg-warning text-dark">Suspended</span>
+                                                break;
+                                        }
+
+                                    </h5>
+                                   
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-secondary ms-2 float-end" @onclick="GoBack">Quay lại</button>
+                        </EditForm>
+
+                    }
+                </div>
+                <!--end::Body-->
+            </div>
+            <!--end::Different Height-->
+
+
+        </div>
+
+    </div>
+    <!--end::Col-->
+
+</div>
+<!--end::Row-->
+@code {
+    [Parameter] public int Id { get; set; }
+    private PartnerViewModel? partner;
+
+    protected override async Task OnInitializedAsync()
+    {
+        partner = await PartnerService.GetByIdAsync(Id);
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/partners");
+    }
+}

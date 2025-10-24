@@ -1,0 +1,25 @@
+﻿@page "/counter"
+
+@* Xác định URL của trang này là /counter.
+Khi người dùng truy cập https://localhost:xxxx/counter, Blazor sẽ render nội dung của trang này. *@
+
+<PageTitle>Counter</PageTitle>
+@* PageTitle sẽ gắn "Counter" vào <title> trong <head>.
+Khi chuyển sang trang khác, tab trình duyệt sẽ hiển thị title mới. *@
+
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

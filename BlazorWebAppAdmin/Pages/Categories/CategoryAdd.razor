@@ -1,0 +1,97 @@
+﻿@page "/categories/add"
+@using BlazorWebAppAdmin.Services
+@inject ICategoryService CategoryService
+@inject NavigationManager NavigationManager
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="Category"
+                 BreadcrumbCurrent="Add" />
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center rounded-top-4">
+                    <h5 class="mb-0">
+                        <i class="fas fa-folder-plus me-2"></i> Add New Category
+                    </h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <EditForm Model="@category" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger mb-3" />
+
+                        <div class="row g-3">
+                            <!-- Category Name -->
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-tag me-1 text-secondary"></i> Category Name
+                                </label>
+                                <InputText class="form-control form-control-lg" placeholder="Enter category name..."
+                                           @bind-Value="category.CategoryName" />
+                                <ValidationMessage For="@(() => category.CategoryName)" class="text-danger small" />
+                            </div>
+
+                            <!-- Color -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-palette me-1 text-secondary"></i> Color
+                                </label>
+                                <div class="d-flex align-items-center">
+                                    <input type="color" class="form-control form-control-color me-2"
+                                           @bind="category.Color" style="width: 3rem; height: 3rem;" />
+                                    <span class="badge border border-secondary px-3 py-2"
+                                          style="background-color:@category.Color;">@category.Color</span>
+                                </div>
+                                <ValidationMessage For="@(() => category.Color)" class="text-danger small" />
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-align-left me-1 text-secondary"></i> Description
+                                </label>
+                                <InputTextArea class="form-control" rows="4" placeholder="Enter description..."
+                                               @bind-Value="category.Description" />
+                                <ValidationMessage For="@(() => category.Description)" class="text-danger small" />
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <button class="btn btn-success btn-lg px-4 me-2" type="submit">
+                                <i class="fas fa-save me-2"></i> Save
+                            </button>
+                            <button class="btn btn-secondary btn-lg px-4" type="button" @onclick="Cancel">
+                                <i class="fas fa-times me-2"></i> Cancel
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private CategoryViewModel category = new();
+
+    protected override void OnInitialized()
+    {
+        if (string.IsNullOrEmpty(category.Color))
+        {
+            category.Color = "#000000";
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await CategoryService.AddAsync(category);
+        NavigationManager.NavigateTo("/categories");
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/categories");
+    }
+}

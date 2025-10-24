@@ -1,0 +1,77 @@
+﻿@page "/useremployees/edit/{id:int}"
+@using BlazorWebAppAdmin.Services
+@inject IUserEmployeeService UserEmployeeService
+@inject IRoleService RoleService
+@inject NavigationManager NavigationManager
+
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="User Employee"
+                 BreadcrumbCurrent="Edit" />
+
+@if (isLoading)
+{
+    <p>Đang tải...</p>
+}
+else if (model != null)
+{
+    <EditForm Model="@model" OnValidSubmit="@HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label>Tên đăng nhập:</label>
+            <InputText class="form-control" @bind-Value="model.Username" disabled />
+        </div>
+
+@*         <div class="mb-3">
+            <label>Đặt lại mật khẩu (tùy chọn):</label>
+            <InputText class="form-control" @bind-Value="model.Password" type="password" />
+        </div> *@
+
+        <div class="mb-3">
+            <label>Vai trò:</label>
+            <InputSelect class="form-select" @bind-Value="model.RoleId">
+                @foreach (var r in roles)
+                {
+                    <option value="@r.Id">@r.RoleName</option>
+                }
+            </InputSelect>
+        </div>
+
+        <div class="form-check mb-3">
+            <InputCheckbox class="form-check-input" @bind-Value="model.IsLocked" />
+            <label class="form-check-label">Khóa tài khoản</label>
+        </div>
+
+        @if (model.IsLocked)
+        {
+            <div class="mb-3">
+                <label>Lý do khóa:</label>
+                <InputTextArea class="form-control" @bind-Value="model.ReasonLock" />
+            </div>
+        }
+
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+    private UserEmployeeEditViewModel model;
+    private List<RoleViewModel> roles = new();
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        roles = await RoleService.GetAllRolesAsync();
+        model = await UserEmployeeService.GetEditByIdAsync(id);
+        isLoading = false;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await UserEmployeeService.UpdateUserEmployeeAsync(model);
+        NavigationManager.NavigateTo("/useremployees");
+    }
+}

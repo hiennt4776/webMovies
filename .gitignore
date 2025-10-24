@@ -1,0 +1,25 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.cache
+*.dbmdl
+
+# Build results
+bin/
+obj/
+Debug/
+Release/
+x64/
+x86/
+
+# Others
+*.log
+*.vsidx
+*.swp
+*.bak
+*.tmp
+
+# User-specific files
+*.userosscache
+*.sln.docstates

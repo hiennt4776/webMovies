@@ -1,0 +1,180 @@
+﻿@page "/contracts/add"
+@using BlazorWebAppAdmin.Services
+@inject IContractService ContractService
+@inject IPartnerService PartnerService
+@inject NavigationManager NavigationManager
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="Contract"
+                 BreadcrumbCurrent="Add" />
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-md-12">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-secondary text-white rounded-top-4">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-signature me-2"></i>  Add Contract
+                    </h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <EditForm Model="@contractCreate" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="row g-3">
+                            <!-- Partner -->
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Partner</label>
+                                <InputSelect @bind-Value="contractCreate.PartnerId" class="form-select">
+                              
+                                    @foreach (var partner in partners)
+                                    {
+                                        <option value="@partner.Id">@partner.Name</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => contractCreate.PartnerId)" />
+                            </div>
+
+                            <!-- Contract number & date -->
+                            <div class="col-md-9">
+                                <label class="form-label fw-semibold">Contract Number</label>
+                                <InputText @bind-Value="contractCreate.ContractNumber" class="form-control" />
+                                <ValidationMessage For="@(() => contractCreate.ContractNumber)" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Contract Date</label>
+                                <InputDate @bind-Value="contractCreate.ContractDate" class="form-control" />
+                                <ValidationMessage For="@(() => contractCreate.ContractDate)" />
+                            </div>
+
+                            <!-- Payment terms -->
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Payment Terms</label>
+                                <InputTextArea @bind-Value="contractCreate.PaymentTerms" class="form-control" rows="3" />
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Notes</label>
+                                <InputTextArea @bind-Value="contractCreate.Notes" class="form-control" rows="3" />
+                            </div>
+
+                            <!-- File upload -->
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Contract File</label><br />
+                                <InputFile OnChange="HandleFileSelected" class="form-control" />
+                            </div>
+
+                            <!-- Movie list -->
+                            <div class="mt-4">
+                                <h6 class="fw-bold mb-3">
+                                    <i class="fas fa-film me-2"></i>Movies in Contract
+                                </h6>
+                            </div>
+
+                            @if (contractCreate.MovieInContract.Any())
+                            {
+                                @foreach (var movie in contractCreate.MovieInContract)
+                                {
+                                    <div class="card mb-3 border-0 shadow-sm rounded-3 p-3 bg-light">
+                                        <div class="row g-3 align-items-center">
+                                            <div class="col-md-5">
+                                                <label class="form-label fw-semibold">Movie</label>
+                                                <InputText @bind-Value="movie.Title" class="form-control" />
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label fw-semibold">Price</label>
+                                                <InputNumber @bind-Value="movie.Price" class="form-control" />
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label fw-semibold">Note</label>
+                                                <InputText @bind-Value="movie.Notes" class="form-control" />
+                                            </div>
+                                            <div class="col-md-1 text-end">
+                                                <button type="button" class="btn btn-outline-danger btn-sm mt-3"
+                                                        title="Delete Movie" @onclick="() => RemoveMovie(movie)">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+
+                            <div class="col-md-12 text-start">
+                                <button type="button" class="btn btn-outline-secondary"
+                                        @onclick="AddMovie">
+                                    <i class="fas fa-plus me-1"></i> Add Movie
+                                </button>
+                            </div>
+
+                            <!-- Total -->
+                            <div class="col-md-12 mt-3">
+                                <strong>Total Value: </strong>
+                                <span class="text-success fw-bold">
+                                    @contractCreate.MovieInContract.Sum(m => m.Price).ToString("N0") VND
+                                </span>
+                            </div>
+
+                            <!-- Submit -->
+                            <div class="col-md-12 mt-4 text-end">
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="fas fa-save me-1"></i>  Save
+                                </button>
+                            </div>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private ContractCreateViewModel contractCreate = new();
+    private List<PartnerViewModel> partners = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        partners = await PartnerService.GetAllPartnersByStatusAsync(PartnerStatusConstant.Active);
+        if (partners.Any())
+            contractCreate.PartnerId = partners.First().Id;
+        // contractCreate = new ContractCreateViewModel();
+    }
+
+    private void AddMovie()
+    {
+        contractCreate.MovieInContract = new List<MovieInContractViewModel>(contractCreate.MovieInContract)
+        {
+            new MovieInContractViewModel()
+        };
+    }
+
+    private void RemoveMovie(MovieInContractViewModel movie)
+    {
+        contractCreate.MovieInContract = contractCreate.MovieInContract
+            .Where(m => m != movie)
+            .ToList();
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        contractCreate.ContractFile = e.File;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var result = await ContractService.CreateContractAsync(contractCreate);
+        if (result)
+        {
+            await Task.Delay(500);
+            NavigationManager.NavigateTo("/contracts");
+        }
+        else
+        {
+            Console.WriteLine("Lỗi khi tạo hợp đồng!");
+        }
+    }
+}

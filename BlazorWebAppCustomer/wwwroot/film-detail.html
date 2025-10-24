@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Film Detail - Movie Hub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-dark text-light">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold text-danger" href="#">🎬 Movie Hub</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link active" href="#trending">Trending</a></li>
+        <li class="nav-item"><a class="nav-link" href="#new">New</a></li>
+        <li class="nav-item"><a class="nav-link" href="#top">Top Rated</a></li>
+
+        <!-- Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown">
+            Categories <i class="fa-solid fa-chevron-down"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="categoriesDropdown">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Comedy</a></li>
+            <li><a class="dropdown-item" href="#">Drama</a></li>
+            <li><a class="dropdown-item" href="#">Sci-Fi</a></li>
+          </ul>
+        </li>
+      </ul>
+
+     <form class="d-flex me-3">
+        <input class="form-control me-2 rounded-pill" type="search" placeholder="Search movies...">
+        <button class="btn btn-blue rounded-pill" type="submit">Search</button>
+      </form>
+      <div class="d-flex">
+        <button class="btn btn-success rounded-pill me-2">Register</button>
+        <button class="btn btn-danger rounded-pill">Login</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<!-- Offcanvas -->
+<div class="offcanvas offcanvas-start bg-dark text-light" id="offcanvasNav">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">🎬 Movie Hub</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="navbar-nav">
+      <li class="nav-item"><a class="nav-link text-light" href="index.html#trending">Trending</a></li>
+      <li class="nav-item"><a class="nav-link text-light" href="index.html#new">New</a></li>
+      <li class="nav-item"><a class="nav-link text-light" href="index.html#top">Top Rated</a></li>
+      <li class="nav-item"><a class="nav-link text-light" href="index.html#categories">Categories</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Film Detail -->
+<section class="container my-5 pt-5">
+  <div class="row glass-card p-4">
+    <div class="col-md-4">
+      <img id="filmPoster" src="https://via.placeholder.com/400x600" alt="Film Poster" class="img-fluid rounded shadow">
+    </div>
+    <div class="col-md-8">
+      <h2 id="filmTitle">Film Title</h2>
+      <p><strong>Genre:</strong> <span id="filmGenre">Action, Adventure</span></p>
+      <p><strong>Release Date:</strong> <span id="filmRelease">2025-09-01</span></p>
+      <p><strong>Duration:</strong> 2h 15m</p>
+      <p><strong>Price:</strong> <span id="filmPrice">$9.99</span></p>
+      <div class="mb-3">
+        <span class="star">★</span><span class="star">★</span>
+        <span class="star">★</span><span class="star">☆</span>
+        <span class="star">☆</span><span>(3/5)</span>
+      </div>
+      <p id="filmDescription">
+        This is a detailed description of the film. It explains the storyline, main characters, and key highlights.
+      </p>
+            <!-- <a href="watch.html" class="btn btn-danger me-2">▶ Watch Film</a>
+<button class="btn btn-warning me-2" data-bs-toggle="modal" data-bs-target="#trailerModal">🎬 Watch Trailer</button>
+      <button class="btn btn-success" id="addToCartBtn">🛒 Add to Cart</button>
+      <button class="btn btn-blue" id="rentBtn">💳 Rent</button> -->
+<button class="btn btn-primary btn-toggle">▶ Watch Film</button>
+      <button class="btn btn-danger btn-toggle">🎞 Watch Trailer</button>
+      <button class="btn btn-success">Submit Comment</button>
+      <button class="btn btn-outline-info">💬 Comment</button>
+      <button class="btn btn-warning">💳 Rent Film</button>
+      <button class="btn btn-success">🛒 Buy Film</button>
+    </div>
+  </div>
+</section>
+
+<!-- Chapters -->
+<section class="container my-5">
+  <h3>Chapters / Episodes</h3>
+  <div class="list-group glass-card">
+    <a href="watch.html?chapter=1" class="list-group-item d-flex justify-content-between align-items-center bg-transparent text-light">
+      Chapter 1: The Beginning <button class="btn btn-sm btn-blue">▶ Play</button>
+    </a>
+    <a href="watch.html?chapter=2" class="list-group-item d-flex justify-content-between align-items-center bg-transparent text-light">
+      Chapter 2: The Conflict <button class="btn btn-sm btn-blue">▶ Play</button>
+    </a>
+    <a href="watch.html?chapter=3" class="list-group-item d-flex justify-content-between align-items-center bg-transparent text-light">
+      Chapter 3: The Resolution <button class="btn btn-sm btn-blue">▶ Play</button>
+    </a>
+  </div>
+</section>
+
+<!-- Trailer Modal -->
+<div class="modal fade" id="trailerModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title">Film Trailer</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <iframe width="100%" height="400" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Related Movies -->
+<section class="container my-5">
+  <h3>Related Movies</h3>
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <div class="glass-card p-2 text-center">
+        <a href="film-detail.html"><img src="https://via.placeholder.com/200x300" class="img-fluid rounded"></a>
+        <p class="mt-2">Related Movie 1</p>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="glass-card p-2 text-center">
+        <a href="film-detail.html"><img src="https://via.placeholder.com/200x300" class="img-fluid rounded"></a>
+        <p class="mt-2">Related Movie 2</p>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="glass-card p-2 text-center">
+        <a href="film-detail.html"><img src="https://via.placeholder.com/200x300" class="img-fluid rounded"></a>
+        <p class="mt-2">Related Movie 3</p>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="glass-card p-2 text-center">
+        <a href="film-detail.html"><img src="https://via.placeholder.com/200x300" class="img-fluid rounded"></a>
+        <p class="mt-2">Related Movie 4</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="text-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold text-danger">🎬 Movie Hub</h5>
+        <p>Your favorite movies, trailers, and TV shows all in one place.</p>
+        <div class="social-icons">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="#"><i class="bi bi-twitter"></i></a>
+          <a href="#"><i class="bi bi-youtube"></i></a>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li><a href="index.html#trending" class="text-light text-decoration-none">Trending</a></li>
+          <li><a href="index.html#new" class="text-light text-decoration-none">New Releases</a></li>
+          <li><a href="index.html#top" class="text-light text-decoration-none">Top Rated</a></li>
+          <li><a href="index.html#categories" class="text-light text-decoration-none">Categories</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold">Support</h6>
+        <ul class="list-unstyled">
+          <li><a href="faq.html" class="text-light text-decoration-none">Help Center</a></li>
+          <li><a href="contact.html" class="text-light text-decoration-none">Contact</a></li>
+          <li><a href="#" class="text-light text-decoration-none">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold">Subscribe</h6>
+        <div class="input-group">
+          <input type="email" class="form-control rounded-start-pill" placeholder="Enter email">
+          <button class="btn btn-gold rounded-end-pill">Go</button>
+        </div>
+      </div>
+    </div>
+    <hr class="border-secondary">
+    <p class="text-center mb-0">&copy; 2025 Movie Hub. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- Back to Top -->
+<button id="backToTop"><i class="bi bi-arrow-up"></i></button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

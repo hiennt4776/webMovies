@@ -1,0 +1,201 @@
+﻿@page "/userEmployees"
+@using BlazorWebAppAdmin.Services
+@using helperMovies.Constants
+@inject IEmployeeService EmployeeService
+@inject IUserEmployeeService UserEmployeeService
+@inject IRoleService RoleService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="User Employees"
+                 BreadcrumbCurrent="List" />
+
+<div class="card card-outline card-secondary shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="card-title fw-bold">
+            <i class="bi bi-people-fill me-2"></i> User Employee Management
+        </div>
+        <button class="btn btn-success btn-sm" @onclick="AddUser">
+            <i class="bi bi-plus-circle me-1"></i> Add User
+        </button>
+    </div>
+
+    <div class="card-body">
+        <div class="row mb-3 g-2">
+            <div class="col-md-4">
+                <input type="text"
+                       class="form-control"
+                       placeholder="Search by username or employee..."
+                       @bind="keyword"
+                       @bind:event="oninput" />
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" @bind="selectedRoleId">
+                    <option value="">All Roles</option>
+                    @foreach (var r in roles)
+                    {
+                        <option value="@r.Id">@r.RoleName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" @bind="SelectedLockFilterString">
+                    <option value="">-- All Statuses --</option>
+                    <option value="false">Active</option>
+                    <option value="true">Locked</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100" @onclick="SearchAsync">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </div>
+
+        @if (pagedResult == null)
+        {
+            <p><i class="bi bi-hourglass-split"></i> Loading data...</p>
+        }
+        else if (!pagedResult.Items.Any())
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> No user employees found.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Username</th>
+                            <th>Employee</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th class="text-center" style="width: 220px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in pagedResult.Items)
+                        {
+                            <tr>
+                                <td>@user.Username</td>
+                                <td>@user.Employee?.FullName</td>
+                                <td>@user.Role?.RoleName</td>
+                                <td>
+                                    @if (user.IsLocked == true)
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-lock-fill me-1"></i> Locked
+                                        </span>
+                                        @if (!string.IsNullOrEmpty(user.ReasonLock))
+                                        {
+                                            <small class="text-muted ms-2">(@user.ReasonLock)</small>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-unlock-fill me-1"></i> Active
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-info me-1" @onclick="() => ViewDetail(user.Id)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-primary me-1" @onclick="() => Edit(user.Id)">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning text-white" @onclick="() => ResetPassword(user.Id)">
+                                        <b>***</b>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <span>Page @pagedResult.PageNumber of @pagedResult.TotalPages</span>
+                <div>
+                    <button class="btn btn-outline-secondary me-2" @onclick="PrevPage" disabled="@(!CanPrev)">
+                        <i class="bi bi-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="NextPage" disabled="@(!CanNext)">
+                        Next <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private PagedResult<UserEmployeeViewModel>? pagedResult;
+    private List<RoleViewModel> roles = new();
+    private string keyword = string.Empty;
+    private int? selectedRoleId;
+    private bool? selectedLockFilter;
+    private int page = 1;
+    private int pageSize = 10;
+
+    protected override async Task OnInitializedAsync()
+    {
+        roles = await RoleService.GetAllRolesAsync();
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        pagedResult = await UserEmployeeService.GetPagedAsync(page, pageSize, keyword, selectedRoleId, selectedLockFilter);
+    }
+
+    private string SelectedLockFilterString
+    {
+        get => selectedLockFilter?.ToString().ToLower() ?? "";
+        set
+        {
+            if (string.IsNullOrEmpty(value))
+                selectedLockFilter = null;
+            else
+                selectedLockFilter = bool.Parse(value);
+        }
+    }
+
+    private async Task SearchAsync()
+    {
+        page = 1;
+        await LoadDataAsync();
+    }
+
+    private async Task PrevPage()
+    {
+        if (page > 1)
+        {
+            page--;
+            await LoadDataAsync();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (pagedResult != null && page < pagedResult.TotalPages)
+        {
+            page++;
+            await LoadDataAsync();
+        }
+    }
+
+    private bool CanPrev => page > 1;
+    private bool CanNext => pagedResult != null && page < pagedResult.TotalPages;
+
+    private void AddUser() => NavigationManager.NavigateTo("/userEmployees/add");
+    private void Edit(int id) => NavigationManager.NavigateTo($"/userEmployees/edit/{id}");
+    private void ViewDetail(int id) => NavigationManager.NavigateTo($"/userEmployees/detail/{id}");
+    private void ResetPassword(int id) => NavigationManager.NavigateTo($"/useremployees/resetpassword/{id}");
+
+  
+}

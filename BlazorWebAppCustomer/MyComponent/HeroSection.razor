@@ -1,0 +1,20 @@
+﻿@* Component hero-section có thể tái dùng nhiều nơi *@
+<section class="hero-section d-flex align-items-center text-center text-white">
+    <div class="container">
+        <h1></h1>
+        <h1 class="fw-bold">@Title</h1>
+        @if (!string.IsNullOrEmpty(Subtitle))
+        {
+            <p class="lead">@Subtitle</p>
+        }
+     
+    </div>
+</section>
+
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Subtitle { get; set; }
+ 
+
+}

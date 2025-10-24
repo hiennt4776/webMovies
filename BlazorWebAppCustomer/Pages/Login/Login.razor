@@ -1,0 +1,112 @@
+﻿@page "/login"
+@using BlazorWebAppCustomer.Services
+@using helperMovies.ViewModel
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorageService
+@inject IUserCustomerService UserCustomerService
+@inject NavigationManager NavigationManager
+@using System.Text.Json
+<!-- Hero Section -->
+<header class="hero-section d-flex align-items-center text-center text-white">
+    <div class="container">
+        <h1 class="fw-bold">Login</h1>
+        <p class="lead">Access your Movie Hub account and enjoy your favorite films.</p>
+    </div>
+</header>
+
+<!-- Login Form -->
+<section class="container d-flex justify-content-center align-items-center my-5">
+    <div class="card glass-card p-4 shadow-lg" style="max-width: 400px; width: 100%;">
+        <h3 class="text-center mb-3">Welcome Back</h3>
+       @*  <form>
+            <div class="mb-3">
+                <label for="loginEmail" class="form-label">Email</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                    <input type="email" class="form-control" id="loginEmail" placeholder="Enter email" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="loginPassword" class="form-label">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                    <input type="password" class="form-control" id="loginPassword" placeholder="Enter password" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-danger w-100 rounded-pill">Login</button>
+        </form> *@
+
+        <EditForm Model="loginRequestViewModel" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="input-group mb-3">
+                <InputText class="form-control" @bind-Value="loginRequestViewModel.Username" placeholder="username" />
+                <div class="input-group-text"><span class="bi bi-person-fill"></span></div>
+                <ValidationMessage For="@(() => loginRequestViewModel.Username)" />
+            </div>
+
+            <div class="input-group mb-3">
+                <InputText type="password" class="form-control" @bind-Value="loginRequestViewModel.Password" placeholder="Password" />
+                <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
+                <ValidationMessage For="@(() => loginRequestViewModel.Password)" />
+            </div>
+
+            <!--begin::Row-->
+            <div class="row">
+                <div class="col-8">
+                    @if (!string.IsNullOrEmpty(message))
+                    {
+                        <p class="text-danger">@message</p>
+                    }
+                </div>
+                <!-- /.col -->
+                <div class="col-4">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Sign In</button>
+                    </div>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!--end::Row-->
+        </EditForm>
+        <p class="mt-3 text-center">
+            Don’t have an account? <a href="register.html" class="text-decoration-none text-warning">Register</a>
+        </p>
+    </div>
+</section>
+
+
+@code {
+    private LoginRequestViewModel loginRequestViewModel = new LoginRequestViewModel();
+    private string? message;
+
+    private async Task HandleValidSubmit()
+    {
+        // Call UserService để login
+        LoginResponseViewModel loginResponseViewModel = await UserCustomerService.LoginAsync(loginRequestViewModel);
+
+        if (!string.IsNullOrEmpty(loginResponseViewModel.Token))
+        {
+
+            await LocalStorageService.SetItemAsync("token", loginResponseViewModel.Token);
+            await LocalStorageService.SetItemAsync("fullName", loginResponseViewModel.FullName);
+            await LocalStorageService.SetItemAsync("email", loginResponseViewModel.Email);
+            // Show live message
+        
+
+            System.Diagnostics.Debug.WriteLine("Login attempt with: " + JsonSerializer.Serialize(loginResponseViewModel));
+            // Điều hướng
+            NavigationManager.NavigateTo("/index", forceLoad: true);
+        }
+        else
+        {
+            message = "Login failed!";
+
+        }
+    }
+
+    //LoginRequestViewModel
+    //LoginResponseViewModel
+}

@@ -1,0 +1,297 @@
+﻿@page "/partners"
+@using BlazorWebAppAdmin.Services
+@inject IPartnerService PartnerService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="Partner"
+                 BreadcrumbCurrent="List" />
+
+
+<div class="container-fluid">
+    <!--begin::Row-->
+    <div class="row g-4">
+        <div class="col-md-12">
+
+            <div class="card card-danger card-outline mb-4">
+                <!--begin::Header-->
+                <div class="card-header">
+                    <div class="card-title">Category</div>
+                </div>
+                <!--end::Header-->
+                <!--begin::Body-->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2  col-xs-12">
+                                <select class="form-select w-auto" @onchange="OnStatusFilterChanged">
+                                    <option value="">-- All --</option>
+                                    @foreach (var status in PartnerStatusConstant.All)
+                                    {
+                                        <option value="@status">@status</option>
+                                    }
+                                </select>
+                        </div>
+                        <div class="col-md-6  col-xs-12">
+                                 <input type="text" class="form-control mb-2" placeholder="Search..." @bind="searchText" />
+                        </div> 
+                        <div class="col-md-4  col-xs-12">
+                                <button class="btn btn-primary mb-2" @onclick="SearchPartners">Search</button>
+                                <button class="btn btn-secondary mb-2" @onclick="ClearSearch">Clear Search</button>
+                                <button class="btn btn-success mb-2" @onclick="AddNew">Add</button>
+                        </div> 
+                    </div>
+    
+                    <div>
+
+                        @if (pagedResult == null)
+                        {
+                            <p><em>Is Loading</em></p>
+                        }
+                        else if (pagedResult.TotalCount == 0)
+                        {
+                            <p class="text-muted">No partners yet.</p>
+                        }
+                        else
+                        {
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th @onclick="@(() => SortBy("Name"))">Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Website</th>
+                                        <th>Status</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var p in pagedResult.Items)
+                                    {
+                                        <tr>
+                                            <td>@p.Name</td>
+                                            <td>@p.Email</td>
+                                            <td>@p.Phone</td>
+                                            <td>@p.Website</td>
+                                            <td>
+                                                @switch (p.Status)
+                                                {
+                                                    case var s when s == PartnerStatusConstant.Active:
+                                                        <span class="badge bg-success">ACTIVE</span>
+                                                        break;
+                                                    case var s when s == PartnerStatusConstant.Inactive:
+                                                        <span class="badge bg-secondary">INACTIVE</span>
+                                                        break;
+                                                    case var s when s == PartnerStatusConstant.Suspended:
+                                                        <span class="badge bg-danger">SUSPENDED</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-dark">@p.Status</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                <button class="btn btn-sm btn-info me-1" @onclick="() => GoToDetail(p.Id)"><i class="bi bi-eye"></i></button>
+                                                <button class="btn btn-warning btn-sm me-2" @onclick="() => Edit(p.Id)"><i class="bi bi-pencil-square"></i></button>
+                                                <button class="btn btn-danger btn-sm" @onclick="() => ShowConfirm(p.Id, p.Name)"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                           
+                            <nav>
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item @(pageNumber == 1 ? "disabled" : "")">
+                                        <button class="page-link" @onclick="PreviousPage">Trước</button>
+                                    </li>
+
+                                    @for (int i = 1; i <= TotalPages; i++)
+                                    {
+                                        var pageIndex = i;
+                                        <!-- biến tạm -->
+                                        <li class="page-item @(pageIndex == pageNumber ? "active" : "")">
+                                            <button class="page-link" @onclick="() => GoToPage(pageIndex)">
+                                                @pageIndex
+                                            </button>
+                                        </li>
+                                    }
+
+
+                                    <li class="page-item @(pageNumber == TotalPages ? "disabled" : "")">
+                                        <button class="page-link" @onclick="NextPage">Sau</button>
+                                    </li>
+                                </ul>
+                                <ul class="pagination justify-content-end">
+
+                                    <li>Page @pagedResult.PageNumber / @TotalPages - Total: @pagedResult.TotalCount</li>
+                           
+                                </ul>
+                            </nav>
+                        }
+                    </div>
+                </div>
+                <!--end::Body-->
+            </div>
+
+        </div>
+        <!--end::Col-->
+
+    </div>
+    <!--end::Row-->
+</div>
+
+
+
+@if (showConfirm)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color:rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" @onclick="CloseConfirm"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure partner <b>@confirmName</b></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseConfirm">Cancel</button>
+                    <button class="btn btn-danger" @onclick="ConfirmDelete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private PagedResult<PartnerViewModel>? pagedResult;
+    private PartnerViewModel selectedPartner = new();
+    private int pageNumber = 1;
+    private int pageSize = 10;
+    private string? searchText;
+    private string? filterStatus;
+    private string sortField = "CreateDate";
+    private bool ascending = false;
+
+    private bool showConfirm;
+    private int TotalPages => (int)Math.Ceiling((double)(pagedResult?.TotalCount ?? 0) / pageSize);
+    private bool CanPrevious => pageNumber > 1;
+    private bool CanNext => pagedResult != null && pageNumber < TotalPages;
+    private int deleteId;
+    private string? confirmName;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        pagedResult = await PartnerService.GetPagedSearchSortAsync(pageNumber, pageSize, filterStatus, searchText, sortField, ascending);
+    }
+
+
+    private async Task SearchPartners()
+    {
+        pageNumber = 1;
+        await LoadDataAsync();
+    }
+
+    private async Task ClearSearch()
+    {
+        searchText = string.Empty;
+        pageNumber = 1;
+        await LoadDataAsync();
+    }
+
+
+    private async Task OnStatusFilterChanged(ChangeEventArgs e)
+    {
+        filterStatus = e.Value?.ToString();
+        await LoadDataAsync();
+    }
+
+    private void SortBy(string field)
+    {
+        if (sortField == field)
+            ascending = !ascending;
+        else
+            sortField = field;
+        _ = LoadDataAsync();
+    }
+
+    private async Task NextPage()
+    {
+        if (CanNext)
+        {
+            pageNumber++;
+            await LoadDataAsync();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (CanPrevious)
+        {
+            pageNumber--;
+            await LoadDataAsync();
+        }
+    }
+
+    private void AddNew()
+    {
+        Navigation.NavigateTo("/partners/add");
+    }
+
+    private void Edit(int id)
+    {
+        Navigation.NavigateTo($"/partners/edit/{id}");
+    }
+
+    private void GoToDetail(int id)
+    {
+        Navigation.NavigateTo($"/partners/detail/{id}");
+    }
+
+    private void ShowConfirm(int id, string name)
+    {
+        deleteId = id;
+        confirmName = name;
+        showConfirm = true;
+    }
+
+    private void CloseConfirm()
+    {
+        showConfirm = false;
+        confirmName = null;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        showConfirm = false;
+        var result = await PartnerService.DeleteAsync(deleteId);
+        if (result)
+        {
+            await LoadDataAsync();
+            await JSRuntime.InvokeVoidAsync("alert", "Delete success!");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Delete fail");
+        }
+    }
+
+    private async Task ShowToastAsync(string message, string type)
+    {
+        await JSRuntime.InvokeVoidAsync("showToast", message, type);
+    }
+    private async Task GoToPage(int page)
+    {
+        pageNumber = page;
+        await LoadDataAsync();
+    }
+}

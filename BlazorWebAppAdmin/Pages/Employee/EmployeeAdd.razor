@@ -1,0 +1,167 @@
+﻿@page "/employees/add"
+@using BlazorWebAppAdmin.Services
+@using helperMovies.Constants
+@inject IEmployeeService EmployeeService
+@inject IRoleService RoleService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="Employee"
+                 BreadcrumbCurrent="Add" />
+
+<div class="container-fluid">
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-plus me-2"></i>Add New Employee</h5>
+                </div>
+
+                <div class="card-body">
+                    <EditForm Model="@employee" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="row g-3">
+                            <!-- Full Name -->
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold">Full Name</label>
+                                <InputText class="form-control" @bind-Value="employee.FullName" placeholder="Enter full name" />
+                            </div>
+
+                            <!-- Gender -->
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold">Gender</label><br />
+                                <InputRadioGroup @bind-Value="employee.Gender">
+                                    <label class="me-3">
+                                        <InputRadio class="form-check-input me-1" Value="true" /> Male
+                                    </label>
+                                    <label>
+                                        <InputRadio class="form-check-input me-1" Value="false" /> Female
+                                    </label>
+                                </InputRadioGroup>
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold">Date of Birth</label>
+                                <InputDate class="form-control" @bind-Value="employee.DateOfBirth" />
+                            </div>
+
+                            <!-- Address -->
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Address</label>
+                                <InputText class="form-control" @bind-Value="employee.Address" placeholder="Enter address" />
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Email</label>
+                                <InputText class="form-control" @bind-Value="employee.Email" placeholder="Enter email address" />
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Phone</label>
+                                <InputText class="form-control" @bind-Value="employee.PhoneNumber" placeholder="Enter phone number" />
+                            </div>
+
+                            <!-- Salary -->
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Salary</label>
+                                <InputNumber class="form-control" @bind-Value="employee.Salary" placeholder="Enter salary amount" />
+                            </div>
+
+                            <!-- Job Status -->
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Job Status</label>
+                                <InputSelect class="form-select" @bind-Value="employee.JobStatus">
+                                    <option value="@JobStatusValue.WORKING">Working</option>
+                                    <option value="@JobStatusValue.RETIRED">Retired</option>
+                                </InputSelect>
+                            </div>
+
+                            <!-- Username -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Username</label>
+                                <InputText class="form-control" @bind-Value="employee.Username" placeholder="Enter username" />
+                            </div>
+
+                            <!-- Password -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Password</label>
+                                <InputText class="form-control" type="password" @bind-Value="employee.Password" placeholder="Enter password" />
+                            </div>
+
+                            <!-- Role -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Role</label>
+                                <InputSelect class="form-select" @bind-Value="employee.RoleId">
+                                    @if (roles != null && roles.Any())
+                                    {
+                                        @foreach (var role in roles)
+                                        {
+                                            <option value="@role.Id">@role.RoleName</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option disabled selected>No roles available</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <!-- Action Buttons -->
+                      
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toastMessage" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toastBody"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    private EmployeeCreateViewModel employee = new();
+    private List<RoleViewModel> roles = new();
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        roles = await RoleService.GetAllRolesAsync();
+
+        // Default values
+        if (roles.Any())
+            employee.RoleId = roles.First().Id;
+
+        employee.JobStatus = JobStatusValue.WORKING;
+        employee.Gender = true;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        isLoading = true;
+        await EmployeeService.AddEmployeeAsync(employee);
+        isLoading = false;
+        NavigationManager.NavigateTo("/employees");
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/employees");
+    }
+}

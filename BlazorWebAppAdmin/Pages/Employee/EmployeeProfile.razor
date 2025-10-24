@@ -1,0 +1,102 @@
+﻿@page "/employees/profile"
+@using BlazorWebAppAdmin.Services
+@inject HttpClient Http
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager NavManager
+
+@inject IUserEmployeeService UserEmployeeService
+@inject AuthService AuthService
+
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="Employees"
+                 BreadcrumbCurrent="Profile" />
+
+@if (user == null)
+{
+    <p>Đang tải...</p>
+}
+else
+{
+  @*   <ul>
+
+        <li>Full Name: @user.FullName</li>
+        <li>Email: @user.Email</li>
+        <li>PhoneNumber: @user.PhoneNumber</li>
+        <li>Address: @user.Address</li>
+        <li>JobStatus: @user.JobStatus</li>
+        <li>DateOfBirth: @user.DateOfBirth</li>
+        <li>Salary: @user.Salary</li>
+ 
+    </ul> *@
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+        <section class="content">
+            <div class="container-fluid">
+
+                <div class="row">
+                    <!-- Left Column -->
+                    <div class="col-md-12">
+                        <!-- Profile Image -->
+                        <div class="card card-primary card-outline">
+                            <div class="card-body box-profile">
+
+
+                                <h3 class="profile-username text-center">@user.FullName</h3>
+                               
+
+                                <ul class="list-group list-group-unbordered mb-3">
+                                    <li class="list-group-item">
+                                        <b>Email:</b> @user.Email
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>PhoneNumber:</b>  @user.PhoneNumber
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Address:</b>   @user.Address
+                                    </li>
+                                     <li class="list-group-item">
+                                        <b>JobStatus:</b>   @user.JobStatus
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <b>DateOfBirth:</b> @user.DateOfBirth
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b> JobStatus:</b>  @user.JobStatus
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b> Salary:</b>  @user.Salary
+                                    </li>
+
+                                </ul>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- /.row -->
+
+            </div>
+        </section>
+    </div>
+
+}
+
+@code {
+    private EmployeeViewModel? user;
+    private string userName = "";
+
+    //bạn chạy lại giúp mình fe nha
+    // chi fe ak fe be luôn nha mình k qquen xài vs tím á
+    // minh hinh chay ca 2 roi nhan start
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        user = await UserEmployeeService.GetCurrentUserNameAsync();
+    }
+
+
+}

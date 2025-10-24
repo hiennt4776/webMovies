@@ -1,0 +1,205 @@
+﻿@page "/contracts/edit/{Id:int}"
+@using BlazorWebAppAdmin.Services
+@inject IContractService ContractService
+@inject IPartnerService PartnerService
+@inject NavigationManager Nav
+@inject IJSRuntime js
+
+
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="Contract"
+                 BreadcrumbCurrent="Edit" />
+
+
+@if (contractEditViewModel == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+    <div class="container-fluid">
+        <div class="row g-4">
+            <div class="col-12">
+
+                <div class="card card-secondary card-outline shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <div class="card-title fw-bold">
+                            Edit Contract
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <EditForm Model="@contractEditViewModel" OnValidSubmit="HandleValidSubmit">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+
+
+
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label class="form-label fw-semibold">Partner</label>
+                                    <InputSelect class="form-select" @bind-Value="contractEditViewModel.PartnerId">
+                                        <option value="">-- Select Partner --</option>
+                                        @foreach (var p in partners)
+                                        {
+                                            <option value="@p.Id">@p.Name</option>
+                                        }
+                                    </InputSelect>
+                                </div>
+
+                                <div class="col-md-9">
+                                    <label class="form-label fw-semibold">Contract Number</label>
+                                    <InputText class="form-control" @bind-Value="contractEditViewModel.ContractNumber" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold">Contract Date</label>
+                                    <InputDate class="form-control" @bind-Value="contractEditViewModel.ContractDate" />
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label fw-semibold">Payment Terms</label>
+                                    <InputTextArea class="form-control" @bind-Value="contractEditViewModel.PaymentTerms" rows="2" />
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label fw-semibold">Notes</label>
+                                    <InputTextArea class="form-control" @bind-Value="contractEditViewModel.Notes" rows="2" />
+                                </div>
+
+                                  <div class="col-md-12">
+                                        <label class="form-label fw-semibold">Contract File</label><br />
+                                        @if (!string.IsNullOrEmpty(contractEditViewModel.ExistingFileName))
+                                        {
+                                            <a href="@contractEditViewModel.ExistingFileName" target="_blank" class="text-decoration-none">
+                                                📄 View Existing File
+                                            </a>
+                                        }
+                                        <InputFile OnChange="OnFileSelected" class="form-control mt-2" />
+                                   </div>
+                                <div class="mt-4">
+                                    <h6 class="fw-bold mb-3">
+                                        <i class="fas fa-film me-2"></i>Movies in Contract
+                                    </h6>
+                                </div>
+
+                                <!-- Danh sách phim -->
+                                <div class="border rounded p-3 bg-light mb-4">
+                                    <h6 class="fw-bold mb-3">Movies in Contract</h6>
+
+                                    @foreach (var movie in contractEditViewModel.MovieInContract)
+                                    {
+                                        <div class="row mb-2 align-items-center">
+                                            <div class="col-md-5">
+                                                <InputText class="form-control" @bind-Value="movie.Title" placeholder="Title" />
+                                            </div>
+                                            <div class="col-md-3">
+                                                <InputNumber class="form-control" @bind-Value="movie.Price" placeholder="Price" />
+                                            </div>
+                                            <div class="col-md-3">
+                                                <InputText class="form-control" @bind-Value="movie.Notes" placeholder="Notes" />
+                                            </div>
+                                            <div class="col-md-1 text-end">
+                                                <button type="button" class="btn btn-outline-danger btn-sm mt-3" title="Remove" @onclick="() => RemoveMovie(movie)">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <div class="col-md-12 text-start">
+                                        <button type="button" class="btn btn-outline-secondary"
+                                                @onclick="AddMovie">
+                                            <i class="bi bi-plus me-1"></i> Add Movie
+                                        </button>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+
+                        
+                            <!-- File hợp đồng -->
+
+                            <div class="col-md-12 mt-3">
+                                <strong>Total Value: </strong>
+                                <span class="text-primary fw-bold">
+                                    @contractEditViewModel.MovieInContract.Sum(m => m.Price).ToString("N0") VND
+                                </span>
+                            </div>
+
+                            <!-- Nút hành động -->
+                            <div class="col-md-12 mt-4 text-end">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" @onclick="CancelEdit">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+
+                        </EditForm>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+}
+
+
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private ContractEditViewModel? contractEditViewModel;
+    private List<PartnerViewModel> partners = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        partners = await PartnerService.GetAllPartnersAsync();
+        contractEditViewModel = await ContractService.GetEditByIdAsync(Id);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        // Tính lại tổng giá trị hợp đồng dựa trên phim hiện còn
+        contractEditViewModel.TotalValue = contractEditViewModel.MovieInContract.Sum(m => m.Price);
+
+        var success = await ContractService.UpdateContractAsync(Id, contractEditViewModel);
+
+        if (success)
+        {
+            await js.InvokeVoidAsync("alert", "Contract updated successfully!");
+            Nav.NavigateTo("/contracts");
+        }
+        else
+        {
+            await js.InvokeVoidAsync("alert", "Error updating contract!");
+        }
+    }
+
+    private void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        contractEditViewModel.ContractFile = e.File;
+    }
+
+    private void AddMovie()
+    {
+        contractEditViewModel.MovieInContract.Add(new MovieInContractViewModel());
+    }
+
+    private void RemoveMovie(MovieInContractViewModel movie)
+    {
+        contractEditViewModel.MovieInContract.Remove(movie);
+        StateHasChanged();
+    }
+
+    private void CancelEdit()
+    {
+        Nav.NavigateTo("/contracts");
+    }
+}
