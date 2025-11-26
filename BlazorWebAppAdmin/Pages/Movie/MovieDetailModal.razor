@@ -1,0 +1,101 @@
+﻿@using BlazorWebAppAdmin.Services
+@inject IMovieService MovieService
+
+@if (Visible)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Movie Files</h5>
+                    <button type="button" class="btn-close" @onclick="Close"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <h5>Upload File</h5>
+
+                    <select class="form-select mb-2" @bind="fileType">
+                        <option value="POSTER">Poster</option>
+                        <option value="TRAILER">Trailer</option>
+                        <option value="MOVIES">Movie File</option>
+                        <option value="SUBTITLE">Subtitle</option>
+                    </select>
+
+                    <InputFile OnChange="OnFileSelected" />
+                    <button class="btn btn-success mt-2" @onclick="Upload">Upload</button>
+
+                    <hr />
+
+                    <h5>Existing Files</h5>
+
+                    <ul class="list-group">
+                        @foreach (var f in files)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    <strong>@f.FileType</strong> — @f.FileName
+                                </span>
+                            </li>
+                        }
+                    </ul>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="Close">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool Visible = false;
+    private int currentMovieId;
+
+    private List<MovieFileViewModel> files = new();
+    private IBrowserFile? selectedFile;
+    private string fileType = "POSTER";
+
+    /// <summary>
+    /// Hiển thị modal + load danh sách file cho MovieID.
+    /// </summary>
+    public async Task Show(int movieId)
+    {
+        currentMovieId = movieId;
+        Visible = true;
+        await LoadFiles();
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        Visible = false;
+    }
+
+    private async Task LoadFiles()
+    {
+        files = await MovieService.GetFilesAsync(currentMovieId);
+    }
+
+    private void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    private async Task Upload()
+    {
+        if (selectedFile == null)
+            return;
+
+        await MovieService.UploadFileAsync(currentMovieId, fileType, selectedFile);
+
+        // Reload file list
+        await LoadFiles();
+
+        StateHasChanged();
+    }
+}

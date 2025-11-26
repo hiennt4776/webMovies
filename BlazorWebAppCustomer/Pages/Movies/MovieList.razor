@@ -1,0 +1,67 @@
+﻿@page "/movielist"
+@using BlazorWebAppCustomer.Services
+@using helperMovies.ViewModel
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorageService
+@inject IUserCustomerService UserCustomerService
+@inject IMovieService MovieService
+@inject NavigationManager NavigationManager
+@using System.Text.Json
+<!-- Hero Section -->
+
+<HeroSection Title="Create Account" Subtitle="Join Movie Hub and explore endless entertainment." />
+
+<h2 class="mb-3">Danh sách phim</h2>
+
+@if (movieList == null)
+{
+    <p>Đang tải danh sách phim...</p>
+}
+else if (movieList.Count == 0)
+{
+    <p>Không có phim nào.</p>
+}
+else
+{
+    <div class="movie-grid">
+        @foreach (var m in movieList)
+        {
+            <div class="movie-card" @onclick="() => GoToMovie(m.Id)">
+                <img src="@MovieService.GetMovieFileUrl(m.Id, "poster")"
+                     alt="@m.Title" />
+
+                <div class="movie-title">@m.Title</div>
+
+                <div class="movie-badges">
+                    @if (m.HasTrailer)
+                    {
+                        <span class="badge trailer">Trailer</span>
+                    }
+                    @if (m.HasMovie)
+                    {
+                        <span class="badge movie">Full HD</span>
+                    }
+                    @if (m.HasSubtitle)
+                    {
+                        <span class="badge subtitle">Vietsub</span>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<MovieViewModel> movieList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        movieList = await MovieService.GetMoviesAsync();
+    }
+
+    void GoToMovie(int id)
+    {
+        NavigationManager.NavigateTo($"/movie/{id}");
+    }
+}

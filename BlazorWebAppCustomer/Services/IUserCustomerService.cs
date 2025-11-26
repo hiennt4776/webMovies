@@ -45,29 +45,33 @@ namespace BlazorWebAppCustomer.Services
 
         public async Task<(bool IsSuccess, string Message)> RegisterAsync(CustomerRegisterViewModel dto)
         {
+         
+               
+
+
             try
             {
                 var url = $"{_settings.BaseUrl}/UserCustomer/register";
-
-
-
                 var response = await _httpClient.PostAsJsonAsync(url, dto);
+
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse>();
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return (true, "Registration successful!");
+                    return (true, result?.Message ?? "Registration successful!");
                 }
                 else
                 {
-                    var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-                    string message = result?["message"] ?? "Registration failed!";
-                    return (false, message);
+                    return (false, result?.Message ?? "Registration failed!");
                 }
             }
             catch (Exception ex)
             {
                 return (false, $"Error: {ex.Message}");
             }
+
+
+
         }
 
         public async Task<LoginResponseViewModel> LoginAsync(LoginRequestViewModel loginRequestViewModel)
@@ -91,6 +95,9 @@ namespace BlazorWebAppCustomer.Services
 
               
         }
+
+   
+
 
     }
 

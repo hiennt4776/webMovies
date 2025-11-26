@@ -23,6 +23,8 @@ namespace helperMovies.DTO
         public string Username { get; set; } = string.Empty;
         [JsonPropertyName("password")]
         public string Password { get; set; } = string.Empty;
+        [JsonPropertyName("confirmPassword")]
+        public string ConfirmPassword { get; set; } = string.Empty;
     }
 
     public class CustomerDTO

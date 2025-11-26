@@ -36,12 +36,12 @@ builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSet
 //    Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
 //});
 
-//builder.Services.AddHttpClient<MovieService>((sp, client) =>
-//{
-//    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
-//    client.BaseAddress = new Uri(settings.BaseUrl);
-//    Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
-//});
+builder.Services.AddHttpClient<IMovieService, MovieService>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(settings.BaseUrl);
+    Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
+});
 
 builder.Services.AddHttpClient<IUserCustomerService, UserCustomerService>((sp, client) =>
 {

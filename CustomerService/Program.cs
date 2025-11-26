@@ -136,7 +136,6 @@ builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<JwtAuthService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
-
 builder.Services.AddScoped<ICustomerAuthService, CustomerAuthService>();
 builder.Services.AddScoped<IUserCustomerService, UserCustomerService>();
 

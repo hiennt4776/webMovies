@@ -38,5 +38,38 @@ namespace CustomerService.Controllers
             var bytes = System.IO.File.ReadAllBytes(path);
             return File(bytes, "image/png");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMovies()
+        {
+            var movies = await _movieService.GetMoviesAsync();
+            return Ok(movies);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetMovie(int id)
+        {
+            var movie = await _movieService.GetMovieByIdAsync(id);
+            if (movie == null) return NotFound();
+            return Ok(movie);
+        }
+
+        [HttpGet("{id}/file/{fileType}")]
+        public async Task<IActionResult> GetMovieFile(int id, string fileType)
+        {
+            var bytes = await _movieService.GetMovieFileAsync(id, fileType);
+            if (bytes == null) return NotFound();
+
+            var contentType = fileType.ToLower() switch
+            {
+                "poster" => "image/png",
+                "trailer" => "video/mp4",
+                "movies" => "video/mp4",
+                "subtitle" => "text/vtt",
+                _ => "application/octet-stream"
+            };
+
+            return File(bytes, contentType);
+        }
     }
 }

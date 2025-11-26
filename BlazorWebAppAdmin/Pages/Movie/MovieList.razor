@@ -1,0 +1,137 @@
+﻿@page "/movies"
+@using BlazorWebAppAdmin.Services
+@using helperMovies.Constants
+@inject IMovieService MovieService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="Movie"
+                 BreadcrumbCurrent="List" />
+
+<h3>Movies</h3>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <input class="form-control" placeholder="Search by title..." @bind="search.Keyword" @bind:event="oninput" />
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-primary" @onclick="LoadData">Search</button>
+    </div>
+</div>
+@if (pagedResult == null)
+{
+    <div class="alert alert-info">Loading data...</div>
+}
+else
+{
+        <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Director</th>
+                    <th>Release</th>
+                    <th>Budget</th>
+                    <th>Box Office</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var m in pagedResult.Items)
+                {
+                    <tr>
+                        <td>@m.Title</td>
+                        <td>@m.Director</td>
+                        <td>@m.ReleaseDate?.ToShortDateString()</td>
+                        <td>@m.Budget</td>
+                        <td>@m.BoxOffice</td>
+                        <td>
+                            <button class="btn btn-sm btn-info" @onclick="() => UpdateMovieFiles(m.Id)">File</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <button class="btn btn-outline-secondary" @onclick="PrevPage" disabled="@(!CanPrev)">
+            <i class="bi bi-chevron-left"></i> Previous
+        </button>
+
+        <span>Page @search.PageNumber of @TotalPages</span>
+
+        <button class="btn btn-outline-secondary" @onclick="NextPage" disabled="@(!CanNext)">
+            Next <i class="bi bi-chevron-right"></i>
+        </button>
+    </div>
+}
+
+
+
+@code {
+    private PagedResult<MovieViewModel>? pagedResult;
+    private MovieSearchViewModel search = new(); 
+    private int page = 1;
+    private int pageSize = 10;
+    private int totalCount = 0;
+
+
+    private int TotalPages => (int)Math.Ceiling((double)totalCount / search.PageSize);
+    private bool CanPrev => search.PageNumber > 1;
+    private bool CanNext => search.PageNumber < TotalPages;
+
+
+    private MovieDetailModal? modal;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        pagedResult = await MovieService.GetMoviesAsync(search);
+        totalCount = pagedResult.TotalCount;
+    }
+
+    private async Task Search()
+    {
+        page = 1;
+        await LoadData();
+    }
+
+    private async Task OnPageChanged(int newPage)
+    {
+        page = newPage;
+        await LoadData();
+    }
+
+    private void UpdateMovieFiles(int id)
+    {
+        Navigation.NavigateTo($"/upload-movie-file/{id}");
+    }
+
+    private async Task Reload() => await LoadData();
+
+    private async Task PrevPage()
+    {
+        if (CanPrev)
+        {
+            search.PageNumber--;
+            await LoadData();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (CanNext)
+        {
+            search.PageNumber++;
+            await LoadData();
+        }
+    }
+
+
+    }

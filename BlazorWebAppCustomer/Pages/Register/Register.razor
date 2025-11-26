@@ -1,6 +1,8 @@
 ﻿@page "/register"
 @using BlazorWebAppCustomer.Services
 @using helperMovies.ViewModel
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
 @inject IUserCustomerService UserCustomerService
 @inject NavigationManager Navigation
 @inject ILogger<Register> Logger

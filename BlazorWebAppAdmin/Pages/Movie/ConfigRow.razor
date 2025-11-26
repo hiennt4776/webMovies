@@ -1,0 +1,27 @@
+﻿<div class="row mb-3">
+    <div class="col-2 fw-bold">@Label:</div>
+    <div class="col-6">
+        @if (!string.IsNullOrEmpty(FileUrl))
+        {
+            <a href="@FileUrl" target="_blank">@FileUrl</a>
+        }
+        else
+        {
+            <i>Chưa có file</i>
+        }
+    </div>
+    <div class="col-4">
+        <InputFile OnChange="OnChange" />
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string? FileUrl { get; set; }
+    [Parameter] public EventCallback<IBrowserFile> OnFileSelected { get; set; }
+
+    async Task OnChange(InputFileChangeEventArgs e)
+    {
+        await OnFileSelected.InvokeAsync(e.File);
+    }
+}

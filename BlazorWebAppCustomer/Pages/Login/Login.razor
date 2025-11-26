@@ -8,18 +8,15 @@
 @inject NavigationManager NavigationManager
 @using System.Text.Json
 <!-- Hero Section -->
-<header class="hero-section d-flex align-items-center text-center text-white">
-    <div class="container">
-        <h1 class="fw-bold">Login</h1>
-        <p class="lead">Access your Movie Hub account and enjoy your favorite films.</p>
-    </div>
-</header>
+
+
+<HeroSection Title="Login" Subtitle="Access your Movie Hub account and enjoy your favorite films." />
 
 <!-- Login Form -->
 <section class="container d-flex justify-content-center align-items-center my-5">
     <div class="card glass-card p-4 shadow-lg" style="max-width: 400px; width: 100%;">
         <h3 class="text-center mb-3">Welcome Back</h3>
-       @*  <form>
+        @*  <form>
             <div class="mb-3">
                 <label for="loginEmail" class="form-label">Email</label>
                 <div class="input-group">
@@ -86,25 +83,32 @@
     {
         // Call UserService để login
         LoginResponseViewModel loginResponseViewModel = await UserCustomerService.LoginAsync(loginRequestViewModel);
-
-        if (!string.IsNullOrEmpty(loginResponseViewModel.Token))
+        try
         {
+            if (!string.IsNullOrEmpty(loginResponseViewModel.Token))
+            {
 
-            await LocalStorageService.SetItemAsync("token", loginResponseViewModel.Token);
-            await LocalStorageService.SetItemAsync("fullName", loginResponseViewModel.FullName);
-            await LocalStorageService.SetItemAsync("email", loginResponseViewModel.Email);
-            // Show live message
-        
+                await LocalStorageService.SetItemAsync("token", loginResponseViewModel.Token);
+                await LocalStorageService.SetItemAsync("fullName", loginResponseViewModel.FullName);
+                await LocalStorageService.SetItemAsync("email", loginResponseViewModel.Email);
+                // Show live message
 
-            System.Diagnostics.Debug.WriteLine("Login attempt with: " + JsonSerializer.Serialize(loginResponseViewModel));
-            // Điều hướng
-            NavigationManager.NavigateTo("/index", forceLoad: true);
+
+                System.Diagnostics.Debug.WriteLine("Login attempt with: " + JsonSerializer.Serialize(loginResponseViewModel));
+                // Điều hướng
+                NavigationManager.NavigateTo("/index", forceLoad: true);
+            }
+            else
+            {
+                message = "Login failed!";
+
+            }
         }
-        else
+        catch
         {
             message = "Login failed!";
-
         }
+
     }
 
     //LoginRequestViewModel

@@ -1,0 +1,104 @@
+﻿
+
+
+@page "/upload-movie-file/{CurrentMovieId:int}"
+@using BlazorWebAppAdmin.Services
+@inject IMovieFileService MovieFileService
+
+<h3>Cấu hình file cho phim</h3>
+
+@if (CurrentMovieId == 0)
+{
+    <p class="text-danger"><b>Hãy chọn phim từ danh sách.</b></p>
+}
+else
+{
+    <div class="card p-3">
+
+        <h5>Phim ID: @CurrentMovieId</h5>
+
+        <div class="mb-3">
+            <label class="form-label">Loại file</label>
+            <select class="form-select" @bind="SelectedType">
+                <option value="@FileTypeMovieConstant.Poster">Poster</option>
+                <option value="@FileTypeMovieConstant.Trailer">Trailer</option>
+                <option value="@FileTypeMovieConstant.Movie">Movie</option>
+                <option value="@FileTypeMovieConstant.Subtitle">Subtitle</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Chọn file</label>
+            <InputFile OnChange="SelectFile" />
+            @if (SelectedFile != null)
+            {
+                <p class="mt-2"><b>Đã chọn:</b> @SelectedFile.Name</p>
+            }
+        </div>
+
+        <button class="btn btn-primary" @onclick="SaveFile" disabled="@(!CanSave)">
+            Lưu
+        </button>
+
+        @if (IsSaving)
+        {
+            <p class="text-info mt-2"><em>Đang xử lý...</em></p>
+        }
+
+        @if (!string.IsNullOrEmpty(Message))
+        {
+            <div class="alert alert-info mt-2">@Message</div>
+        }
+    </div>
+}
+
+@code {
+    // Movie ID nhận từ danh sách phim
+    [Parameter] public int CurrentMovieId { get; set; } = 0;
+
+    private string SelectedType { get; set; } = FileTypeMovieConstant.Poster;
+
+    private IBrowserFile? SelectedFile;
+    private bool IsSaving = false;
+    private string? Message;
+
+    private bool CanSave => CurrentMovieId > 0 && SelectedFile != null;
+
+
+    private void SelectFile(InputFileChangeEventArgs e)
+    {
+        SelectedFile = e.File;
+        Message = null;
+    }
+
+    private async Task SaveFile()
+    {
+        if (!CanSave)
+        {
+            Message = "Vui lòng chọn file.";
+            return;
+        }
+
+        try
+        {
+            IsSaving = true;
+            Message = null;
+
+            await MovieFileService.UploadAsync(
+                CurrentMovieId,
+                SelectedFile!,
+                SelectedType
+            );
+
+            Message = $"Lưu file thành công cho phim ID {CurrentMovieId}.";
+        }
+        catch (Exception ex)
+        {
+            Message = $"Lỗi lưu file: {ex.Message}";
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+}

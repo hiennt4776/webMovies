@@ -23,6 +23,13 @@ builder.Services.AddBlazoredLocalStorage();
 
 ////////////
 //// ApiSettings
+///
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 1024 * 1024 * 500; // 500MB
+});
+
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 
 // HttpClient với BaseAddress động
@@ -57,7 +64,8 @@ builder.Services.AddScoped<IPartnerService, PartnerService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IPartnerService, PartnerService>();
-builder.Services.AddScoped<IContractService, ContractService>();
+builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IMovieFileService, MovieFileService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 
 
