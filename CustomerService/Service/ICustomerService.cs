@@ -23,7 +23,7 @@ namespace CustomerService.Service
         Task<CustomerDTO> GetProfileAsync(string username);
 
     }
-    public class CustomerService : ICustomerService
+    public class CustomerDetailService : ICustomerService
     {
         private readonly dbMoviesContext _context;
         public readonly IUserCustomerRepository _userCustomerRepository;
@@ -31,7 +31,7 @@ namespace CustomerService.Service
         private readonly IUnitOfWork _dbu;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CustomerService(dbMoviesContext context,
+        public CustomerDetailService(dbMoviesContext context,
             IUserCustomerRepository userCustomerRepository,
             ICustomerRepository CustomerRepository,
             IUnitOfWork dbu

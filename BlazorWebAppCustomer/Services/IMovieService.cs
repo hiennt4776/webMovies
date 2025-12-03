@@ -1,6 +1,6 @@
 using Blazored.LocalStorage;
 using BlazorWebAppCustomer.Data;
-using helperMovies.DTO;
+using dbMovies.Models;
 using helperMovies.ViewModel;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -23,6 +23,8 @@ namespace BlazorWebAppCustomer.Services
         Task<List<MovieViewModel>> GetMoviesAsync();
         Task<MovieViewModel> GetMovieAsync(int movieId);
         string GetMovieFileUrl(int movieId, string type);
+        Task<PagedResult<MovieViewModel>> SearchMoviesAsync(MovieQueryViewModel query);
+
     }
     
 
@@ -48,7 +50,7 @@ namespace BlazorWebAppCustomer.Services
         public async Task<List<MovieViewModel>> GetRandomTop5MoviesAsync()
         {
 
-            var url = $"{_settings.BaseUrl}/UserCustomer/random-top5";
+            var url = $"{_settings.BaseUrl}UserCustomer/random-top5";
             return await _httpClient.GetFromJsonAsync<List<MovieViewModel>>(url) ?? new List<MovieViewModel>();
 
             //return await _httpClient.GetFromJsonAsync<List<MovieViewModel>>("/api/Movie/random-top5")
@@ -64,19 +66,26 @@ namespace BlazorWebAppCustomer.Services
 
         public async Task<List<MovieViewModel>> GetMoviesAsync()
         {
-            var url = $"{_settings.BaseUrl}/movies";
+            var url = $"{_settings.BaseUrl}movie";
             return await _httpClient.GetFromJsonAsync<List<MovieViewModel>>(url);
         }
 
         public async Task<MovieViewModel> GetMovieAsync(int movieId)
         {
-            var url = $"{_settings.BaseUrl}/movies/{movieId}";
+            var url = $"{_settings.BaseUrl}movie/{movieId}";
             return await _httpClient.GetFromJsonAsync<MovieViewModel>(url);
         }
 
         public string GetMovieFileUrl(int movieId, string type)
         {
-            return $"{_settings.BaseUrl}/movies/{movieId}/file/{type}";
+            return $"{_settings.BaseUrl}movie/{movieId}/file/{type}";
+        }
+        public async Task<PagedResult<MovieViewModel>> SearchMoviesAsync(MovieQueryViewModel query)
+        {
+            var url = $"{_settings.BaseUrl}movie/search";
+            var response = await _httpClient.PostAsJsonAsync(url, query);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<PagedResult<MovieViewModel>>();
         }
 
 

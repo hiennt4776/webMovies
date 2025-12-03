@@ -1,0 +1,95 @@
+﻿@page "/watch/{MovieId:int}"
+@using BlazorWebAppCustomer.Services
+@using helperMovies.ViewModel
+@using Microsoft.JSInterop
+
+@inject IMovieService MovieService
+@inject WatchHistoryClientService WatchHistoryClient
+@inject IJSRuntime JS
+
+<h2 class="mb-3 text-primary">Xem phim</h2>
+
+@if (IsLoading)
+{
+    <p>Đang tải...</p>
+}
+else if (movie == null)
+{
+    <p class="text-danger">Không tìm thấy phim</p>
+}
+else
+{
+    <div class="container py-5" style="margin-top:80px;">
+        <h1 class="text-center mb-2">🎬 @movie.Title</h1>
+        <div class="text-center movie-tags mb-4">
+            <span>@movie.CategoryName</span>
+        </div>
+
+        <div class="video-container mb-5">
+            <video @ref="videoRef" controls poster="@PosterUrl" width="100%">
+                <source src="@VideoUrl" type="video/mp4" />
+                @if (!string.IsNullOrEmpty(SubtitleUrl))
+                {
+                    <track src="@SubtitleUrl" kind="subtitles" default />
+                }
+                Your browser does not support video.
+            </video>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int MovieId { get; set; }
+
+    private MovieViewModel? movie;
+    private ElementReference videoRef;
+
+    private string VideoUrl { get; set; } = string.Empty;
+    private string SubtitleUrl { get; set; } = string.Empty;
+    private string PosterUrl { get; set; } = string.Empty;
+
+    private bool IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            movie = await MovieService.GetMovieAsync(MovieId);
+
+            if (movie != null)
+            {
+                VideoUrl = MovieService.GetMovieFileUrl(MovieId, "movies");
+                SubtitleUrl = MovieService.GetMovieFileUrl(MovieId, "subtitle");
+                PosterUrl = MovieService.GetMovieFileUrl(MovieId, "poster");
+            }
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && movie != null)
+        {
+            // Lấy thời gian đã xem trước đó
+            var resumeTime = await WatchHistoryClient.GetWatchTimeAsync(MovieId);
+
+            if (resumeTime > 5)
+            {
+                await JS.InvokeVoidAsync("setVideoTime", videoRef, resumeTime);
+            }
+
+            // Khởi tạo JS watcher để lưu thời gian realtime
+            await JS.InvokeVoidAsync("initVideoWatcher", videoRef, DotNetObjectReference.Create(this));
+        }
+    }
+
+    // JS sẽ gọi vào để lưu thời gian
+    [JSInvokable]
+    public async Task SaveTime(decimal current)
+    {
+        await WatchHistoryClient.SaveWatchTimeAsync(MovieId, current);
+    }
+}

@@ -24,4 +24,6 @@ public partial class UserCustomer
     public string ReasonLock { get; set; }
 
     public virtual Customer Customer { get; set; }
+
+    public virtual ICollection<WatchHistory> WatchHistories { get; set; } = new List<WatchHistory>();
 }

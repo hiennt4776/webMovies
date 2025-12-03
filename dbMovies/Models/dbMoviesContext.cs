@@ -70,11 +70,7 @@ public partial class dbMoviesContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__Contract__3214EC07A18760D6");
 
-            entity.HasIndex(e => e.ContractNumber, "UQ__Contract__C51D43DA97529F95").IsUnique();
-
-            entity.Property(e => e.ContractNumber)
-                .IsRequired()
-                .HasMaxLength(50);
+            entity.Property(e => e.ContractNumber).HasMaxLength(50);
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.PartnerId).HasColumnName("PartnerID");
             entity.Property(e => e.TotalValue).HasColumnType("decimal(18, 2)");
@@ -366,19 +362,17 @@ public partial class dbMoviesContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__WatchHis__3214EC078FD13012");
 
-            entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
-            entity.Property(e => e.LastPosition).HasDefaultValue(0);
-            entity.Property(e => e.LastWatched).HasColumnType("datetime");
+            entity.Property(e => e.CurrentTime).HasColumnType("decimal(18, 0)");
             entity.Property(e => e.MovieId).HasColumnName("MovieID");
-            entity.Property(e => e.WatchStatus).HasMaxLength(20);
-
-            entity.HasOne(d => d.Customer).WithMany(p => p.WatchHistories)
-                .HasForeignKey(d => d.CustomerId)
-                .HasConstraintName("FK_WatchHistory_Customer");
+            entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Movie).WithMany(p => p.WatchHistories)
                 .HasForeignKey(d => d.MovieId)
                 .HasConstraintName("FK_WatchHistory_Movies");
+
+            entity.HasOne(d => d.User).WithMany(p => p.WatchHistories)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_WatchHistory_UserCustomers");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -39,7 +39,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Nhập token vào theo định dạng: Bearer {token}"
+        Description = "'Bearer {token}' Authorization"
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -132,12 +132,20 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IUserCustomerRepository, UserCustomerRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
+builder.Services.AddScoped<IWatchHistoryRepository, WatchHistoryRepository> ();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 builder.Services.AddScoped<JwtAuthService>();
+
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<ICustomerAuthService, CustomerAuthService>();
+builder.Services.AddScoped<ICustomerService, CustomerDetailService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IUserCustomerService, UserCustomerService>();
+builder.Services.AddScoped<IWatchHistoryService, WatchHistoryService>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 // ========== BUILD APP ==========
 var app = builder.Build();
@@ -152,18 +160,50 @@ if (app.Environment.IsDevelopment())
 }
 
 // === Middleware log request ===
+//app.Use(async (context, next) =>
+//{
+//    var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+//    Console.WriteLine("==== Incoming Request ====");
+//    Console.WriteLine($"Method: {context.Request.Method}");
+//    Console.WriteLine($"Path: {context.Request.Path}");
+//    Console.WriteLine($"QueryString: {context.Request.QueryString}");
+//    Console.WriteLine($"Authorization: {authHeader ?? "No token"}");
+
+//    if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
+//    {
+//        var tokenStr = authHeader.Replace("Bearer ", "");
+//        try
+//        {
+//            var handler = new JwtSecurityTokenHandler();
+//            var jwtToken = handler.ReadJwtToken(tokenStr);
+//            Console.WriteLine("Decoded JWT Claims:");
+//            foreach (var claim in jwtToken.Claims)
+//            {
+//                Console.WriteLine($" - {claim.Type}: {claim.Value}");
+//            }
+//        }
+//        catch (Exception ex)
+//        {
+//            Console.WriteLine("Failed to decode JWT: " + ex.Message);
+//        }
+//    }
+
+//    await next.Invoke();
+//});
+
 app.Use(async (context, next) =>
 {
+
     var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
     Console.WriteLine("==== Incoming Request ====");
     Console.WriteLine($"Method: {context.Request.Method}");
     Console.WriteLine($"Path: {context.Request.Path}");
-    Console.WriteLine($"QueryString: {context.Request.QueryString}");
+    Console.WriteLine("QueryString: " + context.Request.QueryString);
     Console.WriteLine($"Authorization: {authHeader ?? "No token"}");
 
-    if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
+    if (context.Request.Headers.TryGetValue("Authorization", out var stringsauthHeader))
     {
-        var tokenStr = authHeader.Replace("Bearer ", "");
+        var tokenStr = stringsauthHeader.ToString().Replace("Bearer ", "");
         try
         {
             var handler = new JwtSecurityTokenHandler();
@@ -171,7 +211,7 @@ app.Use(async (context, next) =>
             Console.WriteLine("Decoded JWT Claims:");
             foreach (var claim in jwtToken.Claims)
             {
-                Console.WriteLine($" - {claim.Type}: {claim.Value}");
+                Console.WriteLine($"{claim.Type}: {claim.Value}");
             }
         }
         catch (Exception ex)
@@ -180,8 +220,20 @@ app.Use(async (context, next) =>
         }
     }
 
-    await next.Invoke();
+    // Log body nếu có
+    if (context.Request.ContentLength > 0)
+    {
+        context.Request.EnableBuffering(); // cho phép đọc body nhiều lần
+        using var reader = new StreamReader(context.Request.Body, leaveOpen: true);
+        var body = await reader.ReadToEndAsync();
+        context.Request.Body.Position = 0; // reset stream
+        Console.WriteLine("Body:");
+        Console.WriteLine(body);
+    }
+
+    await next.Invoke(); // gọi tiếp middleware / controller
 });
+
 
 // HTTPS redirect
 app.UseHttpsRedirection();
@@ -217,9 +269,9 @@ using (var scope = app.Services.CreateScope())
 
 // Routing
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
-// Map Controllers
 app.MapControllers();
-
-
 app.Run();
+

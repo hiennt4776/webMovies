@@ -1,0 +1,91 @@
+﻿@page "/moviepage/{id:int}"
+@using BlazorWebAppCustomer.Services
+@using helperMovies.ViewModel
+@using Microsoft.JSInterop
+@inject NavigationManager NavigationManager
+@inject IMovieService MovieService
+@inject IJSRuntime JS
+
+@using System.Text.Json
+
+<HeroSection Title="Create Account" Subtitle="Join Movie Hub and explore endless entertainment." />
+
+
+
+
+
+@if (movie == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+
+
+
+    <!-- Film Detail -->
+    <section class="container my-5 pt-5">
+        <div class="row glass-card p-4">
+            <div class="col-md-4">
+                <img id="filmPoster" src="@MovieService.GetMovieFileUrl(movie.Id, "poster")"  alt="Film Poster" class="img-fluid rounded shadow">
+            </div>
+            <div class="col-md-8">
+                <h2 id="filmTitle">@movie.Title</h2>
+                <p><strong>Genre:</strong> <span id="filmGenre">@movie.CategoryName</span></p>
+                <p><strong>Release Date:</strong> <span id="filmRelease">@movie.ReleaseDate</span></p>
+                @*  <p><strong>Duration:</strong> 2h 15m</p>
+                <p><strong>Price:</strong> <span id="filmPrice">$9.99</span></p>
+                <div class="mb-3">
+                    <span class="star">★</span><span class="star">★</span>
+                    <span class="star">★</span><span class="star">☆</span>
+                    <span class="star">☆</span><span>(3/5)</span>
+                </div> *@
+                <p id="filmDescription">
+                    @movie.Description
+                </p>
+                <!-- <a href="watch.html" class="btn btn-danger me-2">▶ Watch Film</a>
+                <button class="btn btn-warning me-2" data-bs-toggle="modal" data-bs-target="#trailerModal">🎬 Watch Trailer</button>
+                      <button class="btn btn-success" id="addToCartBtn">🛒 Add to Cart</button>
+                      <button class="btn btn-blue" id="rentBtn">💳 Rent</button> -->
+                <button class="btn btn-primary btn-toggle" @onclick="() => GoToWatch(movie.Id)">▶ Watch Film</button>
+                <button class="btn btn-warning">💳 Rent Film</button>
+                <button class="btn btn-success">🛒 Buy Film</button>
+                <button class="btn btn-outline-light">❤️ Add to Favorite</button>
+            </div>
+            @if (movie.HasTrailer)
+            {
+                <div class="col-md-12" style="margin-top:25px;">
+                    <video controls>
+                        <source src="@MovieService.GetMovieFileUrl(movie.Id, "trailer")" type="video/mp4" />
+                        Trình duyệt không hỗ trợ video.
+                    </video>
+                </div>
+            }
+        </div>
+        
+@*          <div class="modal fade" id="trailerModal"> *@
+
+       
+    
+    </section>
+
+
+    
+
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    MovieViewModel? movie;
+
+    protected override async Task OnInitializedAsync()
+    {
+        movie = await MovieService.GetMovieAsync(id);
+    }
+
+    void GoToWatch(int movieId)
+    {
+        NavigationManager.NavigateTo($"/watch/{movieId}");
+    }
+}

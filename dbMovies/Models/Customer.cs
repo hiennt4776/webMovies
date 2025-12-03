@@ -28,6 +28,4 @@ public partial class Customer
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 
     public virtual ICollection<UserCustomer> UserCustomers { get; set; } = new List<UserCustomer>();
-
-    public virtual ICollection<WatchHistory> WatchHistories { get; set; } = new List<WatchHistory>();
 }

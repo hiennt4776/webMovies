@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 
@@ -68,6 +69,7 @@ namespace BlazorWebAppCustomer.Services
             response.EnsureSuccessStatusCode();
             return response;
         }
+
 
         public async Task<HttpResponseMessage> PostFormAsync(string url, HttpContent content)
         {

@@ -53,5 +53,19 @@ namespace helperMovies.ViewModel
         public bool Success { get; set; }
         public string Message { get; set; } = "";
     }
-
+        public class CustomerViewModel
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+        [JsonPropertyName("fullName")]
+        public string FullName { get; set; }
+        [JsonPropertyName("email")]
+        public string Email { get; set; }
+        [JsonPropertyName("phoneNumber")]
+        public string Phone { get; set; }
+        [JsonPropertyName("address")]
+        public string Address { get; set; }
+        [JsonPropertyName("dateOfBirth")]
+        public DateOnly? DateOfBirth { get; set; }
+    }
 }

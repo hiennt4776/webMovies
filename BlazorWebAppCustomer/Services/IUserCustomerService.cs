@@ -51,7 +51,7 @@ namespace BlazorWebAppCustomer.Services
 
             try
             {
-                var url = $"{_settings.BaseUrl}/UserCustomer/register";
+                var url = $"{_settings.BaseUrl}UserCustomer/register";
                 var response = await _httpClient.PostAsJsonAsync(url, dto);
 
                 var result = await response.Content.ReadFromJsonAsync<ApiResponse>();
@@ -77,7 +77,7 @@ namespace BlazorWebAppCustomer.Services
         public async Task<LoginResponseViewModel> LoginAsync(LoginRequestViewModel loginRequestViewModel)
         {
            
-                var url = $"{_settings.BaseUrl}/UserCustomer/login";
+                var url = $"{_settings.BaseUrl}UserCustomer/login";
 
                 //string url = "Category/create";
                 //var response = await _apiClient.PostJsonAsync(url, dto);

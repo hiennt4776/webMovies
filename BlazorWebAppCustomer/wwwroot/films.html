@@ -15,19 +15,18 @@
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-  <div class="container-fluid">
+<div class="container-fluid">
     <a class="navbar-brand fw-bold text-danger" href="#">🎬 Movie Hub</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarNav">
+    <!-- <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item"><a class="nav-link active" href="#trending">Trending</a></li>
         <li class="nav-item"><a class="nav-link" href="#new">New</a></li>
         <li class="nav-item"><a class="nav-link" href="#top">Top Rated</a></li>
 
-        <!-- Dropdown -->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown">
             Categories <i class="fa-solid fa-chevron-down"></i>
@@ -49,11 +48,12 @@
         <button class="btn btn-success rounded-pill me-2">Register</button>
         <button class="btn btn-danger rounded-pill">Login</button>
       </div>
-    </div>
+    </div> -->
   </div>
+
 </nav>
 
-
+ 
 <!-- Offcanvas -->
 <div class="offcanvas offcanvas-start bg-dark text-light" id="offcanvasNav">
   <div class="offcanvas-header">
@@ -82,9 +82,50 @@
 
   <!-- Films Tabs Content -->
   <div class="tab-content" id="genreTabsContent">
+    <!-- Search & Filter Section -->
+<!-- Search & Filter Section -->
+
+
+ <section class="container filter-bar">
+  <div class="row g-2 align-items-center">
+
+    <div class="col-md-6">
+         <label class="filter-label">Search</label>
+      <input type="text" class="form-control filter-input" placeholder="Search films...">
+    </div>
+
+    <div class="col-md-2">
+        <label class="filter-label">Genre</label>
+      <select class="form-select filter-input">
+        <option selected>Genre</option>
+        <option>Action</option>
+        <option>Drama</option>
+        <option>Comedy</option>
+        <option>Sci-Fi</option>
+      </select>
+    </div>
+
+    <div class="col-md-2">
+       <label class="filter-label">Year</label>
+      <select class="form-select filter-input">
+        <option selected>Year</option>
+        <option>2025</option>
+        <option>2024</option>
+        <option>2023</option>
+        <option>2022</option>
+      </select>
+    </div>
+
+    <div class="col-md-2">
+       <label class="filter-label">&nbsp;</label> <!-- giữ thẳng hàng -->
+      <button class="btn btn-danger w-100 filter-btn">🔍 Search</button>
+    </div>
+
+  </div>
+</section>
 
 <!-- Genre Filter -->
-<section class="container my-5">
+<section class="container">
   <ul class="nav nav-pills justify-content-center mb-4" id="genreTabs" role="tablist">
     <li class="nav-item"><button class="nav-link active" id="all-tab" data-bs-toggle="pill" data-bs-target="#all" type="button">All</button></li>
     <li class="nav-item"><button class="nav-link" id="action-tab" data-bs-toggle="pill" data-bs-target="#action" type="button">Action</button></li>
@@ -272,6 +313,46 @@
     <!-- Ở đây mình để All chứa đủ 10 phim, còn các tab kia bạn chỉ cần copy phim thuộc genre đó -->
     
   </div>
+
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+
+    <!-- First page -->
+    <li class="page-item">
+      <button class="page-link" onclick="location.href='all-films-page1.html'">1</button>
+    </li>
+
+    <!-- Left Ellipsis -->
+    <li class="page-item disabled">
+      <button class="page-link">…</button>
+    </li>
+
+    <!-- Middle pages -->
+    <li class="page-item">
+      <button class="page-link" onclick="location.href='all-films-page5.html'">5</button>
+    </li>
+
+    <li class="page-item active">
+      <button class="page-link">6</button>
+    </li>
+
+    <li class="page-item">
+      <button class="page-link" onclick="location.href='all-films-page7.html'">7</button>
+    </li>
+
+    <!-- Right Ellipsis -->
+    <li class="page-item disabled">
+      <button class="page-link">…</button>
+    </li>
+
+    <!-- Last page -->
+    <li class="page-item">
+      <button class="page-link" onclick="location.href='all-films-page20.html'">20</button>
+    </li>
+
+  </ul>
+</nav>
+
 </section>
 
 

@@ -24,6 +24,7 @@ namespace CustomerService.Service
         Task<List<MovieDTO>> GetMoviesAsync();
         Task<MovieDTO> GetMovieByIdAsync(int movieId);
         Task<byte[]> GetMovieFileAsync(int movieId, string fileType);
+        Task<PagedResult<MovieDTO>> SearchMoviesAsync(MovieQueryDTO query);
     }
 
     public class MovieService : IMovieService
@@ -33,17 +34,54 @@ namespace CustomerService.Service
         public IMovieRepository _moviesRepository;
         public IUnitOfWork _dbu;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly FileService _fileService;
+        private readonly IFileService _fileService;
 
-        public MovieService(dbMoviesContext context, IMovieRepository moviesRepository, IUnitOfWork dbu,  IHttpContextAccessor httpContextAccessor)
+        public MovieService(dbMoviesContext context, IMovieRepository moviesRepository, IUnitOfWork dbu,  IHttpContextAccessor httpContextAccessor, IFileService fileService)
         {
             _context = context;
             _moviesRepository = moviesRepository;
             _dbu = dbu;
             _httpContextAccessor = httpContextAccessor;
+            _fileService = fileService;  // <-- FIXED
         }
 
-      
+        public async Task<PagedResult<MovieDTO>> SearchMoviesAsync(MovieQueryDTO query)
+        {
+            var q = _context.Movies
+                .Include(m => m.Category)
+                               .Where(m => m.IsDeleted == false)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query.Keyword))
+                q = q.Where(m => m.Title.Contains(query.Keyword));
+
+            if (query.CategoryId.HasValue)
+                q = q.Where(m => m.CategoryId == query.CategoryId);
+
+            // filter theo YEAR (DateOnly)
+            if (query.ReleaseYear.HasValue)
+                q = q.Where(m => m.ReleaseDate.Value.Year == query.ReleaseYear);
+
+            var totalItems = await q.CountAsync();
+
+            var items = await q
+                .OrderBy(m => m.Title)
+                .Skip((query.Page - 1) * query.PageSize)
+                .Take(query.PageSize)
+                .ToListAsync();
+
+            var dtos = items.Select(m => Map(m)).ToList();
+
+            return new PagedResult<MovieDTO>
+            {
+                Items = dtos,
+                TotalCount = totalItems,
+                PageNumber = query.Page,
+                PageSize = query.PageSize
+            };
+        }
+
+
 
         public async Task<List<MovieDTO>> GetRandomTop5FilmsAsync()
         {
@@ -135,6 +173,35 @@ namespace CustomerService.Service
             var bytes = _fileService.GetFileBytes(file.FilePath);
             return bytes;
         }
+
+        public string GetFileUrl(int movieId, string fileType)
+        {
+            return $"api/movie/file/{movieId}/{fileType}";
+        }
+
+
+        private MovieDTO Map(Movie m) =>
+          new MovieDTO
+          {
+              Id = m.Id,
+              Title = m.Title,
+              Director = m.Director ?? "",
+              ReleaseDate = m.ReleaseDate,
+              LanguageList = m.LanguageList ?? "",
+              Country = m.Country ?? "",
+              Status = m.Status ?? "",
+              Budget = m.Budget,
+              BoxOffice = m.BoxOffice,
+              Files = m.MovieFiles?.Where(f => f.IsDeleted == false).Select(f => new MovieFileDTO
+              {
+                  Id = f.Id,
+                  MovieId = f.MovieId,
+                  FileType = f.FileType,
+                  FileName = f.FileName,
+                  FilePath = f.FilePath
+              }).ToList() ?? new List<MovieFileDTO>()
+          };
+
 
     }
 }

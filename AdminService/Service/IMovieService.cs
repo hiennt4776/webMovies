@@ -35,7 +35,7 @@ namespace AdminService.Service
         private readonly JwtAuthService _jwtAuthService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public bool IsDelete { get; private set; }
+
 
         public MovieService(dbMoviesContext context, IMovieRepository movieRepository,
                         IAuthService authService,

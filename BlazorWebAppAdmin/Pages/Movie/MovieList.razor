@@ -48,6 +48,9 @@ else
                         <td>@m.Budget</td>
                         <td>@m.BoxOffice</td>
                         <td>
+                            <button class="btn btn-sm btn-success" @onclick="() => ManagePricing(m.Id)">
+                                Manage Pricing
+                            </button>
                             <button class="btn btn-sm btn-info" @onclick="() => UpdateMovieFiles(m.Id)">File</button>
                         </td>
                     </tr>
@@ -111,6 +114,11 @@ else
     private void UpdateMovieFiles(int id)
     {
         Navigation.NavigateTo($"/upload-movie-file/{id}");
+    }
+
+    private void ManagePricing(int movieId)
+    {
+        Navigation.NavigateTo($"/movie-pricing/{movieId}");
     }
 
     private async Task Reload() => await LoadData();

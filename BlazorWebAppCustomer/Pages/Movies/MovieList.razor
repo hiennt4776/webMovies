@@ -1,67 +1,288 @@
 ﻿@page "/movielist"
+
 @using BlazorWebAppCustomer.Services
 @using helperMovies.ViewModel
-@using Microsoft.JSInterop
-@inject IJSRuntime JS
-@inject Blazored.LocalStorage.ILocalStorageService LocalStorageService
-@inject IUserCustomerService UserCustomerService
-@inject IMovieService MovieService
 @inject NavigationManager NavigationManager
-@using System.Text.Json
-<!-- Hero Section -->
+@inject IMovieService MovieService
+@inject ICategoryService CategoryService
 
-<HeroSection Title="Create Account" Subtitle="Join Movie Hub and explore endless entertainment." />
 
-<h2 class="mb-3">Danh sách phim</h2>
 
-@if (movieList == null)
-{
-    <p>Đang tải danh sách phim...</p>
-}
-else if (movieList.Count == 0)
-{
-    <p>Không có phim nào.</p>
-}
-else
-{
-    <div class="movie-grid">
-        @foreach (var m in movieList)
-        {
-            <div class="movie-card" @onclick="() => GoToMovie(m.Id)">
-                <img src="@MovieService.GetMovieFileUrl(m.Id, "poster")"
-                     alt="@m.Title" />
+<!-- Hero -->
+<HeroSection Title="All Films" Subtitle="Browse our full collection of movies and discover your next favorite film." />
+  <!-- Films Tabs Content -->
+  <div class="tab-content" id="genreTabsContent">
+<!-- BỘ LỌC -->
+    <!-- Search & Filter Section -->
 
-                <div class="movie-title">@m.Title</div>
 
-                <div class="movie-badges">
-                    @if (m.HasTrailer)
+    <section class="container filter-bar">
+        <div class="row g-2 align-items-center">
+
+            <div class="col-md-6">
+                <label class="filter-label">Search</label>
+                <input type="text" class="form-control filter-input" placeholder="Search films..." @bind="query.Keyword"
+                       @bind:event="oninput" />
+            </div>
+
+            <div class="col-md-2">
+                <label class="filter-label">Genre</label>
+              
+
+                <select class="form-select filter-input"
+                        @bind="query.CategoryId">
+                    <option value="@((int?)null)">Genre</option>
+
+                    @if (categories != null && categories.Any())
                     {
-                        <span class="badge trailer">Trailer</span>
+                        @foreach (var c in categories)
+                        {
+                            <option value="@c.Id">@c.CategoryName</option>
+                        }
                     }
-                    @if (m.HasMovie)
+                </select>
+
+            </div>
+
+            <div class="col-md-2">
+                <label class="filter-label">Year</label>
+                <!-- Năm -->
+                <select class="form-select filter-input"
+                        @bind="query.ReleaseYear">
+                    <option value="@((int?)null)">Năm</option>
+
+                    @foreach (var y in years)
                     {
-                        <span class="badge movie">Full HD</span>
+                        <option value="@y">@y</option>
                     }
-                    @if (m.HasSubtitle)
+                </select>
+
+            </div>
+
+            <div class="col-md-2">
+                <label class="filter-label">&nbsp;</label> <!-- giữ thẳng hàng -->
+                <button class="btn btn-danger w-100 filter-btn" @onclick="Search">🔍 Search</button>
+            </div>
+
+        </div>
+    </section>
+
+<!-- DANH SÁCH PHIM -->
+<section class="container">
+
+      <div class="tab-content" id="genreTabsContent">
+
+    <!-- ALL -->
+    <div class="tab-pane fade show active" id="all">
+      <div class="row">
+                    @if (movies.Count == 0)
                     {
-                        <span class="badge subtitle">Vietsub</span>
+                        <p>Is Loading</p>
                     }
+                    else
+                    {
+                        @foreach (var m in movies)
+                        {
+
+                            <div class="col-md-3 mb-4">
+                                <div class="card glass-card film-card h-100 text-light" @onclick="() => GoToMovie(m.Id)">
+                                    <div class="film-img-wrapper">
+
+
+                                        <img src="@MovieService.GetMovieFileUrl(m.Id, "poster")" class="card-img-top movie-img" alt="@m.Title"  @onclick="() => GoToMovie(m.Id)"/>
+                                        <div class="film-overlay">
+                                        @*     <p class="mb-2">$12.99</p> *@
+                                          @*   <a href="film-detail.html" class="btn btn-danger rounded-pill">View Details</a> *@
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center" @onclick="() => GoToMovie(m.Id)">
+                                        <h5 class="card-title">@m.Title</h5>
+                                       @*  <span class="badge bg-danger">Action</span> *@
+                                    </div>
+                                </div>
+                            </div>
+
+                          @*   <div class="movie-card">
+                                <img src="@MovieService.GetMovieFileUrl(m.Id, "poster")"
+                                     alt="@m.Title" />
+
+                                <h3>@m.Title</h3>
+
+
+                                <div class="movie-badges">
+                                    @if (m.HasTrailer)
+                                    {
+                                        <span class="badge trailer">Trailer</span>
+                                    }
+                                    @if (m.HasMovie)
+                                    {
+                                        <span class="badge movie">Full HD</span>
+                                    }
+                                    @if (m.HasSubtitle)
+                                    {
+                                        <span class="badge subtitle">Vietsub</span>
+                                    }
+                                </div>
+                            </div> *@
+                        }
+                    }
+
+              
                 </div>
             </div>
+        </div>
+
+
+
+
+
+<!-- PHÂN TRANG -->
+@if (totalPages > 1)
+{
+  <ul class="pagination justify-content-center">
+
+                <li class="page-item">
+                        <button class="page-link"
+                            disabled="@(query.Page == 1)"
+                            @onclick="() => GoToPage(query.Page - 1)">
+                        &lt;
+                    </button>
+                </li>
+        <!-- Previous -->
+           
+
+        <!-- Trang 1 -->
+
+            <li class="page-item">
+                    <button class="page-link @(query.Page == 1 ? "active" : "")"
+                            @onclick="() => GoToPage(1)">
+                        1
+                    </button>
+
+                </li>
+        <!-- ... sau trang 1 -->
+        @if (query.Page > 3)
+        {
+                    <li class="page-item disabled">
+                        <button class="page-link">…</button>
+                    </li>
         }
-    </div>
+
+        <!-- Các trang giữa -->
+        @foreach (var p in GetPageNumbers())
+        {
+            if (p != 1 && p != totalPages)
+            {
+
+
+                        <li class="page-item">
+                           <button class="page-link @(query.Page == p ? "active" : "" )"
+                                    @onclick ="() => GoToPage(p)">
+                                @p
+                            </button>
+                        </li>
+
+                     
+                  
+              
+            }
+        }
+
+        <!-- ... trước trang cuối -->
+        @if (query.Page < totalPages - 2)
+        {
+                    <li class="page-item disabled">
+                        <button class="page-link">…</button>
+                    </li>
+        }
+
+        <!-- Trang cuối -->
+        @if (totalPages > 1)
+        {
+            
+                        <li class="page-item">
+                
+                    <button class="page-link @(query.Page == totalPages ? "active" : "")"
+                            @onclick="() => GoToPage(totalPages)">
+                        @totalPages
+                    </button>
+                    </li>
+
+        }
+
+        <!-- Next -->
+        
+                        <li class="page-item">
+                
+                    <button class="page-link"
+                disabled="@(query.Page == totalPages)"
+                @onclick="() => GoToPage(query.Page + 1)">
+                        &gt;
+        </button>
+                </li>
+
+            </ul>
 }
+    </section>
+</div>
 
 @code {
-    private List<MovieViewModel> movieList;
+    List<MovieViewModel> movies = new();
+    List<CategoryViewModel> categories = new();
+    List<int> years = new();
+
+    MovieQueryViewModel query = new MovieQueryViewModel();
+    int totalPages = 1;
 
     protected override async Task OnInitializedAsync()
     {
-        movieList = await MovieService.GetMoviesAsync();
+        // Load categories
+        categories = await CategoryService.GetCategoriesAsync();
+
+        // Tạo danh sách năm: từ 1990 -> năm hiện tại
+        int currentYear = DateTime.Now.Year;
+        years = Enumerable.Range(1990, currentYear - 1990 + 1)
+                          .Reverse()
+                          .ToList();
+
+        await LoadData();
     }
 
+    private List<int> GetPageNumbers()
+    {
+        List<int> pages = new();
+
+        // Trang hiện tại luôn xuất hiện + 2 trang xung quanh
+        int start = Math.Max(2, query.Page - 1);
+        int end = Math.Min(totalPages - 1, query.Page + 1);
+
+        for (int i = start; i <= end; i++)
+            pages.Add(i);
+
+        return pages;
+    }
+
+    private async Task LoadData()
+    {
+        var data = await MovieService.SearchMoviesAsync(query);
+
+        movies = data.Items.ToList();
+        totalPages = data.TotalPages;
+    }
+
+    private async Task Search()
+    {
+        query.Page = 1;
+        await LoadData();
+    }
+
+    private async Task GoToPage(int page)
+    {
+        query.Page = page;
+        await LoadData();
+    }
     void GoToMovie(int id)
     {
-        NavigationManager.NavigateTo($"/movie/{id}");
+        NavigationManager.NavigateTo($"/moviepage/{id}");
     }
 }

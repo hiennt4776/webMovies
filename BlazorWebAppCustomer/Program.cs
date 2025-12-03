@@ -43,6 +43,14 @@ builder.Services.AddHttpClient<IMovieService, MovieService>((sp, client) =>
     Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
 });
 
+builder.Services.AddHttpClient<ApiClient>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(settings.BaseUrl);
+    Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
+});
+
+
 builder.Services.AddHttpClient<IUserCustomerService, UserCustomerService>((sp, client) =>
 {
     var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
@@ -50,17 +58,39 @@ builder.Services.AddHttpClient<IUserCustomerService, UserCustomerService>((sp, c
     Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
 });
 
-builder.Services.AddHttpClient<MovieService>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
-});
 
-builder.Services.AddHttpClient<ApiClient>((sp, client) =>
+builder.Services.AddHttpClient<ICustomerService, CustomerService>((sp, client) =>
 {
     var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
     client.BaseAddress = new Uri(settings.BaseUrl);
     Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
 });
+
+builder.Services.AddHttpClient<ICategoryService, CategoryService>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(settings.BaseUrl);
+    Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
+});
+
+builder.Services.AddHttpClient<IWatchHistoryClientService, WatchHistoryClientService>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(settings.BaseUrl);
+    Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
+});
+
+builder.Services.AddHttpClient<WatchHistoryClientService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+});
+
+
+builder.Services.AddHttpClient<MovieService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+});
+
 
 
 

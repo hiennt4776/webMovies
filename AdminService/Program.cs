@@ -183,7 +183,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IUserEmployeeRepository, UserEmployeeRepository>();
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
-builder.Services.AddScoped<IMovieFileRepository, MovieFileRepository>(); 
+builder.Services.AddScoped<IMovieFileRepository, MovieFileRepository>();
+builder.Services.AddScoped<IMoviePricingRepository, MoviePricingRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IPartnerRepository, PartnerRepository>();
 builder.Services.AddScoped<IContractRepository, ContractRepository>();
@@ -201,6 +202,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IPartnerService, PartnerService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IMovieFileService, MovieFileService>();
+builder.Services.AddScoped<IMoviePricingService, MoviePricingService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();

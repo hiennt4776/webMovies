@@ -19,7 +19,12 @@ namespace CustomerService.Controllers
             _movieService = movieService;
         }
 
-
+        [HttpPost("search")]
+        public async Task<IActionResult> Search([FromBody] MovieQueryDTO query)
+        {
+            var result = await _movieService.SearchMoviesAsync(query);
+            return Ok(result);
+        }
 
         [HttpGet("random-top5")]
         public async Task<ActionResult<List<MovieDTO>>> GetRandomTop5()
@@ -65,7 +70,7 @@ namespace CustomerService.Controllers
                 "poster" => "image/png",
                 "trailer" => "video/mp4",
                 "movies" => "video/mp4",
-                "subtitle" => "text/vtt",
+                "subtitle" => "text/plain",
                 _ => "application/octet-stream"
             };
 
