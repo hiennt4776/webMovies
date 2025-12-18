@@ -35,9 +35,12 @@ namespace AdminService.Service
         private readonly IHttpContextAccessor _httpContextAccessor;
 
 
-        public SubscriptionPackageService(dbMoviesContext context, ISubscriptionPackageRepository subscriptionPackageRepository,
+        public SubscriptionPackageService(dbMoviesContext context, 
+            ISubscriptionPackageRepository subscriptionPackageRepository,
                         IAuthService authService,
-        IUnitOfWork dbu, JwtAuthService jwtAuthService, IHttpContextAccessor httpContextAccessor)
+        IUnitOfWork dbu, 
+        JwtAuthService jwtAuthService, 
+        IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _subscriptionPackageRepository = subscriptionPackageRepository;
@@ -126,10 +129,11 @@ namespace AdminService.Service
                 DurationMonths = DTO.DurationMonths,
                 Price = DTO.Price,
                 CreatedDate = DateTime.Now,
-                CreatedBy = userId
+                CreatedBy = userId,
+                IsDeleted = false
             };
+            await _subscriptionPackageRepository.AddAsync(entity);
 
-            _context.SubscriptionPackages.Add(entity);
             await _context.SaveChangesAsync();
 
             DTO.Id = entity.Id;
@@ -141,8 +145,8 @@ namespace AdminService.Service
             var httpContext = _httpContextAccessor.HttpContext
 ?? throw new InvalidOperationException("There is no HttpContext in ContractService");
             int userId = _authService.GetUserIdFromToken(httpContext);
-            var entity = await _context.SubscriptionPackages.FindAsync(id);
-            if (entity == null || entity.IsDeleted == false)
+            var entity = await _subscriptionPackageRepository.GetByIdAsync(id);
+            if (entity == null)
                 throw new Exception("Package not found");
 
             entity.Name = dto.Name;
@@ -150,6 +154,9 @@ namespace AdminService.Service
             entity.Price = dto.Price;
             entity.UpdatedDate = DateTime.Now;
             entity.UpdatedBy = userId;
+            entity.IsDeleted = false;
+
+
 
             await _context.SaveChangesAsync();
             return dto;
@@ -161,7 +168,7 @@ namespace AdminService.Service
 ?? throw new InvalidOperationException("There is no HttpContext in ContractService");
             int userId = _authService.GetUserIdFromToken(httpContext);
 
-            var entity = await _context.SubscriptionPackages.FindAsync(id);
+            var entity = await _subscriptionPackageRepository.GetByIdAsync(id);
             if (entity == null || entity.IsDeleted == false)
                 return false;
 

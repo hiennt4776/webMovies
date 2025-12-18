@@ -74,56 +74,6 @@ if (string.IsNullOrEmpty(secretKey))
 
 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//    .AddJwtBearer(options =>
-//    {
-//        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-//        options.RequireHttpsMetadata = false;
-//        options.SaveToken = true;
-
-//        options.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuer = true,
-//            ValidIssuer = issuer,
-//            ValidateAudience = true,
-//            ValidAudience = audience,
-//            ValidateLifetime = true,
-//            ValidateIssuerSigningKey = true,
-//            IssuerSigningKey = key,
-//            ClockSkew = TimeSpan.FromDays(2),
-//            RoleClaimType = ClaimTypes.Role,
-//            NameClaimType = ClaimTypes.Name,
-//        };
-
-//        // Log event khi JWT lỗi
-//        options.Events = new JwtBearerEvents
-//        {
-//            OnAuthenticationFailed = context =>
-//            {
-//                Console.WriteLine("JWT Authentication Failed:");
-//                Console.WriteLine(context.Exception.ToString());
-//                return Task.CompletedTask;
-//            },
-//            OnTokenValidated = context =>
-//            {
-//                Console.WriteLine("JWT Token Validated for: " + context.Principal?.Identity?.Name);
-//                return Task.CompletedTask;
-//            },
-//            OnChallenge = context =>
-//            {
-//                Console.WriteLine("JWT Challenge Triggered (token missing or invalid)");
-//                return Task.CompletedTask;
-//            },
-//            OnForbidden = context =>
-//            {
-//                Console.WriteLine("JWT Forbidden: insufficient permissions");
-//                return Task.CompletedTask;
-//            }
-//        };
-//    });
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -191,7 +141,7 @@ builder.Services.AddScoped<IContractRepository, ContractRepository>();
 builder.Services.AddScoped<IRoleUserRepository, IRoleUsersService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-
+builder.Services.AddScoped<ISubscriptionPackageRepository, SubscriptionPackageRepository>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -206,6 +156,8 @@ builder.Services.AddScoped<IMoviePricingService, MoviePricingService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<ISubscriptionPackageService, SubscriptionPackageService>();
+
 
 builder.Services.AddHttpContextAccessor();
 

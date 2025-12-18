@@ -1,0 +1,73 @@
+﻿@page "/packages/edit/{id:int}"
+@using BlazorWebAppAdmin.Services
+@inject   ISubscriptionPackageService SubscriptionPackageService
+@inject NavigationManager Nav
+
+<h3>Sửa gói</h3>
+
+@if (loading)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <EditForm Model="model" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="mb-3">
+                    <label class="form-label">Tên</label>
+                    <InputText class="form-control" @bind-Value="model.Name" />
+                    <ValidationMessage For="@(() => model.Name)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Thời lượng (tháng)</label>
+                    <InputNumber class="form-control" @bind-Value="model.DurationMonths" />
+                    <ValidationMessage For="@(() => model.DurationMonths)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Giá (VNĐ)</label>
+                    <InputNumber class="form-control" @bind-Value="model.Price" />
+                    <ValidationMessage For="@(() => model.Price)" />
+                </div>
+
+                <button class="btn btn-primary" type="submit">Lưu thay đổi</button>
+              
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+    SubscriptionPackageViewModel model = new();
+    bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var dto = await SubscriptionPackageService.GetByIdAsync(id);
+        if (dto == null)
+        {
+            Nav.NavigateTo("/packages");
+            return;
+        }
+        model = new SubscriptionPackageViewModel
+        {
+            Id = dto.Id,
+            Name = dto.Name,
+            DurationMonths = dto.DurationMonths,
+            Price = dto.Price
+        };
+        loading = false;
+    }
+
+    async Task HandleValidSubmit()
+    {
+        await SubscriptionPackageService.UpdateAsync(id, model);
+        Nav.NavigateTo("/packages");
+    }
+}

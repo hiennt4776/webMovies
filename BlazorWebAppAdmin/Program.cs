@@ -46,6 +46,20 @@ builder.Services.AddHttpClient<IMoviePricingService, MoviePricingService>((sp, c
     Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
 });
 
+builder.Services.AddHttpClient<IMoviePricingService, MoviePricingService>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(settings.BaseUrl);
+    Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
+});
+builder.Services.AddHttpClient<ISubscriptionPackageService, SubscriptionPackageService>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(settings.BaseUrl);
+    Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
+});
+
+
 builder.Services.AddHttpClient<ApiClient>((sp, client) =>
 {
     var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;

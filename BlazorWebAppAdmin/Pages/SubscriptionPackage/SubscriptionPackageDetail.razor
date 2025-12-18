@@ -1,0 +1,72 @@
+﻿@page "/packages/detail/{id:int}"
+@using BlazorWebAppAdmin.Services
+@inject ISubscriptionPackageService SubscriptionPackageService
+@inject NavigationManager Nav
+
+<h3>Chi tiết gói đăng ký</h3>
+
+@if (model == null)
+{
+    <p>Đang tải dữ liệu...</p>
+}
+else
+{
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Tên gói</label>
+                <div class="form-control bg-light">@model.Name</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Thời hạn</label>
+                <div class="form-control bg-light">@model.DurationMonths tháng</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Giá</label>
+                <div class="form-control bg-light">
+                    @model.Price
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a class="btn btn-warning"
+                   href="/packages/edit/@model.Id">
+                    Sửa
+                </a>
+
+                <a class="btn btn-danger ms-2"
+                   href="/packages/delete/@model.Id">
+                    Xóa
+                </a>
+
+                <button class="btn btn-secondary ms-2"
+                        @onclick="BackToList">
+                    Quay lại
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    SubscriptionPackageViewModel? model;
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = await SubscriptionPackageService.GetByIdAsync(id);
+
+        if (model == null)
+        {
+            Nav.NavigateTo("/packages");
+        }
+    }
+
+    void BackToList()
+    {
+        Nav.NavigateTo("/packages");
+    }
+}

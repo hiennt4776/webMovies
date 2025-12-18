@@ -55,7 +55,9 @@ namespace BlazorWebAppAdmin.Services
                 int pageNumber, int pageSize, string? search, string? sortColumn, bool ascending)
         { 
             await _userService.AddAuthHeaderAsync(); 
-            var query = new List<string> { $"Category/getPageSortSearchCategories?pageNumber={pageNumber}", $"pageSize={pageSize}", $"ascending={ascending.ToString().ToLower()}" }; if (!string.IsNullOrWhiteSpace(search)) query.Add($"search={Uri.EscapeDataString(search)}"); if (!string.IsNullOrWhiteSpace(sortColumn)) query.Add($"sortColumn={Uri.EscapeDataString(sortColumn)}"); 
+            var query = new List<string> { $"Category/getPageSortSearchCategories?pageNumber={pageNumber}", $"pageSize={pageSize}", $"ascending={ascending.ToString().ToLower()}" }; 
+            if (!string.IsNullOrWhiteSpace(search)) query.Add($"search={Uri.EscapeDataString(search)}"); 
+            if (!string.IsNullOrWhiteSpace(sortColumn)) query.Add($"sortColumn={Uri.EscapeDataString(sortColumn)}"); 
             string url = $"{string.Join("&", query)}"; 
             // Gọi ApiClient thay cho _httpClient
             var response = await _apiClient.GetAsync(url); 

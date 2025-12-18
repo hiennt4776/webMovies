@@ -1,0 +1,146 @@
+﻿@page "/packages"
+@using BlazorWebAppAdmin.Services
+@inject ISubscriptionPackageService SubscriptionPackageService
+@inject NavigationManager Nav
+
+<h3 class="mb-3">Gói đăng ký</h3>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-4">
+                <input class="form-control" placeholder="Tìm theo tên..." @bind="searchText" @bind:event="oninput" />
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-primary" @onclick="Search">Tìm</button>
+            </div>
+            <div class="col text-end">
+                <button class="btn btn-success" @onclick="OpenCreate">+ Thêm gói</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Tên</th>
+                    <th>Thời lượng</th>
+                    <th>Giá</th>
+                    <th style="width:180px">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (pagedResult?.Items?.Any() != true)
+                {
+                    <tr><td colspan="4" class="text-center py-4">Không có dữ liệu</td></tr>
+                }
+                else
+                {
+                    @foreach (var p in pagedResult.Items)
+                    {
+                        <tr>
+                            <td>@p.Name</td>
+                            <td>@p.DurationMonths tháng</td>
+                            <td>@p.Price</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info me-1" title="Detail" @onclick="() => GoToDetail(p.Id)">Detail</button>
+                                <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEdit(p.Id)">Sửa</button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => ConfirmDelete(p.Id, p.Name)">Xóa</button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (pagedResult != null)
+    {
+        <div class="card-footer d-flex justify-content-between align-items-center">
+            <div>Page @pagedResult.PageNumber / @TotalPages - Total: @pagedResult.TotalCount</div>
+
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" href="#" @onclick="() => ChangePage(CurrentPage - 1)">Previous</a>
+                    </li>
+
+                    @for (int i = 1; i <= TotalPages; i++)
+                    {
+                        <li class="page-item @(i == CurrentPage ? "active" : "")">
+                            <a class="page-link" href="#" @onclick="() => ChangePage(i)">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+                        <a class="page-link" href="#" @onclick="() => ChangePage(CurrentPage + 1)">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+
+</div>
+
+
+@code {
+    PagedResult<SubscriptionPackageViewModel>? pagedResult;
+    string? searchText;
+    int CurrentPage = 1;
+    int PageSize = 10;
+
+    bool showDeleteConfirm = false;
+    int deleteId;
+    string? deleteName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPage();
+    }
+
+    int TotalPages => pagedResult == null ? 1 : (int)Math.Ceiling((double)pagedResult.TotalCount / pagedResult.PageSize);
+
+    private async Task LoadPage()
+    {
+        pagedResult = await SubscriptionPackageService.GetPagedAsync(searchText, CurrentPage, PageSize);
+        StateHasChanged();
+    }
+
+
+    private async Task Search()
+    {
+        CurrentPage = 1;
+        await LoadPage();
+    }
+
+
+    void GoToDetail(int id) => Nav.NavigateTo($"packages/detail/{id:int}");
+  
+
+
+    void OpenCreate() => Nav.NavigateTo("/packages/add");
+    void OpenEdit(int id) => Nav.NavigateTo($"/packages/edit/{id}");
+
+    void ConfirmDelete(int id, string name)
+    {
+        deleteId = id;
+        deleteName = name;
+        showDeleteConfirm = true;
+    }
+
+    async Task DeleteConfirmed()
+    {
+        await SubscriptionPackageService.DeleteAsync(deleteId);
+        showDeleteConfirm = false;
+        await LoadPage();
+    }
+
+    async Task ChangePage(int newPage)
+    {
+        if (newPage < 1 || pagedResult == null || newPage > TotalPages) return;
+        CurrentPage = newPage;
+        await LoadPage();
+    }
+}

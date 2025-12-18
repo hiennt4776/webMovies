@@ -16,9 +16,13 @@ namespace AdminService.Controllers
             _subscriptionPackageService = service;
 
         }
-        // GET: api/SubscriptionPackages?search=...&page=1&pageSize=10
+
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string? search, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        [Route("getPageSortSearchSubscriptionPackage")]
+        public async Task<ActionResult<PagedResult<SubscriptionPackageDTO>>> GetPagedSortSearchAsync(
+              int page = 1,
+              int pageSize = 10,
+              string? search = null)
         {
             var result = await _subscriptionPackageService.GetAllPagedAsync(search, page, pageSize);
             return Ok(result);

@@ -1,0 +1,63 @@
+﻿@page "/packages/add"
+@using BlazorWebAppAdmin.Services
+@inject   ISubscriptionPackageService SubscriptionPackageService
+@inject NavigationManager Nav
+
+
+
+
+<DashboardHeader Title="Dashboard"
+                 BreadcrumbMain="Subscription Package"
+                 BreadcrumbCurrent="Add" />
+
+
+<div class="card">
+    <div class="card-body">
+        <EditForm Model="@subscriptionPackage" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label class="form-label">Tên</label>
+                <InputText class="form-control" @bind-Value="subscriptionPackage.Name" />
+                <ValidationMessage For="@(() => subscriptionPackage.Name)" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Thời lượng (tháng)</label>
+                <InputNumber class="form-control" @bind-Value="subscriptionPackage.DurationMonths" />
+                <ValidationMessage For="@(() => subscriptionPackage.DurationMonths)" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Giá (VNĐ)</label>
+                <InputNumber class="form-control" @bind-Value="subscriptionPackage.Price" />
+                <ValidationMessage For="@(() => subscriptionPackage.Price)" />
+            </div>
+
+            <button class="btn btn-success" type="submit">Lưu</button>
+
+            </EditForm>
+    </div>
+</div>
+
+@code {
+    SubscriptionPackageViewModel subscriptionPackage = new();
+
+    async Task HandleValidSubmit()
+    {
+        try
+        {
+            await SubscriptionPackageService.CreateAsync(subscriptionPackage);
+            Nav.NavigateTo("/packages");
+        }
+        catch (HttpRequestException ex)
+        {
+            // show error, or use Notification
+            Console.WriteLine(ex.Message);
+        }
+    }
+}
+<h3>SubscriptionPackageCreate</h3>
+
+

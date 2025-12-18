@@ -215,13 +215,13 @@
         await LoadDataAsync();
     }
 
-    private void SortBy(string field)
+    private async void SortBy(string field)
     {
         if (sortField == field)
             ascending = !ascending;
         else
             sortField = field;
-        _ = LoadDataAsync();
+        await LoadDataAsync();
     }
 
     private async Task NextPage()
