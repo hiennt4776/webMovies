@@ -176,8 +176,8 @@ public partial class dbMoviesContext : DbContext
             entity.Property(e => e.TotalAmount).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
-            entity.HasOne(d => d.Customer).WithMany(p => p.Invoices)
-                .HasForeignKey(d => d.CustomerId)
+            entity.HasOne(d => d.UserCustomer).WithMany(p => p.Invoices)
+                .HasForeignKey(d => d.UserCustomerId)
                 .HasConstraintName("FK_Invoices_UserCustomer");
         });
 
@@ -329,6 +329,7 @@ public partial class dbMoviesContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Subscrip__3214EC07BC2C919B");
 
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(500);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Price).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");

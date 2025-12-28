@@ -35,21 +35,24 @@ namespace CustomerService.Service
 
         public async Task<decimal> GetWatchTimeAsync(int movieId)
         {
-            var httpContext = _httpContextAccessor.HttpContext
- ?? throw new InvalidOperationException("There is no HttpContext in ContractService");
-            int userId = _authService.GetUserIdFromToken(httpContext);
+                    var httpContext = _httpContextAccessor.HttpContext
+         ?? throw new InvalidOperationException("There is no HttpContext in ContractService");
+                    int userId = _authService.GetUserIdFromToken(httpContext);
+
+            //int userId = _authService.GetUserIdFromToken();
             var item = await _context.WatchHistories
-                .FirstOrDefaultAsync(x => x.UserId == userId && x.MovieId == movieId);
+                  .FirstOrDefaultAsync(x => x.UserId == userId && x.MovieId == movieId);
 
             return item?.CurrentTime ?? 0;
         }
 
         public async Task SaveWatchTimeAsync(WatchHistoryDTO req)
         {
-            var httpContext = _httpContextAccessor.HttpContext
- ?? throw new InvalidOperationException("There is no HttpContext in ContractService");
-            int userId = _authService.GetUserIdFromToken(httpContext);
+                        var httpContext = _httpContextAccessor.HttpContext
+             ?? throw new InvalidOperationException("There is no HttpContext in ContractService");
+                        int userId = _authService.GetUserIdFromToken(httpContext);
 
+            //int userId = _authService.GetUserIdFromToken();
             var item = await _context.WatchHistories
                 .FirstOrDefaultAsync(x => x.UserId == userId && x.MovieId == req.MovieId);
 

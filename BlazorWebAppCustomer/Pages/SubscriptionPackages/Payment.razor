@@ -1,0 +1,48 @@
+﻿@page "/payment/{InvoiceId:int}"
+@using BlazorWebAppCustomer.Services
+@inject PaymentClientService PaymentClient
+@inject NavigationManager Nav
+
+
+
+<h3 class="mb-4">💳 Thanh toán online</h3>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <p class="text-muted">
+            Giả lập cổng thanh toán (VNPay / Momo)
+        </p>
+
+        <div class="d-grid gap-2">
+            <button class="btn btn-success"
+                    disabled="@isProcessing"
+                    @onclick="PaySuccess">
+                @(isProcessing ? "Đang xử lý..." : "Thanh toán thành công")
+            </button>
+
+            <button class="btn btn-danger"
+                    disabled="@isProcessing"
+                    @onclick="PayFail">
+                Thanh toán thất bại
+            </button>
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter] public int InvoiceId { get; set; }
+    private bool isProcessing = false;
+
+    private async Task PaySuccess()
+    {
+        isProcessing = true;
+        await PaymentClient.SimulateAsync(InvoiceId, true);
+        Nav.NavigateTo("/purchase-success", true);
+    }
+
+    private async Task PayFail()
+    {
+        isProcessing = true;
+        await PaymentClient.SimulateAsync(InvoiceId, false);
+        Nav.NavigateTo("/purchase-failed", true);
+    }
+}

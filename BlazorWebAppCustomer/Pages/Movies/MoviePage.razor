@@ -33,20 +33,11 @@ else
                 <h2 id="filmTitle">@movie.Title</h2>
                 <p><strong>Genre:</strong> <span id="filmGenre">@movie.CategoryName</span></p>
                 <p><strong>Release Date:</strong> <span id="filmRelease">@movie.ReleaseDate</span></p>
-                @*  <p><strong>Duration:</strong> 2h 15m</p>
-                <p><strong>Price:</strong> <span id="filmPrice">$9.99</span></p>
-                <div class="mb-3">
-                    <span class="star">★</span><span class="star">★</span>
-                    <span class="star">★</span><span class="star">☆</span>
-                    <span class="star">☆</span><span>(3/5)</span>
-                </div> *@
+      
                 <p id="filmDescription">
                     @movie.Description
                 </p>
-                <!-- <a href="watch.html" class="btn btn-danger me-2">▶ Watch Film</a>
-                <button class="btn btn-warning me-2" data-bs-toggle="modal" data-bs-target="#trailerModal">🎬 Watch Trailer</button>
-                      <button class="btn btn-success" id="addToCartBtn">🛒 Add to Cart</button>
-                      <button class="btn btn-blue" id="rentBtn">💳 Rent</button> -->
+
                 <button class="btn btn-primary btn-toggle" @onclick="() => GoToWatch(movie.Id)">▶ Watch Film</button>
                 <button class="btn btn-warning">💳 Rent Film</button>
                 <button class="btn btn-success">🛒 Buy Film</button>
@@ -54,8 +45,8 @@ else
             </div>
             @if (movie.HasTrailer)
             {
-                <div class="col-md-12" style="margin-top:25px;">
-                    <video controls>
+                <div class="col-12" style="margin-top:25px">
+                    <video controls style="width:100%; height:auto;">
                         <source src="@MovieService.GetMovieFileUrl(movie.Id, "trailer")" type="video/mp4" />
                         Trình duyệt không hỗ trợ video.
                     </video>

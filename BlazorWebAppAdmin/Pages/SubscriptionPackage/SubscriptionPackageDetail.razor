@@ -24,11 +24,23 @@ else
             </div>
 
             <div class="mb-3">
+                <label class="form-label fw-bold">Description</label>
+                <div class="form-control bg-light">@model.Description</div>
+            </div>
+
+            <div class="mb-3">
                 <label class="form-label fw-bold">Giá</label>
                 <div class="form-control bg-light">
                     @model.Price
                 </div>
             </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Trạng thái</label>
+                <div class="form-control bg-light">
+                    @(model.IsActive ? "Đang hoạt động" : "Ngưng hoạt động")
+                </div>
+            </div>
+
 
             <div class="mt-4">
                 <a class="btn btn-warning"

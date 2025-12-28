@@ -67,6 +67,8 @@ namespace BlazorWebAppCustomer.Services
         public async Task<List<MovieViewModel>> GetMoviesAsync()
         {
             var url = $"{_settings.BaseUrl}movie";
+            var response = _httpClient.GetFromJsonAsync<List<MovieViewModel>>(url);
+        
             return await _httpClient.GetFromJsonAsync<List<MovieViewModel>>(url);
         }
 

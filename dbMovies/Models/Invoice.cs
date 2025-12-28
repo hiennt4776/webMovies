@@ -9,7 +9,7 @@ public partial class Invoice
 {
     public int Id { get; set; }
 
-    public int? CustomerId { get; set; }
+    public int? UserCustomerId { get; set; }
 
     public string InvoiceNumber { get; set; }
 
@@ -29,7 +29,7 @@ public partial class Invoice
 
     public bool? IsDeleted { get; set; }
 
-    public virtual Customer Customer { get; set; }
-
     public virtual ICollection<InvoiceDetail> InvoiceDetails { get; set; } = new List<InvoiceDetail>();
+
+    public virtual UserCustomer UserCustomer { get; set; }
 }

@@ -90,7 +90,9 @@ namespace AdminService.Service
                     Id = x.Id,
                     Name = x.Name,
                     DurationMonths = x.DurationMonths,
-                    Price = x.Price
+                    Description = x.Description,
+                    Price = x.Price,
+                      IsActive = x.IsActive
                 })
                 .ToListAsync();
 
@@ -112,7 +114,9 @@ namespace AdminService.Service
                     Id = x.Id,
                     Name = x.Name,
                     DurationMonths = x.DurationMonths,
-                    Price = x.Price
+                    Description = x.Description,
+                    Price = x.Price,
+                        IsActive = x.IsActive
                 })
                 .FirstOrDefaultAsync();
         }
@@ -128,6 +132,8 @@ namespace AdminService.Service
                 Name = DTO.Name,
                 DurationMonths = DTO.DurationMonths,
                 Price = DTO.Price,
+                Description = DTO.Description,
+                IsActive = DTO.IsActive,
                 CreatedDate = DateTime.Now,
                 CreatedBy = userId,
                 IsDeleted = false
@@ -152,10 +158,11 @@ namespace AdminService.Service
             entity.Name = dto.Name;
             entity.DurationMonths = dto.DurationMonths;
             entity.Price = dto.Price;
+            entity.Description = dto.Description;
             entity.UpdatedDate = DateTime.Now;
             entity.UpdatedBy = userId;
             entity.IsDeleted = false;
-
+            entity.IsActive = dto.IsActive;
 
 
             await _context.SaveChangesAsync();

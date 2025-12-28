@@ -9,10 +9,10 @@
     <div class="card-body">
         <div class="row g-2 align-items-center">
             <div class="col-md-4">
-                <input class="form-control" placeholder="Tìm theo tên..." @bind="searchText" @bind:event="oninput" />
+                <input class="form-control" placeholder="Search..." @bind="searchText" @bind:event="oninput" />
             </div>
             <div class="col-auto">
-                <button class="btn btn-primary" @onclick="Search">Tìm</button>
+                <button class="btn btn-primary" @onclick="Search">Search </button>
             </div>
             <div class="col text-end">
                 <button class="btn btn-success" @onclick="OpenCreate">+ Thêm gói</button>
@@ -29,6 +29,7 @@
                     <th>Tên</th>
                     <th>Thời lượng</th>
                     <th>Giá</th>
+                    <th>Is Active</th>
                     <th style="width:180px">Hành động</th>
                 </tr>
             </thead>
@@ -45,6 +46,16 @@
                             <td>@p.Name</td>
                             <td>@p.DurationMonths tháng</td>
                             <td>@p.Price</td>
+                       
+                                <td>
+                                    <input type="checkbox" readonly
+                                           class="form-check-input"
+                                           checked="@p.IsActive" />
+                              
+                                </td>
+                              
+                          
+
                             <td>
                                 <button class="btn btn-sm btn-outline-info me-1" title="Detail" @onclick="() => GoToDetail(p.Id)">Detail</button>
                                 <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => OpenEdit(p.Id)">Sửa</button>
@@ -116,7 +127,7 @@
     }
 
 
-    void GoToDetail(int id) => Nav.NavigateTo($"packages/detail/{id:int}");
+    void GoToDetail(int id) => Nav.NavigateTo($"/packages/detail/{id}");
   
 
 

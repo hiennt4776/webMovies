@@ -30,10 +30,24 @@ else
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label">Mô tả</label>
+                    <InputTextArea class="form-control" @bind-Value="model.Description" />
+                    <ValidationMessage For="@(() => model.Description)" />
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label">Giá (VNĐ)</label>
                     <InputNumber class="form-control" @bind-Value="model.Price" />
                     <ValidationMessage For="@(() => model.Price)" />
                 </div>
+                <div class="form-check mb-3">
+                    <InputCheckbox class="form-check-input"
+                                   @bind-Value="model.IsActive" />
+                    <label class="form-check-label">
+                        Gói đang hoạt động
+                    </label>
+                </div>
+
 
                 <button class="btn btn-primary" type="submit">Lưu thay đổi</button>
               
@@ -59,6 +73,7 @@ else
         {
             Id = dto.Id,
             Name = dto.Name,
+            Description = dto.Description,
             DurationMonths = dto.DurationMonths,
             Price = dto.Price
         };

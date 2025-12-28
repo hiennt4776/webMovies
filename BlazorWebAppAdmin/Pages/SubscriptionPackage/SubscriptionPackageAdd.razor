@@ -28,11 +28,23 @@
                 <InputNumber class="form-control" @bind-Value="subscriptionPackage.DurationMonths" />
                 <ValidationMessage For="@(() => subscriptionPackage.DurationMonths)" />
             </div>
+            <div class="mb-3">
+                <label class="form-label">Mô tả</label>
+                <InputTextArea class="form-control" @bind-Value="subscriptionPackage.Description" />
+                <ValidationMessage For="@(() => subscriptionPackage.Description)" />
+            </div>
 
             <div class="mb-3">
                 <label class="form-label">Giá (VNĐ)</label>
                 <InputNumber class="form-control" @bind-Value="subscriptionPackage.Price" />
                 <ValidationMessage For="@(() => subscriptionPackage.Price)" />
+            </div>
+            <div class="form-check mb-3">
+                <InputCheckbox class="form-check-input"
+                               @bind-Value="subscriptionPackage.IsActive" />
+                <label class="form-check-label">
+                    Kích hoạt gói
+                </label>
             </div>
 
             <button class="btn btn-success" type="submit">Lưu</button>

@@ -80,6 +80,26 @@ builder.Services.AddHttpClient<IWatchHistoryClientService, WatchHistoryClientSer
     Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
 });
 
+
+
+
+
+builder.Services.AddHttpClient<ISubscriptionPackageService, SubscriptionPackageService>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(settings.BaseUrl);
+    Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
+});
+
+
+builder.Services.AddHttpClient<IPaymentClientService, PaymentClientService>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(settings.BaseUrl);
+    Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
+});
+
+
 builder.Services.AddHttpClient<WatchHistoryClientService>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
@@ -91,6 +111,17 @@ builder.Services.AddHttpClient<MovieService>(client =>
     client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
 });
 
+builder.Services.AddHttpClient<SubscriptionPackageService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+});
+
+
+
+builder.Services.AddHttpClient<PaymentClientService> (client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+});
 
 
 

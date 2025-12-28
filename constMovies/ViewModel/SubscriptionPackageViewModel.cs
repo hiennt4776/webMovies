@@ -22,5 +22,10 @@ namespace helperMovies.ViewModel
 
         [Range(0, double.MaxValue, ErrorMessage = "Price must be a number >= 0")]
         public decimal? Price { get; set; }
+
+
+        [MaxLength(500)]
+        public string? Description { get; set; }
+        public bool IsActive { get; set; }
     }
 }

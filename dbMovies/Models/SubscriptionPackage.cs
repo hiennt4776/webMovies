@@ -13,7 +13,11 @@ public partial class SubscriptionPackage
 
     public int? DurationMonths { get; set; }
 
+    public string Description { get; set; }
+
     public decimal? Price { get; set; }
+
+    public bool? IsActive { get; set; }
 
     public DateTime? CreatedDate { get; set; }
 

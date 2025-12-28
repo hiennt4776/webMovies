@@ -129,12 +129,15 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 // ===== Register Services =====
-
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IUserCustomerRepository, UserCustomerRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IWatchHistoryRepository, WatchHistoryRepository> ();
+builder.Services.AddScoped<ISubscriptionPackageRepository, SubscriptionPackageRepository>();
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<JwtAuthService>();
@@ -146,6 +149,8 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IUserCustomerService, UserCustomerService>();
 builder.Services.AddScoped<IWatchHistoryService, WatchHistoryService>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<ISubscriptionPackageService, SubscriptionPackageService>();
+
 
 // ========== BUILD APP ==========
 var app = builder.Build();

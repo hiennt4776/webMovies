@@ -25,7 +25,5 @@ public partial class Customer
 
     public virtual ICollection<FavoriteMovie> FavoriteMovies { get; set; } = new List<FavoriteMovie>();
 
-    public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
-
     public virtual ICollection<UserCustomer> UserCustomers { get; set; } = new List<UserCustomer>();
 }
