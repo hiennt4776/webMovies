@@ -3,6 +3,7 @@
 @inject NavigationManager Navigation
 @inject IEmployeeService EmployeeService
 @inject IJSRuntime JSRuntime
+@inject AuthService AuthService
 
 <DashboardHeader Title="Dashboard"
                  BreadcrumbMain="Employee"
@@ -77,6 +78,11 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+
         try
         {
             employee = await EmployeeService.GetByIdAsync(Id);

@@ -1,0 +1,63 @@
+﻿@page "/movies/rent/{id:int}"
+@using BlazorWebAppCustomer.Services
+@using helperMovies.ViewModel
+@using Microsoft.JSInterop
+@inject IMoviePricingService MoviePricingService
+@inject IInvoiceService InvoiceService
+@inject AuthService AuthService
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+
+
+@if (RentPrices == null)
+{
+    <p>Đang tải giá thuê...</p>
+}
+else if (!RentPrices.Any())
+{
+    <p>Không có gói thuê</p>
+}
+else
+{
+    <h4>🎬 Thuê phim</h4>
+
+    @foreach (var price in RentPrices)
+    {
+        <div class="card mb-2 p-2">
+            <div>
+                <b>@price.RentalDurationDays ngày</b>
+                <span class="text-muted">- @price.Price.ToString("N0") đ</span>
+            </div>
+
+            <button class="btn btn-primary btn-sm mt-2"
+                    @onclick="() => Rent(price.Id)">
+                Thuê
+            </button>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private List<MoviePricingViewModel>? RentPrices;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!await AuthService.IsAuthenticated())
+        {
+            NavManager.NavigateTo("/login", true);
+        }
+
+        RentPrices = await MoviePricingService.GetRentPricesAsync(id);
+    }
+
+
+
+    private async Task Rent(int pricingId)
+    {
+        var invoiceId = await InvoiceService.CreateInvoiceAsync(pricingId);
+        NavManager.NavigateTo($"/invoice/{invoiceId}");
+    }
+}

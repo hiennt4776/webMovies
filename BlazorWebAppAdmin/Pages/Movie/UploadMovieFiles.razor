@@ -1,6 +1,9 @@
 ﻿@page "/upload-movie-file/{CurrentMovieId:int}"
 @using BlazorWebAppAdmin.Services
 @inject IMovieFileService MovieFileService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject AuthService AuthService
 
 <h3>Cấu hình file cho phim</h3>
 
@@ -61,6 +64,14 @@ else
 
     private bool CanSave => CurrentMovieId > 0 && SelectedFile != null;
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+
+    }
 
     private void SelectFile(InputFileChangeEventArgs e)
     {

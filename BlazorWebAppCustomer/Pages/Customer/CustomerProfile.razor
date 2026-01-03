@@ -2,6 +2,7 @@
 @using BlazorWebAppCustomer.Services
 @inject HttpClient Http
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject AuthService AuthService
 @inject NavigationManager NavManager
 
 @inject ICustomerService CustomerService
@@ -63,7 +64,10 @@ else
     protected override async Task OnInitializedAsync()
     {
 
-
+        if (!await AuthService.IsAuthenticated())
+        {
+            NavManager.NavigateTo("/login", true);
+        }
         user = await CustomerService.GetCurrentUserNameAsync();
     }
 

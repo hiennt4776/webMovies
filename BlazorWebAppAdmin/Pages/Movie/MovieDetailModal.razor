@@ -1,6 +1,8 @@
 ﻿@using BlazorWebAppAdmin.Services
 @inject IMovieService MovieService
-
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject AuthService AuthService
 @if (Visible)
 {
     <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
@@ -59,6 +61,15 @@
     private List<MovieFileViewModel> files = new();
     private IBrowserFile? selectedFile;
     private string fileType = "POSTER";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+
+    }
 
     /// <summary>
     /// Hiển thị modal + load danh sách file cho MovieID.

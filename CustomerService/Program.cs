@@ -137,6 +137,8 @@ builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IWatchHistoryRepository, WatchHistoryRepository> ();
 builder.Services.AddScoped<ISubscriptionPackageRepository, SubscriptionPackageRepository>();
+builder.Services.AddScoped<IMoviePricingRepository, MoviePricingRepository>();
+
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -150,7 +152,8 @@ builder.Services.AddScoped<IUserCustomerService, UserCustomerService>();
 builder.Services.AddScoped<IWatchHistoryService, WatchHistoryService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<ISubscriptionPackageService, SubscriptionPackageService>();
-
+builder.Services.AddScoped<IMoviePricingService, MoviePricingService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
 // ========== BUILD APP ==========
 var app = builder.Build();

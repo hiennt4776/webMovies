@@ -11,7 +11,7 @@ using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.Intrinsics.Arm;
 using System.Text.Json;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
 
 
 namespace CustomerService.Service

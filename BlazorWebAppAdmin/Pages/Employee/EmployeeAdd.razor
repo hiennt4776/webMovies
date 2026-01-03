@@ -3,8 +3,9 @@
 @using helperMovies.Constants
 @inject IEmployeeService EmployeeService
 @inject IRoleService RoleService
-@inject NavigationManager NavigationManager
+@inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject AuthService AuthService
 
 <DashboardHeader Title="Dashboard"
                  BreadcrumbMain="Employee"
@@ -142,6 +143,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+
+
         roles = await RoleService.GetAllRolesAsync();
 
         // Default values
@@ -157,11 +164,11 @@
         isLoading = true;
         await EmployeeService.AddEmployeeAsync(employee);
         isLoading = false;
-        NavigationManager.NavigateTo("/employees");
+        Navigation.NavigateTo("/employees");
     }
 
     private void Cancel()
     {
-        NavigationManager.NavigateTo("/employees");
+        Navigation.NavigateTo("/employees");
     }
 }

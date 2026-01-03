@@ -1,8 +1,9 @@
 ﻿@page "/categories/add"
 @using BlazorWebAppAdmin.Services
 @inject ICategoryService CategoryService
-@inject NavigationManager NavigationManager
-
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject AuthService AuthService
 <DashboardHeader Title="Dashboard"
                  BreadcrumbMain="Category"
                  BreadcrumbCurrent="Add" />
@@ -76,8 +77,13 @@
 @code {
     private CategoryViewModel category = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+
         if (string.IsNullOrEmpty(category.Color))
         {
             category.Color = "#000000";
@@ -87,11 +93,11 @@
     private async Task HandleValidSubmit()
     {
         await CategoryService.AddAsync(category);
-        NavigationManager.NavigateTo("/categories");
+        Navigation.NavigateTo("/categories");
     }
 
     private void Cancel()
     {
-        NavigationManager.NavigateTo("/categories");
+        Navigation.NavigateTo("/categories");
     }
 }

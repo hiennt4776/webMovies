@@ -3,8 +3,8 @@
 @using helperMovies.Constants
 @inject IEmployeeService EmployeeService
 @inject IRoleService RoleService
-@inject NavigationManager NavigationManager
-
+@inject NavigationManager Navigation
+@inject AuthService AuthService
 <DashboardHeader Title="Dashboard"
                  BreadcrumbMain="Employee"
                  BreadcrumbCurrent="Edit" />
@@ -104,6 +104,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+
         try
         {
             employee = await EmployeeService.GetByIdAsync(Id);
@@ -125,7 +131,7 @@ else
             await EmployeeService.UpdateEmployeeAsync(Id, employee);
             message = "Employee information updated successfully!";
             await Task.Delay(1000);
-            NavigationManager.NavigateTo("/employees");
+            Navigation.NavigateTo("/employees");
         }
         catch (Exception ex)
         {
@@ -135,6 +141,6 @@ else
 
     private void BackToList()
     {
-        NavigationManager.NavigateTo("/employees");
+        Navigation.NavigateTo("/employees");
     }
 }

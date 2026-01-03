@@ -39,8 +39,8 @@ else
                 </p>
 
                 <button class="btn btn-primary btn-toggle" @onclick="() => GoToWatch(movie.Id)">▶ Watch Film</button>
-                <button class="btn btn-warning">💳 Rent Film</button>
-                <button class="btn btn-success">🛒 Buy Film</button>
+                <button class="btn btn-warning" @onclick="() => RentMovie(movie.Id)">💳 Rent Film</button>
+                <button class="btn btn-success" @onclick="() => BuyMovie(movie.Id)">🛒 Buy Film</button>
                 <button class="btn btn-outline-light">❤️ Add to Favorite</button>
             </div>
             @if (movie.HasTrailer)
@@ -53,12 +53,13 @@ else
                 </div>
             }
         </div>
+            </section>
         
 @*          <div class="modal fade" id="trailerModal"> *@
 
        
     
-    </section>
+
 
 
     
@@ -72,11 +73,24 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+
+
+
         movie = await MovieService.GetMovieAsync(id);
     }
 
     void GoToWatch(int movieId)
     {
         NavigationManager.NavigateTo($"/watch/{movieId}");
+    }
+
+    void RentMovie(int movieId)
+    {
+        NavigationManager.NavigateTo($"/movies/rent/{movieId}");
+    }
+
+    void BuyMovie(int movieId)
+    {
+        NavigationManager.NavigateTo($"/movies/buy/{movieId}");
     }
 }

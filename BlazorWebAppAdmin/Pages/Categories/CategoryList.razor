@@ -3,7 +3,7 @@
 @inject ICategoryService CategoryService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
-
+@inject AuthService AuthService
 <DashboardHeader Title="Dashboard"
                  BreadcrumbMain="Category"
                  BreadcrumbCurrent="Index" />
@@ -169,6 +169,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
         await LoadDataAsync();
     }
 

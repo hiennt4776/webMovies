@@ -2,9 +2,9 @@
 @using BlazorWebAppAdmin.Services
 @inject IContractService ContractService
 @inject IPartnerService PartnerService
-@inject NavigationManager Nav
+@inject NavigationManager Navigation
 @inject IJSRuntime js
-
+@inject AuthService AuthService
 
 
 <DashboardHeader Title="Dashboard"
@@ -160,6 +160,11 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+
         partners = await PartnerService.GetAllPartnersAsync();
         contractEditViewModel = await ContractService.GetEditByIdAsync(Id);
     }
@@ -174,7 +179,7 @@ else
         if (success)
         {
             await js.InvokeVoidAsync("alert", "Contract updated successfully!");
-            Nav.NavigateTo("/contracts");
+            Navigation.NavigateTo("/contracts");
         }
         else
         {
@@ -200,6 +205,6 @@ else
 
     private void CancelEdit()
     {
-        Nav.NavigateTo("/contracts");
+        Navigation.NavigateTo("/contracts");
     }
 }

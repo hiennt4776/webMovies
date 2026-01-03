@@ -2,7 +2,7 @@
 @using BlazorWebAppAdmin.Services
 @inject NavigationManager Navigation
 @inject IContractService ContractService
-
+@inject AuthService AuthService
 <DashboardHeader Title="Dashboard"
                  BreadcrumbMain="Contract"
                  BreadcrumbCurrent="Detail" />
@@ -97,6 +97,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+
         contract = await ContractService.GetByIdAsync(Id);
     }
 

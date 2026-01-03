@@ -2,8 +2,8 @@
 @using BlazorWebAppAdmin.Services
 @inject IContractService ContractService
 @inject IPartnerService PartnerService
-@inject NavigationManager NavigationManager
-
+@inject NavigationManager Navigation
+@inject AuthService AuthService
 <DashboardHeader Title="Dashboard"
                  BreadcrumbMain="Contract"
                  BreadcrumbCurrent="Add" />
@@ -138,6 +138,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+
         partners = await PartnerService.GetAllPartnersByStatusAsync(PartnerStatusConstant.Active);
         if (partners.Any())
             contractCreate.PartnerId = partners.First().Id;
@@ -170,7 +175,7 @@
         if (result)
         {
             await Task.Delay(500);
-            NavigationManager.NavigateTo("/contracts");
+            Navigation.NavigateTo("/contracts");
         }
         else
         {

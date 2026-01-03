@@ -9,13 +9,8 @@ namespace CustomerService.Service
 
     public interface IInvoiceService
     {
-
-
-    Task<int> PurchaseMovieAsync(
-            int userCustomerId,
-            int movieId,
-            string pricingType);
-
+        Task<int> PurchaseMovieAsync(int userCustomerId, int movieId, string pricingType);
+        Task<int> CreateInvoiceAsync(int pricingId);
     }
     public class InvoiceService : IInvoiceService
     {
@@ -32,14 +27,16 @@ namespace CustomerService.Service
             dbMoviesContext context,
             IUserCustomerRepository userCustomerRepository,
             ICustomerRepository CustomerRepository,
+                                    IAuthService authService,
             IUnitOfWork dbu,
-                IConfiguration config,
-          JwtAuthService jwtAuthService,
+            IConfiguration config,
+            JwtAuthService jwtAuthService,
             IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _userCustomerRepository = userCustomerRepository;
             _CustomerRepository = CustomerRepository;
+            _authService = authService;
             _dbu = dbu;
             _config = config;
             _jwtAuthService = jwtAuthService;
@@ -138,7 +135,50 @@ namespace CustomerService.Service
             return invoice.Id;
         }
 
-   
+        public async Task<int> CreateInvoiceAsync(int pricingId)
+        {
+            var httpContext = _httpContextAccessor.HttpContext
+?? throw new InvalidOperationException("There is no HttpContext in ContractService");
+            int userId = _authService.GetUserIdFromToken(httpContext);
+
+            var pricing = await _context.MoviePricings
+                .FirstOrDefaultAsync(x => x.Id == pricingId && x.IsDeleted == false);
+
+            if (pricing == null)
+                throw new Exception("Pricing not found");
+
+            var invoice = new Invoice
+            {
+                UserCustomerId = userId,
+                InvoiceNumber = await GenerateInvoiceNumberAsync(),
+                InvoiceDate = DateTime.Now,
+                TotalAmount = pricing.Price,
+                PaymentStatus = "PENDING",
+                CreatedDate = DateTime.Now
+            };
+
+            _context.Invoices.Add(invoice);
+            await _context.SaveChangesAsync();
+
+            var detail = new InvoiceDetail
+            {
+                InvoiceId = invoice.Id,
+                MovieId = pricing.MovieId,
+                PricingType = pricing.PricingType,
+                UnitPrice = pricing.Price,
+                AccessStart = DateTime.Now,
+                AccessEnd = pricing.PricingType == "RENT"
+                    ? DateTime.Now.AddDays(pricing.RentalDurationDays!.Value)
+                    : null,
+                CreatedDate = DateTime.Now
+            };
+
+            _context.InvoiceDetails.Add(detail);
+            await _context.SaveChangesAsync();
+
+            return invoice.Id;
+        }
+
     }
 
 }

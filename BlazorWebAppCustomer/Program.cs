@@ -22,7 +22,9 @@ builder.Services.AddServerSideBlazor();
 
 // Blazored LocalStorage
 builder.Services.AddBlazoredLocalStorage();
-
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<InvoiceService>();
+//builder.Services.AddScoped<AuthorizationMessageHandler>();
 
 ////////////
 //// ApiSettings
@@ -99,6 +101,20 @@ builder.Services.AddHttpClient<IPaymentClientService, PaymentClientService>((sp,
     Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
 });
 
+builder.Services.AddHttpClient<IMoviePricingService, MoviePricingService>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(settings.BaseUrl);
+    Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
+});
+
+builder.Services.AddHttpClient<IInvoiceService, InvoiceService>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(settings.BaseUrl);
+    Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
+});
+
 
 builder.Services.AddHttpClient<WatchHistoryClientService>(client =>
 {
@@ -124,14 +140,15 @@ builder.Services.AddHttpClient<PaymentClientService> (client =>
 });
 
 
+builder.Services.AddHttpClient<MoviePricingService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+});
+builder.Services.AddHttpClient<InvoiceService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+});
 
-
-//builder.Services.AddScoped<IUserCustomerService, UserCustomerService>();
-
-//builder.Services.AddHttpClient("GateWayApiProduct", client =>
-//{
-//    client.BaseAddress = new Uri("https://localhost:7076/product-service/api/");
-//});
 
 var app = builder.Build();
 

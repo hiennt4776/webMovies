@@ -3,7 +3,7 @@
 @inject IContractService ContractService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
-
+@inject AuthService AuthService
 <DashboardHeader Title="Contract"
                  BreadcrumbMain="Contract"
                  BreadcrumbCurrent="List" />
@@ -172,6 +172,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
         await LoadDataAsync();
     }
 

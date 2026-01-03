@@ -4,7 +4,7 @@
 @inject IMovieService MovieService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
-
+@inject AuthService AuthService
 
 <DashboardHeader Title="Dashboard"
                  BreadcrumbMain="Movie"
@@ -90,6 +90,11 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+
         await LoadData();
     }
 

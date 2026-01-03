@@ -2,7 +2,7 @@
 @using BlazorWebAppAdmin.Services
 @inject NavigationManager Navigation
 @inject ICategoryService CategoryService
-
+@inject AuthService AuthService
 <DashboardHeader Title="Dashboard"
                  BreadcrumbMain="Category"
                  BreadcrumbCurrent="Detail" />
@@ -83,6 +83,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+
         category = await CategoryService.GetByIdAsync(Id);
     }
 

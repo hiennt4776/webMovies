@@ -16,23 +16,7 @@
 <section class="container d-flex justify-content-center align-items-center my-5">
     <div class="card glass-card p-4 shadow-lg" style="max-width: 400px; width: 100%;">
         <h3 class="text-center mb-3">Welcome Back</h3>
-        @*  <form>
-            <div class="mb-3">
-                <label for="loginEmail" class="form-label">Email</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                    <input type="email" class="form-control" id="loginEmail" placeholder="Enter email" required>
-                </div>
-            </div>
-            <div class="mb-3">
-                <label for="loginPassword" class="form-label">Password</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                    <input type="password" class="form-control" id="loginPassword" placeholder="Enter password" required>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-danger w-100 rounded-pill">Login</button>
-        </form> *@
+    
 
         <EditForm Model="loginRequestViewModel" OnValidSubmit="HandleValidSubmit">
             <DataAnnotationsValidator />

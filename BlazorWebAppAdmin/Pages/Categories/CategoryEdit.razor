@@ -1,8 +1,8 @@
 ﻿@page "/categories/edit/{id:int}"
 @using BlazorWebAppAdmin.Services
 @inject ICategoryService CategoryService
-@inject NavigationManager NavigationManager
-
+@inject NavigationManager Navigation
+@inject AuthService AuthService
 <DashboardHeader Title="Dashboard"
                  BreadcrumbMain="Category"
                  BreadcrumbCurrent="Edit" />
@@ -94,6 +94,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+
+
         try
         {
             var data = await CategoryService.GetByIdAsync(id);
@@ -109,11 +115,11 @@
     private async Task HandleValidSubmit()
     {
         await CategoryService.UpdateAsync(id, category);
-        NavigationManager.NavigateTo("/categories");
+        Navigation.NavigateTo("/categories");
     }
 
     private void Cancel()
     {
-        NavigationManager.NavigateTo("/categories");
+        Navigation.NavigateTo("/categories");
     }
 }

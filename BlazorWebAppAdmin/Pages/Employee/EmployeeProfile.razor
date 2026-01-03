@@ -2,8 +2,7 @@
 @using BlazorWebAppAdmin.Services
 @inject HttpClient Http
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
-@inject NavigationManager NavManager
-
+@inject NavigationManager Navigation
 @inject IUserEmployeeService UserEmployeeService
 @inject AuthService AuthService
 
@@ -87,13 +86,12 @@ else
     private EmployeeViewModel? user;
     private string userName = "";
 
-    //bạn chạy lại giúp mình fe nha
-    // chi fe ak fe be luôn nha mình k qquen xài vs tím á
-    // minh hinh chay ca 2 roi nhan start
-
     protected override async Task OnInitializedAsync()
     {
-
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
 
         user = await UserEmployeeService.GetCurrentUserNameAsync();
     }

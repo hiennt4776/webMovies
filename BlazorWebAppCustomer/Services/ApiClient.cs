@@ -62,6 +62,13 @@ namespace BlazorWebAppCustomer.Services
             return await _httpClient.GetAsync(relativeUrl); // dùng BaseAddress + relativeUrl
         }
 
+
+        public async Task<T?> GetAsync<T>(string url)
+        {
+            await AddJwtHeaderAsync();
+            return await _httpClient.GetFromJsonAsync<T>(url);
+        }
+
         public async Task<HttpResponseMessage> PostJsonAsync<T>(string url, T data)
         {
             await AddJwtHeaderAsync();

@@ -1,21 +1,26 @@
-﻿
-using Blazored.LocalStorage;
+﻿using Blazored.LocalStorage;
+using dbMovies.Models;
+using helperMovies.ViewModel;
+using Microsoft.JSInterop;
+using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
+using System.Text.Json;
+using static System.Net.WebRequestMethods;
 
-namespace BlazorWebAppAdmin.Services
+namespace BlazorWebAppCustomer.Services
 {
     public class AuthService
     {
-        private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorage;
 
-        public AuthService(HttpClient httpClient, ILocalStorageService localStorage)
+        public AuthService(ILocalStorageService localStorage)
         {
-            _httpClient = httpClient;
             _localStorage = localStorage;
         }
+
         public async Task<bool> IsAuthenticated()
         {
             var token = await _localStorage.GetItemAsync<string>("token");
@@ -27,11 +32,9 @@ namespace BlazorWebAppAdmin.Services
             return jwt.ValidTo > DateTime.UtcNow;
         }
 
-        public async Task LogoutAsync()
+        public async Task Logout()
         {
             await _localStorage.RemoveItemAsync("token");
         }
-
-
     }
 }
