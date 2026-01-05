@@ -143,7 +143,7 @@
             Navigation.NavigateTo("/login", true);
         }
 
-        partners = await PartnerService.GetAllPartnersByStatusAsync(PartnerStatusConstant.Active);
+        partners = await PartnerService.GetAllPartnersByStatusAsync(PartnerStatusConstant.ACTIVE);
         if (partners.Any())
             contractCreate.PartnerId = partners.First().Id;
         // contractCreate = new ContractCreateViewModel();

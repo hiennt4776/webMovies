@@ -2,6 +2,7 @@
 @using BlazorWebAppCustomer.Services
 @using helperMovies.ViewModel
 @using Microsoft.JSInterop
+@inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject IMovieService MovieService
 @inject IJSRuntime JS
@@ -37,10 +38,41 @@ else
                 <p id="filmDescription">
                     @movie.Description
                 </p>
+                @if (_access.IsFree)
+                {
+                    <p> <span class="badge bg-success ms-2">FREE</span>  </p>
+                }
+                @if (_access.CanWatch)
+                {
+                    <button class="btn btn-primary btn-toggle" @onclick="() => GoToWatch(movie.Id)">▶ Watch Film</button>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        Phim trả phí – vui lòng mua hoặc thuê
+                    </div>
 
-                <button class="btn btn-primary btn-toggle" @onclick="() => GoToWatch(movie.Id)">▶ Watch Film</button>
-                <button class="btn btn-warning" @onclick="() => RentMovie(movie.Id)">💳 Rent Film</button>
-                <button class="btn btn-success" @onclick="() => BuyMovie(movie.Id)">🛒 Buy Film</button>
+                    @* 👉 MUA *@
+                    @if (_access.ShowBuy)
+                    {
+                        <button class="btn btn-success" @onclick="() => BuyMovie(movie.Id)">🛒 Buy Film</button>
+                    }
+
+                    @* 👉 THUÊ *@
+                    @if (_access.ShowRent)
+                    {
+                        <button class="btn btn-outline-warning"
+                                @onclick="() => RentMovie(movie.Id)">
+                            💳 Rent Film
+                        </button>
+                     
+                    }
+                }
+
+
+        
+              
+           
                 <button class="btn btn-outline-light">❤️ Add to Favorite</button>
             </div>
             @if (movie.HasTrailer)
@@ -53,17 +85,8 @@ else
                 </div>
             }
         </div>
-            </section>
+    </section>
         
-@*          <div class="modal fade" id="trailerModal"> *@
-
-       
-    
-
-
-
-    
-
 }
 
 @code {
@@ -71,11 +94,21 @@ else
 
     MovieViewModel? movie;
 
+
+    private MovieAccessViewModel? _access;
+    private bool _loading = true;
+
     protected override async Task OnInitializedAsync()
     {
 
-
-
+        try
+        {
+            _access = await MovieService.CheckAccessAsync(id);
+        }
+        finally
+        {
+            _loading = false;
+        }
         movie = await MovieService.GetMovieAsync(id);
     }
 
@@ -92,5 +125,11 @@ else
     void BuyMovie(int movieId)
     {
         NavigationManager.NavigateTo($"/movies/buy/{movieId}");
+    }
+    string FormatPrice(decimal? price)
+    {
+        return price == null
+            ? ""
+            : string.Format("{0:N0} $", price);
     }
 }

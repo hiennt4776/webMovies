@@ -20,10 +20,10 @@ else
         <div class="mb-3">
             <label class="form-label">Loại file</label>
             <select class="form-select" @bind="SelectedType">
-                <option value="@FileTypeMovieConstant.Poster">Poster</option>
-                <option value="@FileTypeMovieConstant.Trailer">Trailer</option>
-                <option value="@FileTypeMovieConstant.Movie">Movie</option>
-                <option value="@FileTypeMovieConstant.Subtitle">Subtitle</option>
+                <option value="@FileTypeMovieConstant.POSTER">Poster</option>
+                <option value="@FileTypeMovieConstant.TRAILER">Trailer</option>
+                <option value="@FileTypeMovieConstant.MOVIES">Movie</option>
+                <option value="@FileTypeMovieConstant.SUBTITLE">Subtitle</option>
             </select>
         </div>
 
@@ -56,7 +56,7 @@ else
     // Movie ID nhận từ danh sách phim
     [Parameter] public int CurrentMovieId { get; set; } = 0;
 
-    private string SelectedType { get; set; } = FileTypeMovieConstant.Poster;
+    private string SelectedType { get; set; } = FileTypeMovieConstant.POSTER;
 
     private IBrowserFile? SelectedFile;
     private bool IsSaving = false;

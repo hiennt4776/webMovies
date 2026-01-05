@@ -129,9 +129,9 @@
                             <div class="col-md-4 col-xs-12">
                                 <label class="form-label">Status</label>
                             <InputSelect class="form-select" @bind-Value="partner.Status">
-                                <option value="@PartnerStatusConstant.Active">Active</option>
-                                <option value="@PartnerStatusConstant.Inactive">Inactive</option>
-                                <option value="@PartnerStatusConstant.Suspended">Suspended</option>
+                                    <option value="@PartnerStatusConstant.ACTIVE">ACTIVE</option>
+                                    <option value="@PartnerStatusConstant.INACTIVE">INACTIVE</option>
+                                    <option value="@PartnerStatusConstant.SUSPENDED">SUSPENDED</option>
                             </InputSelect>
                                 <div class="invalid-feedback">
                                     <ValidationMessage For="@(() => partner.Status)" />
@@ -173,7 +173,7 @@
         partner ??= new PartnerViewModel();
         if (string.IsNullOrEmpty(partner.Status))
         {
-            partner.Status = PartnerStatusConstant.Active;
+            partner.Status = PartnerStatusConstant.ACTIVE;
         }
     }
     private async Task HandleValidSubmit()

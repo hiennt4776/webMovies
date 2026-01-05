@@ -4,6 +4,7 @@
 @using Microsoft.JSInterop
 @inject IMoviePricingService MoviePricingService
 @inject IInvoiceService InvoiceService
+@inject IMovieService MovieService
 @inject AuthService AuthService
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
@@ -19,29 +20,55 @@ else if (!RentPrices.Any())
 }
 else
 {
-    <h4>🎬 Thuê phim</h4>
 
-    @foreach (var price in RentPrices)
-    {
-        <div class="card mb-2 p-2">
-            <div>
-                <b>@price.RentalDurationDays ngày</b>
-                <span class="text-muted">- @price.Price.ToString("N0") đ</span>
+
+    <section class="container">
+        <div class="row glass-card">
+            <div class="col-md-4">
+                <img id="filmPoster" src="@MovieService.GetMovieFileUrl(movie.Id, "poster")" alt="Film Poster" class="img-fluid rounded shadow">
+            </div>
+            <div class="col-md-8">
+                <h2 id="filmTitle">@movie.Title</h2>
+                <p><strong>Genre:</strong> <span id="filmGenre">@movie.CategoryName</span></p>
+                <p><strong>Release Date:</strong> <span id="filmRelease">@movie.ReleaseDate</span></p>
+
+                <p id="filmDescription">
+                    @movie.Description
+                </p>
+           
             </div>
 
-            <button class="btn btn-primary btn-sm mt-2"
-                    @onclick="() => Rent(price.Id)">
-                Thuê
-            </button>
         </div>
-    }
+       
+    </section>
+    <section class="container">
+        <div class="row justify-content-center">
+            @foreach (var price in RentPrices)
+            {
+                <div class="col-md-3">
+                    <div class="card glass-card text-center package-card">
+                        <div class="card-header">
+                            <h4 class="card-title fw-bold"> @price.RentalDurationDays ngày</h4>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h3>$ @price.Price.ToString("N0")</h3>
+
+                            <button class="btn btn-success w-100 rounded-pill" @onclick="() => Rent(price.Id)">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+            }
+
+
+        </div>
+    </section>
 }
 
 @code {
     [Parameter] public int id { get; set; }
 
     private List<MoviePricingViewModel>? RentPrices;
-
+    MovieViewModel? movie;
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,15 +76,33 @@ else
         {
             NavManager.NavigateTo("/login", true);
         }
-
+        movie = await MovieService.GetMovieAsync(id);
         RentPrices = await MoviePricingService.GetRentPricesAsync(id);
+
+       
     }
 
 
 
     private async Task Rent(int pricingId)
     {
+        if (!await JsConfirm("Bạn có chắc muốn mua gói này?"))
+            return;
+
         var invoiceId = await InvoiceService.CreateInvoiceAsync(pricingId);
         NavManager.NavigateTo($"/invoice/{invoiceId}");
+        await JsAlert("🎉 Mua gói thành công!");
+
+        NavManager.NavigateTo($"/invoice/{invoiceId}");
+    }
+
+    private async Task<bool> JsConfirm(string message)
+    {
+        return await JS.InvokeAsync<bool>("confirm", message);
+    }
+
+    private async Task JsAlert(string message)
+    {
+        await JS.InvokeVoidAsync("alert", message);
     }
 }

@@ -217,7 +217,7 @@ namespace AdminService.Service
                 TaxCode = dto.TaxCode,
                 AccountNumber = dto.AccountNumber,
                 BankName = dto.BankName,
-                Status = dto.Status ?? PartnerStatusConstant.Active,
+                Status = dto.Status ?? PartnerStatusConstant.ACTIVE,
                 CreatedBy = userId,
                 CreatedDate = DateTime.Now,
                 IsDeleted = false,

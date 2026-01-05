@@ -71,9 +71,24 @@ else
 
     private async Task Buy()
     {
+        if (!await JsConfirm("Bạn có chắc muốn mua gói này?"))
+            return;
+
+
         if (BuyPrice == null) return;
 
         var invoiceId = await InvoiceService.CreateInvoiceAsync(BuyPrice.Id);
+        await JsAlert("🎉 Mua gói thành công!");
+        
         NavManager.NavigateTo($"/invoice/{invoiceId}");
+    }
+    private async Task<bool> JsConfirm(string message)
+    {
+        return await JS.InvokeAsync<bool>("confirm", message);
+    }
+
+    private async Task JsAlert(string message)
+    {
+        await JS.InvokeVoidAsync("alert", message);
     }
 }

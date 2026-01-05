@@ -1,5 +1,6 @@
 ﻿//using CustomerService.Utils;
 using dbMovies.Models;
+using helperMovies.constMovies;
 using helperMovies.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,7 @@ namespace CustomerService.Service
         Task<MovieDTO> GetMovieByIdAsync(int movieId);
         Task<byte[]> GetMovieFileAsync(int movieId, string fileType);
         Task<PagedResult<MovieDTO>> SearchMoviesAsync(MovieQueryDTO query);
+        Task<MovieAccessDTO> GetMovieAccessAsync(int movieId);
     }
 
     public class MovieService : IMovieService
@@ -32,17 +34,31 @@ namespace CustomerService.Service
 
         private readonly dbMoviesContext _context;
         public IMovieRepository _moviesRepository;
-        public IUnitOfWork _dbu;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IFileService _fileService;
+        private readonly IUnitOfWork _dbu;
+        private readonly IConfiguration _config;
+        private readonly IAuthService _authService;
+        private readonly JwtAuthService _jwtAuthService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public MovieService(dbMoviesContext context, IMovieRepository moviesRepository, IUnitOfWork dbu,  IHttpContextAccessor httpContextAccessor, IFileService fileService)
+        public MovieService(
+            dbMoviesContext context, 
+            IMovieRepository moviesRepository,
+              IFileService fileService,
+             IAuthService authService,
+            IUnitOfWork dbu,
+            IConfiguration config,
+            JwtAuthService jwtAuthService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _moviesRepository = moviesRepository;
+            _fileService = fileService; 
+              _authService = authService;
             _dbu = dbu;
+            _config = config;
+            _jwtAuthService = jwtAuthService;
             _httpContextAccessor = httpContextAccessor;
-            _fileService = fileService;  // <-- FIXED
         }
 
         public async Task<PagedResult<MovieDTO>> SearchMoviesAsync(MovieQueryDTO query)
@@ -90,7 +106,7 @@ namespace CustomerService.Service
 
             var k = await _context.Movies
                   .Where(m => m.IsDeleted == false
-                      && m.MovieFiles.Any(f => f.IsDeleted == false && f.FileType == "POSTER"))
+                      && m.MovieFiles.Any(f => f.IsDeleted == false && f.FileType == FileTypeMovieConstant.POSTER))
                   .OrderBy(m => Guid.NewGuid())
                   .Take(5)
                   .Select(m => new MovieDTO
@@ -100,7 +116,7 @@ namespace CustomerService.Service
                       ReleaseDate = m.ReleaseDate,
                       // chỉ thêm /movies nếu đường dẫn trong DB KHÔNG chứa nó
                       FilePath = $"{baseUrl}/{m.MovieFiles
-                          .Where(f => f.IsDeleted == false && f.FileType == "POSTER")
+                          .Where(f => f.IsDeleted == false && f.FileType == FileTypeMovieConstant.POSTER)
                           .Select(f => f.FilePath.Replace("\\", "/"))
                           .FirstOrDefault()}"
                   })
@@ -108,7 +124,7 @@ namespace CustomerService.Service
 
             return await _context.Movies
                   .Where(m => m.IsDeleted == false
-                      && m.MovieFiles.Any(f => f.IsDeleted == false && f.FileType == "POSTER"))
+                      && m.MovieFiles.Any(f => f.IsDeleted == false && f.FileType == FileTypeMovieConstant.POSTER))
                   .OrderBy(m => Guid.NewGuid())
                   .Take(5)
                   .Select(m => new MovieDTO
@@ -118,7 +134,7 @@ namespace CustomerService.Service
                       ReleaseDate = m.ReleaseDate,
                       // chỉ thêm /movies nếu đường dẫn trong DB KHÔNG chứa nó
                       FilePath = $"{baseUrl}/{m.MovieFiles
-                          .Where(f => f.IsDeleted == false && f.FileType == "POSTER")
+                          .Where(f => f.IsDeleted == false && f.FileType == FileTypeMovieConstant.POSTER)
                           .Select(f => f.FilePath.Replace("\\", "/"))
                           .FirstOrDefault()}"
                   })
@@ -135,9 +151,9 @@ namespace CustomerService.Service
                     Id = m.Id,
                     Title = m.Title,
                     Description = m.Description,
-                    HasTrailer = m.MovieFiles.Any(f => f.FileType.ToLower() == "trailer" && f.IsDeleted == false),
-                    HasMovie = m.MovieFiles.Any(f => f.FileType.ToLower() == "movies" && f.IsDeleted == false),
-                    HasSubtitle = m.MovieFiles.Any(f => f.FileType.ToLower() == "subtitle" && f.IsDeleted == false)
+                    HasTrailer = m.MovieFiles.Any(f => f.FileType == FileTypeMovieConstant.TRAILER && f.IsDeleted == false),
+                    HasMovie = m.MovieFiles.Any(f => f.FileType == FileTypeMovieConstant.MOVIES && f.IsDeleted == false),
+                    HasSubtitle = m.MovieFiles.Any(f => f.FileType == FileTypeMovieConstant.SUBTITLE && f.IsDeleted == false)
                 })
                 .ToListAsync();
 
@@ -154,9 +170,9 @@ namespace CustomerService.Service
                     Id = m.Id,
                     Title = m.Title,
                     Description = m.Description,
-                    HasTrailer = m.MovieFiles.Any(f => f.FileType.ToLower() == "trailer" && f.IsDeleted == false),
-                    HasMovie = m.MovieFiles.Any(f => f.FileType.ToLower() == "movies" && f.IsDeleted == false),
-                    HasSubtitle = m.MovieFiles.Any(f => f.FileType.ToLower() == "subtitle" && f.IsDeleted == false)
+                    HasTrailer = m.MovieFiles.Any(f => f.FileType == FileTypeMovieConstant.TRAILER && f.IsDeleted == false),
+                    HasMovie = m.MovieFiles.Any(f => f.FileType == FileTypeMovieConstant.MOVIES && f.IsDeleted == false),
+                    HasSubtitle = m.MovieFiles.Any(f => f.FileType == FileTypeMovieConstant.SUBTITLE && f.IsDeleted == false)
                 })
                 .FirstOrDefaultAsync();
 
@@ -202,6 +218,110 @@ namespace CustomerService.Service
               }).ToList() ?? new List<MovieFileDTO>()
           };
 
+        ///
+        public async Task<Movie?> GetByIdAsync(int id)
+            => await _context.Movies.FindAsync(id);
+        public async Task<List<MoviePricing>> GetActiveAsync(int movieId)
+        {
+            return await _context.MoviePricings
+                .Where(x =>
+                    x.MovieId == movieId &&
+                    x.IsActive == true &&
+                    x.IsDeleted == false &&
+                    x.StartDate <= DateTime.Now &&
+                    (x.EndDate == null || x.EndDate >= DateTime.Now))
+                .ToListAsync();
+        }
 
+        public async Task<bool> IsFreeMovieAsync(int movieId)
+        {
+            return await _context.MoviePricings.AnyAsync(x =>
+                x.MovieId == movieId &&
+                x.PricingType == PricingType.FREE &&
+                x.IsActive == true &&
+                x.IsDeleted == false &&
+                x.StartDate <= DateTime.Now &&
+                (x.EndDate == null || x.EndDate >= DateTime.Now));
+        }
+
+        public async Task<bool> HasActivePackageAsync(int userId)
+        {
+            return await _context.InvoiceDetails.AnyAsync(d =>
+                d.PackageId != null &&
+                d.PackageStart <= DateTime.Now &&
+                d.PackageEnd >= DateTime.Now &&
+                d.IsDeleted == false &&
+                d.Invoice.IsDeleted == false &&
+                d.Invoice.UserCustomerId == userId &&
+                d.Invoice.PaymentStatus == PaymentStatus.PAID);
+        }
+
+        public async Task<bool> HasMovieAccessAsync(int userId, int movieId)
+        {
+            return await _context.InvoiceDetails.AnyAsync(d =>
+                d.MovieId == movieId &&
+                d.AccessStart <= DateTime.Now &&
+                (d.AccessEnd == null || d.AccessEnd >= DateTime.Now) &&
+                d.IsDeleted == false &&
+                d.Invoice.IsDeleted == false &&
+                d.Invoice.UserCustomerId == userId &&
+                d.Invoice.PaymentStatus == PaymentStatus.PAID);
+        }
+
+        public async Task<MovieAccessDTO> GetMovieAccessAsync(int movieId)
+        {
+            var movie = await GetByIdAsync(movieId)
+                ?? throw new Exception("Movie not found");
+            var httpContext = _httpContextAccessor.HttpContext
+?? throw new InvalidOperationException("There is no HttpContext in ContractService");
+            int userId = _authService.GetUserIdFromToken(httpContext);
+            // 🎬 FREE
+            if (await IsFreeMovieAsync(movieId))
+            {
+                return new MovieAccessDTO
+                {
+                    MovieId = movieId,
+                    IsFree = true,
+                    CanWatch = true
+                };
+            }
+
+            // 📦 GÓI
+            if (await HasActivePackageAsync(userId))
+            {
+                return new MovieAccessDTO
+                {
+                    MovieId = movieId,
+                    IsFree = false,
+                    CanWatch = true
+                };
+            }
+
+            // 🎥 MUA / THUÊ
+            if (await HasMovieAccessAsync(userId, movieId))
+            {
+                return new MovieAccessDTO
+                {
+                    MovieId = movieId,
+                    IsFree = false,
+                    CanWatch = true
+                };
+            }
+
+            // ❌ KHÔNG CÓ QUYỀN → SHOW GIÁ
+            var pricing = await GetActiveAsync(movieId);
+
+            return new MovieAccessDTO
+            {
+                MovieId = movieId,
+                IsFree = false,
+                CanWatch = false,
+                ShowBuy = pricing.Any(x => x.PricingType == PricingType.BUY),
+                ShowRent = pricing.Any(x => x.PricingType == PricingType.RENT),
+                BuyPrice = pricing.FirstOrDefault(x => x.PricingType == PricingType.BUY)?.Price,
+                RentPrice = pricing.FirstOrDefault(x => x.PricingType == PricingType.RENT)?.Price,
+                RentalDurationDays = pricing.FirstOrDefault(x => x.PricingType == PricingType.RENT)?.RentalDurationDays
+            };
+        }
     }
 }

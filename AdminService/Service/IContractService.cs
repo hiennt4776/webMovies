@@ -114,7 +114,7 @@ namespace AdminService.Service
                 {
 
 
-                    FileDTO fileDTO =  await _fileService.SaveFileAsync(contractCreateDTO.ContractFile, $"{CubDirectoryFileConstant.Contracts}\\{contract.Id}");
+                    FileDTO fileDTO =  await _fileService.SaveFileAsync(contractCreateDTO.ContractFile, $"{CubDirectoryFileConstant.CONTRACT}\\{contract.Id}");
     
                     var fileRecord = new ContractFile
                     {
@@ -215,7 +215,7 @@ namespace AdminService.Service
                     f.UpdatedBy = userId;
                 }
 
-                FileDTO fileDTO = await _fileService.SaveFileAsync(dto.ContractFile, $"{CubDirectoryFileConstant.Contracts}\\{contract.Id}");
+                FileDTO fileDTO = await _fileService.SaveFileAsync(dto.ContractFile, $"{CubDirectoryFileConstant.CONTRACT}\\{contract.Id}");
                 var file = new ContractFile
                 {
                     ContractId = contract.Id,

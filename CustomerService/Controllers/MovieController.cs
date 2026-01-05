@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using CustomerService.Service;
 using dbMovies.Models;
 using helperMovies.DTO;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CustomerService.Service;
 
 
 namespace CustomerService.Controllers
@@ -75,6 +76,16 @@ namespace CustomerService.Controllers
             };
 
             return File(bytes, contentType);
+        }
+
+
+        [Authorize]
+        [HttpGet("access/{movieId}")]
+        public async Task<IActionResult> GetMovieAccess(int movieId)
+        {
+         
+            var result = await _movieService.GetMovieAccessAsync(movieId);
+            return Ok(result);
         }
     }
 }

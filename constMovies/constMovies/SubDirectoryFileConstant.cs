@@ -8,8 +8,8 @@ namespace helperMovies.constMovies
 {
     public static class CubDirectoryFileConstant
     {
-        public static string Contracts = "Contracts";
-        public static string Movies = "Movies";
+        public static string CONTRACT = "Contracts";
+        public static string MOVIE = "Movies";
 
     }
 

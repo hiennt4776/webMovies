@@ -1,4 +1,5 @@
 ﻿using dbMovies.Models;
+using helperMovies.constMovies;
 using helperMovies.DTO;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,6 +34,18 @@ namespace CustomerService.Service
             _jwtAuthService = jwtAuthService;
             _httpContextAccessor = httpContextAccessor;
         }
+
+        public async Task<bool> IsFreeMovieAsync(int movieId)
+        {
+            return await _context.MoviePricings.AnyAsync(x =>
+                x.MovieId == movieId &&
+                x.PricingType == PricingType.FREE &&
+                x.IsActive == true &&
+                x.IsDeleted == false &&
+                x.StartDate <= DateTime.Now &&
+                (x.EndDate == null || x.EndDate >= DateTime.Now));
+        }
+
         public async Task<bool> HasActivePackageAsync(int userId)
         {
             return await _context.InvoiceDetails
@@ -41,7 +54,7 @@ namespace CustomerService.Service
                 && d.PackageEnd >= DateTime.Now
                 && d.IsDeleted == false
                && d.Invoice.UserCustomerId == userId
-               && d.Invoice.PaymentStatus == "Paid"
+               && d.Invoice.PaymentStatus == PaymentStatus.PAID
                && d.Invoice.IsDeleted == false
                 );
 
@@ -56,7 +69,7 @@ namespace CustomerService.Service
                d.IsDeleted == false &&
                 d.Invoice.IsDeleted == false &&
                 d.Invoice.UserCustomerId == userId &&
-                d.Invoice.PaymentStatus == "Paid");
+                d.Invoice.PaymentStatus == PaymentStatus.PAID);
         }
 
 
@@ -84,13 +97,13 @@ namespace CustomerService.Service
 
                 ?? throw new Exception("Movie not found");
 
-            // 🎬 FREE
-            if (movie.IsPaid == false)
+            // 2️⃣ FREE?
+            if (await IsFreeMovieAsync(movieId))
             {
                 return new MovieAccessDTO
                 {
                     MovieId = movieId,
-                    IsPaid = false,
+                    IsFree = true,
                     CanWatch = true
                 };
             }
@@ -103,7 +116,7 @@ namespace CustomerService.Service
                 return new MovieAccessDTO
                 {
                     MovieId = movieId,
-                    IsPaid = true,
+                    IsFree = false,
                     CanWatch = true
                 };
             }
@@ -114,7 +127,7 @@ namespace CustomerService.Service
                 return new MovieAccessDTO
                 {
                     MovieId = movieId,
-                    IsPaid = true,
+                    IsFree = false,
                     CanWatch = true
                 };
             }
@@ -127,15 +140,15 @@ namespace CustomerService.Service
             return new MovieAccessDTO
             {
                 MovieId = movieId,
-                IsPaid = true,
+                IsFree = false,
                 CanWatch = false,
 
-                ShowBuy = pricing.Any(x => x.PricingType == "Buy"),
-                ShowRent = pricing.Any(x => x.PricingType == "Rent"),
+                ShowBuy = pricing.Any(x => x.PricingType == PricingType.BUY ),
+                ShowRent = pricing.Any(x => x.PricingType == PricingType.RENT),
 
-                BuyPrice = pricing.FirstOrDefault(x => x.PricingType == "Buy")?.Price,
-                RentPrice = pricing.FirstOrDefault(x => x.PricingType == "Rent")?.Price,
-                RentalDurationDays = pricing.FirstOrDefault(x => x.PricingType == "Rent")?.RentalDurationDays
+                BuyPrice = pricing.FirstOrDefault(x => x.PricingType == PricingType.BUY)?.Price,
+                RentPrice = pricing.FirstOrDefault(x => x.PricingType == PricingType.RENT)?.Price,
+                RentalDurationDays = pricing.FirstOrDefault(x => x.PricingType == PricingType.RENT)?.RentalDurationDays
             };
         }
 
@@ -147,7 +160,7 @@ namespace CustomerService.Service
                   && d.PackageEnd >= DateTime.Now
                   && d.IsDeleted == false
                  && d.Invoice.UserCustomerId == userId
-                 && d.Invoice.PaymentStatus == "Paid"
+                 && d.Invoice.PaymentStatus == PaymentStatus.PAID
                  && d.Invoice.IsDeleted == false
                   );
         }
@@ -156,7 +169,7 @@ namespace CustomerService.Service
         {
             return await _context.MoviePricings
                 .Where(x => x.MovieId == movieId
-                         && x.PricingType == "RENT"
+                         && x.PricingType == PricingType.RENT
                          && x.IsActive == true
                          && x.IsDeleted == false)
                 .Select(x => new MoviePricingDTO
@@ -174,7 +187,7 @@ namespace CustomerService.Service
         {
             return await _context.MoviePricings
                 .Where(x => x.MovieId == movieId
-                         && x.PricingType == "BUY"
+                         && x.PricingType == PricingType.BUY
                        && x.IsActive == true
                          && x.IsDeleted == false)
                 .Select(x => new MoviePricingDTO

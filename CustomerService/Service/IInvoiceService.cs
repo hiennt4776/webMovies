@@ -27,7 +27,7 @@ namespace CustomerService.Service
             dbMoviesContext context,
             IUserCustomerRepository userCustomerRepository,
             ICustomerRepository CustomerRepository,
-                                    IAuthService authService,
+            IAuthService authService,
             IUnitOfWork dbu,
             IConfiguration config,
             JwtAuthService jwtAuthService,
@@ -89,7 +89,7 @@ namespace CustomerService.Service
             DateTime? accessStart = DateTime.Now;
             DateTime? accessEnd = null;
 
-            if (pricingType == PricingType.Rent)
+            if (pricingType == PricingType.RENT)
             {
                 accessEnd = accessStart.Value.AddDays(pricing.RentalDurationDays ?? 0);
             }
@@ -101,8 +101,8 @@ namespace CustomerService.Service
                 InvoiceNumber = await GenerateInvoiceNumberAsync(),
                 InvoiceDate = DateTime.Now,
                 TotalAmount = pricing.Price,
-                PaymentStatus = pricingType, // giả sử đã thanh toán
-                PaymentMethod = "Wallet",
+                PaymentStatus = PaymentStatus.PAID, // giả sử đã thanh toán
+                PaymentMethod = PaymentMethod.WALLET,
                 CreatedDate = DateTime.Now,
                 IsDeleted = false
             };
@@ -153,8 +153,9 @@ namespace CustomerService.Service
                 InvoiceNumber = await GenerateInvoiceNumberAsync(),
                 InvoiceDate = DateTime.Now,
                 TotalAmount = pricing.Price,
-                PaymentStatus = "PENDING",
-                CreatedDate = DateTime.Now
+                PaymentStatus = PaymentStatus.PAID,
+                CreatedDate = DateTime.Now,
+                IsDeleted =false
             };
 
             _context.Invoices.Add(invoice);
@@ -167,10 +168,11 @@ namespace CustomerService.Service
                 PricingType = pricing.PricingType,
                 UnitPrice = pricing.Price,
                 AccessStart = DateTime.Now,
-                AccessEnd = pricing.PricingType == "RENT"
+                AccessEnd = pricing.PricingType == PricingType.RENT
                     ? DateTime.Now.AddDays(pricing.RentalDurationDays!.Value)
                     : null,
-                CreatedDate = DateTime.Now
+                CreatedDate = DateTime.Now,
+                IsDeleted = false
             };
 
             _context.InvoiceDetails.Add(detail);

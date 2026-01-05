@@ -16,6 +16,7 @@ using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using helperMovies.constMovies;
 
 
 namespace CustomerService.Service
@@ -191,7 +192,7 @@ namespace CustomerService.Service
             var currentPackage = await _context.InvoiceDetails
                 .Where(d =>
                     d.Invoice.UserCustomerId == userId &&
-                    d.PricingType == "PACKAGE" &&
+                    d.PricingType == PricingType.PACKAGE &&
                     d.IsDeleted == false &&
                     d.PackageEnd > now)
                 .OrderByDescending(d => d.PackageEnd)
@@ -214,9 +215,10 @@ namespace CustomerService.Service
                     InvoiceNumber = await GenerateInvoiceNumberAsync(),
                     InvoiceDate = now,
                     TotalAmount = package.Price,
-                    PaymentStatus = "PAID",
-                    PaymentMethod = "CASH",
-                    CreatedDate = now
+                    PaymentStatus = PaymentStatus.PAID,
+                    PaymentMethod = PaymentMethod.CASH,
+                    CreatedDate = DateTime.Now,
+                     IsDeleted = false
                 };
 
                 _context.Invoices.Add(invoice);
@@ -227,11 +229,12 @@ namespace CustomerService.Service
                 {
                     InvoiceId = invoice.Id,
                     PackageId = package.Id,
-                    PricingType = "PACKAGE",
+                    PricingType = PricingType.PACKAGE,
                     UnitPrice = package.Price,
                     PackageStart = startDate,
                     PackageEnd = endDate,
-                    CreatedDate = now
+                    CreatedDate = DateTime.Now,
+                    IsDeleted = false
                 };
                 _context.InvoiceDetails.Add(detail);
                 await _context.SaveChangesAsync();

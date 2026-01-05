@@ -2,11 +2,11 @@
 {
     public static class PartnerStatusConstant
     {
-        public static string Active = "ACTIVE";
-        public static string Inactive = "INACTIVE";
-        public static string Suspended = "SUSPENDED";
+        public static string ACTIVE = "ACTIVE";
+        public static string INACTIVE = "INACTIVE";
+        public static string SUSPENDED = "SUSPENDED";
 
 
-        public static readonly List<string> All = new() { Active, Inactive, Suspended };
+        public static readonly List<string> All = new() { ACTIVE, INACTIVE, SUSPENDED };
     }
 }

@@ -23,6 +23,7 @@ namespace BlazorWebAppCustomer.Services
         Task<List<MovieViewModel>> GetMoviesAsync();
         Task<MovieViewModel> GetMovieAsync(int movieId);
         string GetMovieFileUrl(int movieId, string type);
+        Task<MovieAccessViewModel?> CheckAccessAsync(int movieId);
         Task<PagedResult<MovieViewModel>> SearchMoviesAsync(MovieQueryViewModel query);
 
     }
@@ -76,6 +77,12 @@ namespace BlazorWebAppCustomer.Services
         {
             var url = $"{_settings.BaseUrl}movie/{movieId}";
             return await _httpClient.GetFromJsonAsync<MovieViewModel>(url);
+        }
+
+        public async Task<MovieAccessViewModel?> CheckAccessAsync(int movieId)
+        {
+            return await _apiClient.GetAsync<MovieAccessViewModel>(
+                $"movie/access/{movieId}");
         }
 
         public string GetMovieFileUrl(int movieId, string type)

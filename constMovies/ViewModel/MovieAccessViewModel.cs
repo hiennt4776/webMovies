@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace helperMovies.DTO
+namespace helperMovies.ViewModel
 {
-    public class MovieAccessDTO
+    public class MovieAccessViewModel
     {
         public int MovieId { get; set; }
         public bool IsFree { get; set; }

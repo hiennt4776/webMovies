@@ -2,9 +2,9 @@
 {
     public static class FileTypeMovieConstant
     {
-        public static string Trailer = "TRAILER";
-        public static string Poster = "POSTER";
-        public static string Movie = "MOVIES";
-        public static string Subtitle = "SUBTITLE"; 
+        public static string TRAILER = "TRAILER";
+        public static string POSTER = "POSTER";
+        public static string MOVIES = "MOVIES";
+        public static string SUBTITLE = "SUBTITLE"; 
     }
 }
