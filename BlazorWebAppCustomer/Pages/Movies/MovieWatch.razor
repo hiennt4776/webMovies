@@ -5,6 +5,8 @@
 
 @inject IMovieService MovieService
 @inject WatchHistoryClientService WatchHistoryClient
+@inject AuthService AuthService
+@inject NavigationManager NavManager
 @inject IJSRuntime JS
 
 <h2 class="mb-3 text-primary">Xem phim</h2>
@@ -50,17 +52,34 @@ else
 
     private bool IsLoading = true;
 
+
+    MovieAccessViewModel?  access;
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            if (!await AuthService.IsAuthenticated())
+            {
+                NavManager.NavigateTo("/login", true);
+            }
+
+
             movie = await MovieService.GetMovieAsync(MovieId);
 
-            if (movie != null)
+            access = await MovieService.CheckAccessAsync(MovieId);
+
+
+
+            if (movie != null && access.CanWatch)
             {
                 VideoUrl = MovieService.GetMovieFileUrl(MovieId, "movies");
                 SubtitleUrl = MovieService.GetMovieFileUrl(MovieId, "subtitle");
                 PosterUrl = MovieService.GetMovieFileUrl(MovieId, "poster");
+            }
+            else
+            {
+                NavManager.NavigateTo($"/moviepage/{MovieId}");
             }
         }
         finally

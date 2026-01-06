@@ -10,6 +10,7 @@ namespace CustomerService.Service
 {
     public interface IFileService
     {
+        string GetFullPath(string relativePath);
         byte[] GetFileBytes(string relativePath);
     }
     public class FileService : IFileService
