@@ -23,7 +23,5 @@ public partial class Customer
 
     public DateTime? UpdatedDate { get; set; }
 
-    public virtual ICollection<FavoriteMovie> FavoriteMovies { get; set; } = new List<FavoriteMovie>();
-
     public virtual ICollection<UserCustomer> UserCustomers { get; set; } = new List<UserCustomer>();
 }

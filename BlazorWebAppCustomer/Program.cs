@@ -115,6 +115,13 @@ builder.Services.AddHttpClient<IInvoiceService, InvoiceService>((sp, client) =>
     Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
 });
 
+builder.Services.AddHttpClient<IFavoriteMovieService, FavoriteMovieService>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(settings.BaseUrl);
+    Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
+});
+
 
 builder.Services.AddHttpClient<WatchHistoryClientService>(client =>
 {
@@ -148,7 +155,10 @@ builder.Services.AddHttpClient<InvoiceService>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
 });
-
+builder.Services.AddHttpClient<FavoriteMovieService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+});
 
 var app = builder.Build();
 

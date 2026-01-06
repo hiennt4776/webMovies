@@ -5,25 +5,18 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject IMovieService MovieService
+@inject IFavoriteMovieService FavoriteMovieService
 @inject IJSRuntime JS
 
 @using System.Text.Json
 
 <HeroSection Title="Create Account" Subtitle="Join Movie Hub and explore endless entertainment." />
-
-
-
-
-
 @if (movie == null)
 {
     <p>Loading...</p>
 }
 else
 {
-
-
-
     <!-- Film Detail -->
     <section class="container my-5 pt-5">
         <div class="row glass-card p-4">
@@ -38,6 +31,7 @@ else
                 <p id="filmDescription">
                     @movie.Description
                 </p>
+             
                 @if (_access.IsFree)
                 {
                     <p> <span class="badge bg-success ms-2">FREE</span>  </p>
@@ -68,19 +62,20 @@ else
                      
                     }
                 }
+                
+                <button class="btn btn-outline-danger"
+                        @onclick="ToggleFavorite">
+                        @(IsFavorite ? "❤️ Add to favorites" : "🤍 Remove from favorites")
+                </button>
 
-
-        
-              
-           
-                <button class="btn btn-outline-light">❤️ Add to Favorite</button>
+             
             </div>
             @if (movie.HasTrailer)
             {
                 <div class="col-12" style="margin-top:25px">
                     <video controls style="width:100%; height:auto;">
                         <source src="@MovieService.GetMovieFileUrl(movie.Id, "trailer")" type="video/mp4" />
-                        Trình duyệt không hỗ trợ video.
+                       The browser does not support video.
                     </video>
                 </div>
             }
@@ -94,13 +89,13 @@ else
 
     MovieViewModel? movie;
 
-
+      private bool IsFavorite;
     private MovieAccessViewModel? _access;
     private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
-
+        IsFavorite = await FavoriteMovieService.IsFavoriteAsync(id);
         try
         {
             _access = await MovieService.CheckAccessAsync(id);
@@ -111,7 +106,10 @@ else
         }
         movie = await MovieService.GetMovieAsync(id);
     }
-
+    private async Task ToggleFavorite()
+    {
+        IsFavorite = await FavoriteMovieService.ToggleFavoriteAsync(id);
+    }
     void GoToWatch(int movieId)
     {
         NavigationManager.NavigateTo($"/watch/{movieId}");
@@ -132,4 +130,6 @@ else
             ? ""
             : string.Format("{0:N0} $", price);
     }
+
+
 }

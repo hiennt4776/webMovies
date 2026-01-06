@@ -9,13 +9,13 @@ public partial class FavoriteMovie
 {
     public int Id { get; set; }
 
-    public int? CustomerId { get; set; }
+    public int? UserCustomerId { get; set; }
 
     public int? MovieId { get; set; }
 
     public DateTime? AddedDate { get; set; }
 
-    public virtual Customer Customer { get; set; }
-
     public virtual Movie Movie { get; set; }
+
+    public virtual UserCustomer UserCustomer { get; set; }
 }

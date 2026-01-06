@@ -149,19 +149,18 @@ public partial class dbMoviesContext : DbContext
 
         modelBuilder.Entity<FavoriteMovie>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Favorite__3214EC070BEF2E17");
+            entity.HasKey(e => e.Id).HasName("PK__Favorite__3214EC0705A985D9");
 
             entity.Property(e => e.AddedDate).HasColumnType("datetime");
-            entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
             entity.Property(e => e.MovieId).HasColumnName("MovieID");
-
-            entity.HasOne(d => d.Customer).WithMany(p => p.FavoriteMovies)
-                .HasForeignKey(d => d.CustomerId)
-                .HasConstraintName("FK_FavoriteMovies_Customer");
 
             entity.HasOne(d => d.Movie).WithMany(p => p.FavoriteMovies)
                 .HasForeignKey(d => d.MovieId)
                 .HasConstraintName("FK_FavoriteMovies_Movies");
+
+            entity.HasOne(d => d.UserCustomer).WithMany(p => p.FavoriteMovies)
+                .HasForeignKey(d => d.UserCustomerId)
+                .HasConstraintName("FK_FavoriteMovies_UserCustomer");
         });
 
         modelBuilder.Entity<Invoice>(entity =>
