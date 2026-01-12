@@ -26,15 +26,14 @@ namespace BlazorWebAppAdmin.Services
     {
         private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorage;
-        private readonly IUserEmployeeService _userEmployeeService;
         private readonly ApiClient _apiClient;
 
-        public EmployeeService(HttpClient httpClient, ApiClient apiClient, ILocalStorageService localStorage, IUserEmployeeService userEmployeeService)
+        public EmployeeService(HttpClient httpClient, ApiClient apiClient, ILocalStorageService localStorage)
         {
             _httpClient = httpClient;
             _apiClient = apiClient;
             _localStorage = localStorage;
-            _userEmployeeService = userEmployeeService;
+
         }
 
         public async Task<PagedResult<EmployeeViewModel>> GetPagedSearchSortAsync(

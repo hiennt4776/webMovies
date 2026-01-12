@@ -6,8 +6,10 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 
@@ -26,6 +28,8 @@ namespace BlazorWebAppAdmin.Services
         public  Task<HttpResponseMessage> PutJsonAsync<T>(string relativeUrl, T data);
 
         public Task<HttpResponseMessage> DeleteAsync(string relativeUrl);
+        public Task<T> GetAsync<T>(string url);
+        public Task PostAsync(string url);
     }
     public class ApiClient: IApiClient
     {
@@ -60,6 +64,25 @@ namespace BlazorWebAppAdmin.Services
 
             return await _httpClient.GetAsync(relativeUrl); // dùng BaseAddress + relativeUrl
         }
+
+        public async Task<T?> GetAsync<T>(string url)
+        {
+            await AddJwtHeaderAsync();
+
+    
+
+            return await _httpClient.GetFromJsonAsync<T>(url);
+        }
+
+        public async Task PostAsync(string url)
+        {
+            await AddJwtHeaderAsync();
+            var response = await _httpClient.PostAsync(url, null);
+            response.EnsureSuccessStatusCode();
+        }
+
+
+
 
         public async Task<HttpResponseMessage> PostJsonAsync<T>(string url, T data)
         {

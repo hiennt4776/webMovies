@@ -11,6 +11,8 @@ namespace CustomerService.Service
     {
         Task<int> PurchaseMovieAsync(int userCustomerId, int movieId, string pricingType);
         Task<int> CreateInvoiceAsync(int pricingId);
+
+        Task<InvoiceDTO?> GetInvoiceDetailAsync(int invoiceId);
     }
     public class InvoiceService : IInvoiceService
     {
@@ -48,7 +50,8 @@ namespace CustomerService.Service
         public async Task<string> GenerateInvoiceNumberAsync()
         {
             var now = DateTime.Now;
-            var prefix = now.ToString("yyMM"); // VD: 2512
+
+            var prefix = $"INV-{now:yyMM}"; // VD: INV-2512
 
             // Lấy invoice lớn nhất trong tháng hiện tại
             var lastInvoice = await _context.Invoices
@@ -61,8 +64,10 @@ namespace CustomerService.Service
 
             if (!string.IsNullOrEmpty(lastInvoice))
             {
-                // Cắt 5 số cuối
-                var lastSeq = int.Parse(lastInvoice.Substring(4, 5));
+                // INV-251200123 → lấy 5 số cuối
+                var lastSeq = int.Parse(
+                    lastInvoice.Substring(prefix.Length, 5));
+
                 nextSequence = lastSeq + 1;
             }
 
@@ -181,6 +186,51 @@ namespace CustomerService.Service
             return invoice.Id;
         }
 
+        public async Task<InvoiceDTO?> GetInvoiceDetailAsync(int invoiceId)
+        {
+            var invoice = await _context.Invoices
+        .Include(i => i.InvoiceDetails)
+            .ThenInclude(d => d.Movie)
+        .Include(i => i.InvoiceDetails)
+            .ThenInclude(d => d.Package)
+        .FirstOrDefaultAsync(i => i.Id == invoiceId && i.IsDeleted == false);
+
+            if (invoice == null) return null;
+
+            return new InvoiceDTO
+            {
+                Id = invoice.Id,
+                InvoiceNumber = invoice.InvoiceNumber,
+                InvoiceDate = invoice.InvoiceDate,
+                TotalAmount = invoice.TotalAmount,
+                PaymentStatus = invoice.PaymentStatus,
+                PaymentMethod = invoice.PaymentMethod,
+                Notes = invoice.Notes,
+                IsDeleted = invoice.IsDeleted,
+                Reason = invoice.Reason,
+                InvoiceDetail = invoice.InvoiceDetails
+
+                    .Select(d => new InvoiceDetailDTO
+                    {
+                        Id = d.Id,
+
+          
+
+                        MovieId = d.MovieId,
+                        MovieTitle = d.Movie?.Title,
+
+                        PackageId = d.PackageId,
+                        PackageName = d.Package?.Name,
+
+                        PricingType = d.PricingType,
+                        UnitPrice = d.UnitPrice,
+
+                        StartDate = d.MovieId != null ? d.AccessStart : d.PackageStart,
+                        EndDate = d.MovieId != null ? d.AccessEnd : d.PackageEnd
+                    })
+                    .ToList()
+            };
+        }
     }
 
 }

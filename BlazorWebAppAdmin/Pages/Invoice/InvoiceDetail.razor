@@ -1,0 +1,98 @@
+﻿@page "/invoice/detail/{Id:int}"
+@using BlazorWebAppAdmin.Services
+@inject NavigationManager Navigation
+@inject IInvoiceService InvoiceService
+@inject IJSRuntime JSRuntime
+@inject AuthService AuthService
+@if (_loading)
+{
+    <div>⏳ Đang tải chi tiết hóa đơn...</div>
+}
+else if (_invoice == null)
+{
+    <div class="text-danger">Không tìm thấy hóa đơn</div>
+}
+else
+{
+    <div class="card mt-2">
+        <div class="card-header">
+            <strong>Hóa đơn:</strong> @_invoice.InvoiceNumber
+        </div>
+
+        <div class="card-body">
+            @if (_invoice.IsDeleted == true)
+            {
+                <div class="alert alert-warning">
+                    <strong>Hóa đơn đã bị hủy</strong><br />
+                    Lý do: @_invoice.Reason
+                </div>
+            }
+
+            <!-- 👤 CUSTOMER -->
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>Khách hàng:</strong>
+                    @_invoice.CustomerName
+                </div>
+                <div class="col-md-4">
+                    <strong>Ngày lập:</strong>
+                    @_invoice.InvoiceDate
+                </div>
+                <div class="col-md-4">
+                    <strong>Thanh toán:</strong>
+                    @_invoice.PaymentMethod
+                </div>
+            </div>
+
+            <hr />
+
+            <!-- 📦 ITEMS -->
+            <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Loại</th>
+                        <th>Giá</th>
+                        <th>Thời gian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in _invoice.InvoiceDetail)
+                    {
+                        <tr>
+                            <td>
+                                @(item.MovieTitle ?? item.PackageName)
+                            </td>
+                            <td>@item.PricingType</td>
+                            <td>@item.UnitPrice.ToString("N0") ₫</td>
+                            <td>
+
+                                @($"{item.StartDate} - {item.EndDate}")
+                          
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="text-end mt-2">
+                <strong>Tổng cộng:</strong>
+                @_invoice.TotalAmount $
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private bool _loading = true;
+    private InvoiceViewModel? _invoice;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+        _invoice = await InvoiceService.GetDetailAsync(Id);
+        _loading = false;
+    }
+}

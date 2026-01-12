@@ -82,7 +82,11 @@ namespace BlazorWebAppAdmin.Services
 
             var token = await _localStorage.GetItemAsStringAsync("authToken");
             //mình xóa bớt log nha nhìn hơi rối 
-            Console.WriteLine($"Authorization zzzzzzz:", token.ToString());
+            if (token != null)
+            {
+                Console.WriteLine($"Authorization zzzzzzz:", token.ToString());
+            }
+            else { Console.WriteLine("token is null"); } 
             if (string.IsNullOrEmpty(token)) throw new UnauthorizedAccessException("Please Login");
             // Gắn token vào header Authorization
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

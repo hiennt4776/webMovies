@@ -31,6 +31,8 @@ public partial class InvoiceDetail
 
     public DateTime? UpdatedDate { get; set; }
 
+    public int? UpdateBy { get; set; }
+
     public bool? IsDeleted { get; set; }
 
     public virtual Invoice Invoice { get; set; }

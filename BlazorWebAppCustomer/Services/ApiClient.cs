@@ -79,7 +79,7 @@ namespace BlazorWebAppCustomer.Services
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<T>(json)!;
+            return JsonSerializer.Deserialize<T>(json);
         }
 
         public async Task<HttpResponseMessage> PostJsonAsync<T>(string url, T data)

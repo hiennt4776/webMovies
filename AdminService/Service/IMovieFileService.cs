@@ -267,6 +267,6 @@ namespace AdminService.Service
             }).ToList();
         }
 
-     
+
     }
 }

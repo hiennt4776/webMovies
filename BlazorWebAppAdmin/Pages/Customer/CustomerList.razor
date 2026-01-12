@@ -1,0 +1,143 @@
+﻿@page "/customers"
+@using BlazorWebAppAdmin.Services
+@inject ICustomerService CustomerService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject AuthService AuthService
+
+
+<h3 class="mb-3">👥 Danh sách khách hàng</h3>
+
+<!-- SEARCH BAR -->
+<div class="row mb-3 align-items-end">
+    <div class="col-md-4">
+        <label class="form-label">Từ khóa</label>
+        <input class="form-control"
+               placeholder="Tên, email, phone, username"
+               @bind="Keyword" @bind:event="oninput" />
+    </div>
+
+    <div class="col-md-2">
+        <button class="btn btn-primary w-100"
+                @onclick="Search">
+            🔍 Tìm kiếm
+        </button>
+    </div>
+</div>
+
+<!-- TABLE -->
+
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Username</th>
+                <th>Trạng thái</th>
+                <th>Ngày tạo</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @if (pagedResult == null)
+            {
+                        <p class="text-center text-muted my-4"><em>Loading data...</em></p>
+            }
+            else if (!pagedResult.Items.Any())
+            {
+                        <p class="text-center text-muted my-4">No contracts found.</p>
+            }
+            else
+            {
+                @foreach (var item in pagedResult.Items)
+                {
+                    <tr>
+                        <td>@item.FullName</td>
+                        <td>@item.Email</td>
+                        <td>@item.Phone</td>
+                        <td>@item.Username</td>
+                        <td>
+                            @if (item.IsLocked)
+                            {
+                                <span class="badge bg-danger">Bị khóa</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Hoạt động</span>
+                            }
+                        </td>
+                        <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                }
+        }
+        </tbody>
+    </table>
+@if (pagedResult != null)
+    @if (pagedResult.TotalPages > 1)
+{
+    {
+        <nav>
+            <ul class="pagination">
+                <li class="page-item @(PageIndex == 1 ? "disabled" : "")">
+                    <button class="page-link"
+                            @onclick="() => ChangePage(PageIndex - 1)">
+                        «
+                    </button>
+                </li>
+
+                @for (int i = 1; i <= TotalPages; i++)
+                {
+                    <li class="page-item @(i == PageIndex ? "active" : "")">
+                        <button class="page-link"
+                                @onclick="() => ChangePage(i)">
+                            @i
+                        </button>
+                    </li>
+                }
+
+                <li class="page-item @(PageIndex == TotalPages ? "disabled" : "")">
+                    <button class="page-link"
+                            @onclick="() => ChangePage(PageIndex + 1)">
+                        »
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+    }
+    }
+@code {
+    private PagedResult<CustomerViewModel>? pagedResult;
+
+    string? Keyword;
+    int PageIndex = 1;
+    int PageSize = 10;
+    int TotalItems;
+
+    int TotalPages =>
+        (int)Math.Ceiling((double)TotalItems / PageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        pagedResult = await CustomerService.GetCustomersAsync(
+            Keyword, PageIndex, PageSize);
+    }
+
+    private async Task Search()
+    {
+        PageIndex = 1; // reset về trang đầu
+        await LoadData();
+    }
+
+    private async Task ChangePage(int page)
+    {
+        PageIndex = page;
+        await LoadData();
+    }
+}

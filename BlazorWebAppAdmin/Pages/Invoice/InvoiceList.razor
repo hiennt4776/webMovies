@@ -1,0 +1,308 @@
+﻿@page "/invoices"
+@using BlazorWebAppAdmin.Services
+@using helperMovies.Constants
+@inject IInvoiceService InvoiceService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject AuthService AuthService
+
+<h3 class="mb-3">📄 Danh sách hóa đơn</h3>
+
+<!-- 🔍 FILTER -->
+<div class="row mb-3 g-2">
+    <div class="col-md-4">
+        <input class="form-control"
+               placeholder="Tìm theo mã hóa đơn..."
+               @bind="Query.Keyword"
+               @bind:event="oninput" />
+    </div>
+
+    <div class="col-md-2">
+        <select class="form-select"
+                value="@_isDeletedValue"
+                @onchange="OnIsDeletedChanged">
+            <option value="">Tất cả</option>
+            <option value="false">Chưa hủy</option>
+            <option value="true">Đã hủy</option>
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <button class="btn btn-primary w-100" @onclick="Reload">
+            🔍 Tìm kiếm
+        </button>
+    </div>
+</div>
+
+<!-- 📋 TABLE -->
+<table class="table table-bordered table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th @onclick="() => Sort(nameof(InvoiceViewModel.InvoiceNumber))">
+                Mã HĐ @SortIcon(nameof(InvoiceViewModel.InvoiceNumber))
+            </th>
+            <th @onclick="() => Sort(nameof(InvoiceViewModel.InvoiceDate))">
+                Ngày @SortIcon(nameof(InvoiceViewModel.InvoiceDate))
+            </th>
+            <th @onclick="() => Sort(nameof(InvoiceViewModel.TotalAmount))">
+                Tổng tiền @SortIcon(nameof(InvoiceViewModel.TotalAmount))
+            </th>
+            <th>Thanh toán</th>
+            <th>Trạng thái</th>
+            <th>Lý do hủy</th>
+            <th width="180">Thao tác</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (_loading)
+        {
+            <tr>
+                <td colspan="7" class="text-center">⏳ Đang tải...</td>
+            </tr>
+        }
+        else if (!_data.Items.Any())
+        {
+            <tr>
+                <td colspan="7" class="text-center text-muted">
+                    Không có dữ liệu
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in _data.Items)
+            {
+                <tr class="@(item.IsDeleted == true ? "table-secondary" : "")">
+                    <td>@item.InvoiceNumber</td>
+                    <td>@item.InvoiceDate</td>
+                    <td> @($"{item.TotalAmount:N0}")</td>
+                    <td>@item.PaymentMethod</td>
+                    <td>
+                        @if (item.IsDeleted ==true)
+                        {
+                            <span class="badge bg-secondary">Đã hủy</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Hợp lệ</span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.IsDeleted == true)
+                        {
+                            <span class="text-danger">
+                                @item.Reason
+                            </span>
+                        }
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-info me-1"
+                                @onclick="() => ViewDetails(item.Id)">
+                            Chi tiết
+                        </button>
+
+                        @if (item.IsDeleted == false)
+                        {
+                            <button class="btn btn-sm btn-outline-danger"
+                                    @onclick="() => OpenCancelModal(item.Id)">
+                                Hủy
+                            </button>
+                        }
+                    </td>
+                </tr>
+
+                @if (_expandedId == item.Id)
+                {
+                    <tr>
+                        <td colspan="7" class="bg-light">
+                            <InvoiceDetail InvoiceId="item.Id" />
+                        </td>
+                    </tr>
+                }
+            }
+        }
+    </tbody>
+</table>
+
+<!-- 📑 PAGING -->
+@if (_data.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination">
+            <li class="page-item @(Query.Page == 1 ? "disabled" : "")">
+                <button class="page-link"
+                        @onclick="() => ChangePage(Query.Page - 1)">«</button>
+            </li>
+            @for (int i = 1; i <= _data.TotalPages; i++)
+            {
+                var pageIndex = i;
+
+                <li class="page-item @(pageIndex == Query.Page ? "active" : "")">
+                    <button class="page-link"
+                            @onclick="() => ChangePage(pageIndex)">
+                        @pageIndex
+                    </button>
+                </li>
+            }
+
+            <li class="page-item @(Query.Page == _data.TotalPages ? "disabled" : "")">
+                <button class="page-link"
+                        @onclick="() => ChangePage(Query.Page + 1)">»</button>
+            </li>
+        </ul>
+    </nav>
+}
+
+<!-- ❌ CANCEL MODAL -->
+@if (_showCancelModal)
+{
+    <div class="modal fade show d-block">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Hủy hóa đơn</h5>
+                </div>
+
+                <div class="modal-body">
+                    <textarea class="form-control"
+                              rows="4"
+                              placeholder="Nhập lý do hủy..."
+                              @bind="_cancelReason">
+                    </textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary"
+                            @onclick="CloseCancelModal">
+                        Đóng
+                    </button>
+                    <button class="btn btn-danger"
+                            @onclick="ConfirmCancel">
+                        Xác nhận hủy
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    private bool _loading;
+    private int? _expandedId;
+
+    private bool _showCancelModal;
+    private int _cancelInvoiceId;
+    private string _cancelReason = "";
+
+    private PagedResult<InvoiceViewModel> _data = new();
+
+    private InvoiceQueryViewModel Query = new()
+    {
+        Page = 1,
+        PageSize = 10,
+        SortBy = nameof(InvoiceViewModel.InvoiceDate),
+        SortDesc = true
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!await AuthService.IsAuthenticated())
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+        _expandedId = null;
+        _data = await InvoiceService.GetInvoicesAsync(Query);
+        _loading = false;
+    }
+
+    private async Task Reload()
+    {
+        Query.Page = 1;
+        await LoadData();
+    }
+
+    private async Task ChangePage(int page)
+    {
+        Query.Page = page;
+        await LoadData();
+    }
+
+    private void Sort(string field)
+    {
+        if (Query.SortBy == field)
+            Query.SortDesc = !Query.SortDesc;
+        else
+        {
+            Query.SortBy = field;
+            Query.SortDesc = false;
+        }
+
+        Query.Page = 1;
+        _ = LoadData();
+    }
+
+    RenderFragment SortIcon(string field) => builder =>
+    {
+        if (Query.SortBy == field)
+            builder.AddContent(0, Query.SortDesc ? " 🔽" : " 🔼");
+    };
+
+
+
+    private void OpenCancelModal(int id)
+    {
+        _cancelInvoiceId = id;
+        _cancelReason = "";
+        _showCancelModal = true;
+    }
+
+    private  void CloseCancelModal()
+    {
+        _showCancelModal = false;
+    }
+
+    private async Task ConfirmCancel()
+    {
+        if (string.IsNullOrWhiteSpace(_cancelReason))
+        {
+            await JS.InvokeVoidAsync("alert", "Vui lòng nhập lý do hủy!");
+            return;
+        }
+
+        await InvoiceService.CancelAsync(
+            _cancelInvoiceId,
+            _cancelReason);
+
+        _showCancelModal = false;
+        await LoadData();
+    }
+
+    string? _isDeletedValue;
+
+    async Task OnIsDeletedChanged(ChangeEventArgs e)
+    {
+        _isDeletedValue = e.Value?.ToString();
+
+        Query.IsDeleted = _isDeletedValue switch
+        {
+            "true" => true,
+            "false" => false,
+            _ => null
+        };
+
+        Query.Page = 1; // reset paging
+        await LoadData(); // 👉 GET API
+    }
+    private void ViewDetails(int id)
+    {
+        Navigation.NavigateTo($"/invoice/detail/{id}");
+    }
+}

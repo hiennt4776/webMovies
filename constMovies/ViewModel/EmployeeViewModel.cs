@@ -116,4 +116,21 @@ namespace helperMovies.ViewModel
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 10;
     }
+
+
+    public class CustomerListViewModel
+    {
+        public int Id { get; set; }
+        public string FullName { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string Address { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+
+        public string Username { get; set; }
+        public bool IsLocked { get; set; }
+        public string ReasonLock { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+    }
 }

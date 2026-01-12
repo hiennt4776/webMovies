@@ -53,7 +53,7 @@ namespace helperMovies.ViewModel
         public bool Success { get; set; }
         public string Message { get; set; } = "";
     }
-        public class CustomerViewModel
+    public class CustomerViewModel
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }
@@ -67,5 +67,12 @@ namespace helperMovies.ViewModel
         public string Address { get; set; }
         [JsonPropertyName("dateOfBirth")]
         public DateOnly? DateOfBirth { get; set; }
+
+
+        public string Username { get; set; }
+        public bool IsLocked { get; set; }
+        public string ReasonLock { get; set; }
+
+        public DateTime CreatedDate { get; set; }
     }
 }

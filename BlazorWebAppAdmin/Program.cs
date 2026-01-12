@@ -58,7 +58,12 @@ builder.Services.AddHttpClient<ISubscriptionPackageService, SubscriptionPackageS
     client.BaseAddress = new Uri(settings.BaseUrl);
     Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
 });
-
+builder.Services.AddHttpClient<ICustomerService, CustomerService>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(settings.BaseUrl);
+    Console.WriteLine($"[DEBUG] API BaseUrl: {settings.BaseUrl}");
+});
 
 builder.Services.AddHttpClient<ApiClient>((sp, client) =>
 {
@@ -88,8 +93,8 @@ builder.Services.AddScoped<IMovieFileService, MovieFileService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IMoviePricingService, MoviePricingService>();
 builder.Services.AddScoped<ISubscriptionPackageService, SubscriptionPackageService>();
-
-
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 var app = builder.Build();
 

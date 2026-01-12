@@ -27,7 +27,11 @@ public partial class Invoice
 
     public DateTime? UpdatedDate { get; set; }
 
+    public int? UpdateBy { get; set; }
+
     public bool? IsDeleted { get; set; }
+
+    public string Reason { get; set; }
 
     public virtual ICollection<InvoiceDetail> InvoiceDetails { get; set; } = new List<InvoiceDetail>();
 

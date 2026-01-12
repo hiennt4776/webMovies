@@ -16,6 +16,7 @@ namespace BlazorWebAppAdmin.Services
         Task UploadAsync(int movieId, IBrowserFile file, string fileType);
         Task DeleteAsync(int fileId);
         Task<MovieFileViewModel> GetByIdAsync(int fileId);
+        Task<List<MovieFileViewModel>> GetFilesAsync(int movieId);
     }
 
 
@@ -23,16 +24,15 @@ namespace BlazorWebAppAdmin.Services
     {
         private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorage;
-        private readonly IUserEmployeeService _userService;
         private readonly ApiClient _apiClient;
         private readonly IJSRuntime _js;
 
-        public MovieFileService(HttpClient httpClient, ApiClient apiClient, ILocalStorageService localStorage, IUserEmployeeService userService, IJSRuntime js)
+        public MovieFileService(HttpClient httpClient, ApiClient apiClient, ILocalStorageService localStorage, IJSRuntime js)
         {
             _httpClient = httpClient;
             _apiClient = apiClient;
             _localStorage = localStorage;
-            _userService = userService;
+           
             _js = js;
         }
         public async Task<MovieFileViewModel> GetByIdAsync(int id)
@@ -69,7 +69,16 @@ namespace BlazorWebAppAdmin.Services
 
         public async Task DeleteAsync(int fileId)
         {
-            await _httpClient.DeleteAsync($"api/moviefiles/{fileId}");
+            await _httpClient.DeleteAsync($"/MovieFile/{fileId}");
         }
+        public async Task<List<MovieFileViewModel>> GetFilesAsync(int movieId)
+        {
+            var result = await _apiClient.GetAsync<List<MovieFileViewModel>>(
+                $"MovieFile/{movieId}"
+            );
+
+            return result ?? new List<MovieFileViewModel>();
+        }
+
     }
 }
