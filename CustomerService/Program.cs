@@ -157,6 +157,7 @@ builder.Services.AddScoped<ISubscriptionPackageService, SubscriptionPackageServi
 builder.Services.AddScoped<IMoviePricingService, MoviePricingService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IFavoriteMovieService, FavoriteMovieService>();
+
 // ========== BUILD APP ==========
 var app = builder.Build();
 

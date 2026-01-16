@@ -50,5 +50,11 @@ namespace helperMovies.DTO
         public DateTime? CreatedDate { get; set; }
     }
 
-
+    public class UserProfileDTO
+    {
+        public int UserCustomerId { get; set; }
+        public string Username { get; set; } = string.Empty;
+        public DateTime CreatedDate { get; set; }
+        public bool IsLocked { get; set; }
+    }
 }

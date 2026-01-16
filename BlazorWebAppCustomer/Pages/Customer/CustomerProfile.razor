@@ -8,58 +8,106 @@
 @inject ICustomerService CustomerService
 
 
+<HeroSection Title="All Films" Subtitle="Browse our full collection of movies and discover your next favorite film." />
 
-
-@if (user == null)
+@if (isLoading)
 {
-    <p>Đang tải...</p>
+    <p>Đang tải dữ liệu...</p>
 }
 else
 {
-  @*   <ul>
+    <!-- Thông tin tài khoản -->
+    <div class="card mb-4 p-3">
+        <h5>Thông tin tài khoản</h5>
+        <p><b>Tài khoản:</b> @profile!.Username</p>
+        <p><b>Ngày tạo:</b> @profile.CreatedDate.ToString()</p>
+        
+    </div>
 
-        <li>Full Name: @user.FullName</li>
-        <li>Email: @user.Email</li>
-        <li>PhoneNumber: @user.PhoneNumber</li>
-        <li>Address: @user.Address</li>
-        <li>JobStatus: @user.JobStatus</li>
-        <li>DateOfBirth: @user.DateOfBirth</li>
-        <li>Salary: @user.Salary</li>
- 
-    </ul> *@
-    <!-- Content Wrapper -->
-    <!-- Profile Content -->
-    <section class="container my-5">
+    <!-- Hóa đơn -->
+    <div class="mb-4">
+        <h5>🧾 Hóa đơn của bạn</h5>
 
-        <div class="row">
+        @if (!invoices.Any())
+        {
+            <p class="text-muted">Chưa có hóa đơn nào</p>
+        }
+        else
+        {
+            @foreach (var invoice in invoices)
+            {
+                <div class="card mb-2 p-3">
+                    <div class="d-flex justify-content-between">
+                        <b>@invoice.InvoiceNumber</b>
+                        <span>@invoice.InvoiceDate.ToString()</span>
+                    </div>
 
-            <!-- Left Column -->
-            <div class="col-lg-12 mb-4">
-                <div class="card glass-card p-3">
-                    <h5 class="fw-bold mb-3">@user.FullName</h5>
-                    <p><i class="bi bi-envelope-fill text-danger"></i> @user.Address</p>
-                    <p><i class="bi bi-telephone-fill text-danger"></i>  @user.Phone</p>
-                    <p><i class="bi bi-geo-alt-fill text-danger"></i> @user.Address</p>
+                    <p>
+                        Tổng tiền:
+                        <b class="text-success">
+                            @invoice.TotalAmount.ToString() $
+                        </b>
+                    </p>
 
+                    <ul class="list-group">
+                        @foreach (var d in invoice.InvoiceDetail)
+                        {
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>
+
+
+
+                                    <b>@(d.MovieTitle ?? d.PackageName)</b>
+                                </span>
+                                <span>
+                                    @d.UnitPrice.ToString()$
+                                </span>
+                            </li>
+                        }
+                    </ul>
                 </div>
+            }
+        }
+    </div>
+
+    <!-- Phim yêu thích -->
+    <div>
+        <h5>❤️ Phim đã thích</h5>
+
+        @if (!favorites.Any())
+        {
+            <p class="text-muted">Bạn chưa thích phim nào</p>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var f in favorites)
+                {
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 p-2 movie-card"
+                             @onclick="() => GoToMovie(f.MovieId)">
+                            <b>@f.MovieName</b>
+                            <small class="text-muted">
+                                Đã thêm: @f.AddedDate.ToString()
+                            </small>
+                        </div>
+                    </div>
+                }
             </div>
-
-   
-
-        </div>
-
-    </section>
-
-
+        }
+    </div>
 }
 
 @code {
     private CustomerViewModel? user;
     private string userName = "";
 
-    //bạn chạy lại giúp mình fe nha
-    // chi fe ak fe be luôn nha mình k qquen xài vs tím á
-    // minh hinh chay ca 2 roi nhan start
+
+    private CustomerViewModel? profile;
+    private List<InvoiceViewModel> invoices = new();
+    private List<FavoriteMovieViewModel> favorites = new();
+    private bool isLoading = true;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -68,8 +116,28 @@ else
         {
             NavManager.NavigateTo("/login", true);
         }
-        user = await CustomerService.GetCurrentUserNameAsync();
+
+        await LoadData();
+
+
+    }
+    private async Task LoadData()
+    {
+        try
+        {
+            profile = await CustomerService.GetProfileAsync();
+            invoices = await CustomerService.GetInvoicesAsync();
+            favorites = await CustomerService.GetFavoritesAsync();
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
+    void GoToMovie(int? movieId)
+    {
+        NavManager.NavigateTo($"/movie/{movieId}");
+    }
 
 }

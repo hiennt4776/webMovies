@@ -70,9 +70,9 @@ namespace helperMovies.ViewModel
 
 
         public string Username { get; set; }
-        public bool IsLocked { get; set; }
+        public bool? IsLocked { get; set; }
         public string ReasonLock { get; set; }
 
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
     }
 }

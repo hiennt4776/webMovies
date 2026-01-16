@@ -26,6 +26,7 @@ namespace CustomerService.Controllers
         [HttpGet("profile")]
         public async Task<IActionResult> Profile()
         {
+            
             var username = User.Claims.FirstOrDefault(c => c.Type == "UserName")?.Value.Trim();
             if (username == null) return Unauthorized();
 
@@ -33,6 +34,20 @@ namespace CustomerService.Controllers
             if (profile == null) return NotFound();
 
             return Ok(profile);
+        }
+
+        [HttpGet("invoices")]
+        public async Task<IActionResult> GetInvoices()
+        {
+
+            return Ok(await _customerService.GetInvoicesAsync());
+        }
+
+        [HttpGet("favorites")]
+        public async Task<IActionResult> GetFavorites()
+        {
+          
+            return Ok(await _customerService.GetFavoriteMoviesAsync());
         }
     }
 }

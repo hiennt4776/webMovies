@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using dbMovies.Models;
+using helperMovies.DTO;
 using helperMovies.ViewModel;
 using Microsoft.JSInterop;
 using System;
@@ -14,8 +15,11 @@ namespace BlazorWebAppCustomer.Services
 
     public interface ICustomerService
     {
-
+        Task<List<FavoriteMovieViewModel>> GetFavoritesAsync();
+        Task<List<InvoiceViewModel>> GetInvoicesAsync();
         Task<CustomerViewModel> GetCurrentUserNameAsync();
+
+        Task<CustomerViewModel> GetProfileAsync();
 
     }
     public class CustomerService : ICustomerService
@@ -77,7 +81,23 @@ namespace BlazorWebAppCustomer.Services
             return await response.Content.ReadFromJsonAsync<CustomerViewModel>();
         }
 
+        public async Task<CustomerViewModel> GetProfileAsync()
+        {
+            return await _apiClient.GetAsync<CustomerViewModel>("customer/profile");
+        }
 
+
+        public async Task<List<InvoiceViewModel>> GetInvoicesAsync()
+        {
+            return await _apiClient.GetAsync<List<InvoiceViewModel>>("customer/invoices")
+                   ?? new List<InvoiceViewModel>();
+        }
+
+        public async Task<List<FavoriteMovieViewModel>> GetFavoritesAsync()
+        {
+            return await _apiClient.GetAsync<List<FavoriteMovieViewModel>>("customer/favorites")
+                   ?? new List<FavoriteMovieViewModel>();
+        }
 
 
 
